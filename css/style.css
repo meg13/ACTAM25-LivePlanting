@@ -16,3 +16,13 @@ body > header > h1 {
 body {
     background-color: #8BC34A;
 }
+
+.grass_dark{
+    opacity: 0.6;
+    background: #689F38;
+}
+
+.grass_light{
+    opacity: 0.4;
+    background: #AED581;
+}
