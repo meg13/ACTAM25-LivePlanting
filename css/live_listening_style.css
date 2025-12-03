@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+body > header {
+    text-align: left;
+    margin: 50px 0px;
+}
+
+body > header > h1 {
+    color: black;
+    font-family: 'Press Start 2P', cursive;
+    margin: 0;
+    padding: 0;
+    letter-spacing: 2px;
+}
+
+body {
+    background-color: #8BC34A;
+}
+
+.audio-container {
+    width: 70%;
+}
+
+#waveform {
+    margin-top: 0px;
+    height: 200px;
+    width: 100%;
+    border: solid green;
+    background-color: #F5F5DC;
+}
+
+.audio-controls {
+    font-family: 'Press Start 2P', cursive;
+    margin-top: 10px;
+}
+
+.audio-controls button {
+    background-color: #F5F5DC;
+    color: black;
+    border: solid black;
+    padding: 10px;
+    margin: 5px 20px 0px 0px;
+    cursor: pointer;
+    font-family: 'Press Start 2P', cursive;
+}
+
+.audio-container .volume-btn {
+  width: 24px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.audio-container .fa-volume-mute {
+  display: none;
+}
+
+/* Stile personalizzato per lo slider */
+#volumeSlider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 150px;
+    height: 12px;
+    background: #F5F5DC;
+    border: 3px solid black;
+    outline: none;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Thumb QUADRATO per Chrome/Safari */
+#volumeSlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    background: #4A90E2;
+    border: 3px solid black;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+#volumeSlider::-webkit-slider-thumb:hover {
+    background: #5BA3F5;
+}

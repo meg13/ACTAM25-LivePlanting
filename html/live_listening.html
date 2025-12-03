@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>      
+        <title>Live Listening</title>
+        <meta charset="UTF-8">
+        <link href="../css/live_listening_style.css" type="text/css" rel="stylesheet"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    </head>
+    <body>
+        <header>
+        <h1>LISTEN TO YOUR PLANT</h1>
+        </header>
+        <main>
+            <div class="audio-container">
+                <div id="waveform"></div>
+                <div class="audio-controls">
+                    <button id="startButton">Start Listening</button>
+                    <button id="stopButton">Stop Listening</button>
+                    <span class="volume-btn">
+                        <i class="fas fa-volume-up"></i>
+                        <i class="fas fa-volume-mute"></i>
+                    </span>
+                    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
+                </div>
+            </div>
+        </main>
+
