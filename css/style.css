@@ -39,6 +39,7 @@ body {
     height: 30px;
     position: relative;
     margin-bottom: 8px;
+    z-index: 2;
 }
 
 .petal {
