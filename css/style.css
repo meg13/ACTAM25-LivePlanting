@@ -34,18 +34,18 @@ body {
     background: #AED581;
 }
 
-.flower {
-    width: 50px;
-    height: 50px;
+.bg-flower {
+    width: 30px;
+    height: 30px;
     position: relative;
     margin-bottom: 8px;
 }
 
 .petal {
-    width: 18px;
-    height: 18px;
+    width: 8px;
+    height: 8px;
     position: absolute;
-    border: 2px solid black;
+    background-color: white;
 }
 
 .petal-top {
@@ -73,13 +73,12 @@ body {
 }
 
 .flower-center {
-    width: 18px;
-    height: 18px;
+    width: 8px;
+    height: 8px;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: #FFD700;
-    border: 2px solid black;
     z-index: 1;
 }
