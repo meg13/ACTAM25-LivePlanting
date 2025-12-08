@@ -69,10 +69,11 @@
 }
 
 .genre-selector {
-    position: absolute;
+    position: relative;
     width: 270px;
     height: 270px;
     margin-left: 100px;
+    z-index: 10;
 }
 
 .knob {
@@ -120,28 +121,29 @@
     position: absolute;
     color: white;
     font-size: 10px;
+    text-align: center;
 }
 
 .genre-label:nth-child(1) { 
     top: 50%; 
-    left: 50%; 
-    transform: translate(-50%, calc(-70px - 100%)); /* 60px dal bordo + altezza etichetta */
+    left: 52%; 
+    transform: translate(-50%, calc(-55px - 100%)); /* 60px dal bordo + altezza etichetta */
 }
 
 .genre-label:nth-child(2) { 
-    top: 50%; 
+    top: 52%; 
     left: 50%; 
-    transform: translate(70px, -50%); /* 60px dal bordo del knob */
+    transform: translate(65px, -50%); /* 60px dal bordo del knob */
 }
 
 .genre-label:nth-child(3) { 
     top: 50%; 
     left: 50%; 
-    transform: translate(-50%, 70px); /* 60px dal bordo del knob */
+    transform: translate(-50%, 65px); /* 60px dal bordo del knob */
 }
 
 .genre-label:nth-child(4) { 
-    top: 50%; 
+    top: 52%; 
     left: 50%; 
-    transform: translate(calc(-70px - 100%), -50%); /* 60px + larghezza dell'etichetta */
+    transform: translate(calc(-55px - 100%), -50%); /* 60px + larghezza dell'etichetta */
 }
