@@ -49,25 +49,25 @@ body {
     background-color: white;
 }
 
-.petal-top {
+.bg-flower > .petal-top, .petal-front-top {
     top: 0;
     left: 50%;
     transform: translateX(-50%);
 }
 
-.petal-right {
+.bg-flower > .petal-right, .petal-front-right {
     right: 0;
     top: 50%;
     transform: translateY(-50%);
 }
 
-.petal-bottom {
+.bg-flower > .petal-bottom, .petal-front-bottom {
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
 }
 
-.petal-left {
+.bg-flower > .petal-left, .petal-front-left {
     left: 0;
     top: 50%;
     transform: translateY(-50%);
@@ -83,3 +83,99 @@ body {
     background-color: #FFD700;
     z-index: 1;
 }
+.nav-element{
+    height: 100px;
+    width: 72px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+}
+
+.menu-flower {
+    position: relative;
+    display: flex;
+    width: 56px;
+    height: 56px;
+}
+
+.menu-flower > .petal {
+    position: absolute;
+    background-color: #FD86AE;
+}
+
+.menu-flower > .petal-left, .menu-flower > .petal-right {
+    position: absolute;
+    background-color: #FD86AE;
+    width: 12px;
+    height: 16px;
+}
+
+.menu-flower > .petal-top, .menu-flower > .petal-bottom {
+    position: absolute;
+    background-color: #FD86AE;
+    width: 16px;
+    height: 12px;
+}
+
+.menu-flower > .flower-center {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background-color: #FFEB3B;
+    z-index: 10;
+}
+
+.menu-flower > [class^="petal-front"] {
+    position: absolute;
+    background-color: #FD86AE;
+}
+
+.petal-front-right, .petal-front-left {
+    width: 4px;
+    height: 12px;
+}
+
+.menu-flower > .petal-right {
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.menu-flower > .petal-left {
+    left: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+
+.petal-front-top, .petal-front-bottom {
+    width: 12px;
+    height: 4px;
+}
+
+.menu-flower > .petal-top {
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.menu-flower > .petal-bottom {
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.nav-button {
+    height: 16px;
+    width: 100%;
+    color: white;
+    padding: 7px 0;
+    margin-top: 8px;
+    text-align: center;
+}
+
+#home-button {
+    background-color: #FD86AE;
+}
+
