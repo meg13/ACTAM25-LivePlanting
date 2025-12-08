@@ -138,7 +138,7 @@
 
 .genre-label:nth-child(3) { 
     top: 50%; 
-    left: 50%; 
+    left: 51%; 
     transform: translate(-50%, 65px); /* 60px dal bordo del knob */
 }
 
