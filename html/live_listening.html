@@ -82,6 +82,24 @@
                     <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
                 </div>
             </div>
+            
+            <div class="genre-selector">
+                <!-- Etichette dei generi attorno alla manopola -->
+                <div class="genre-label active">POP</div>
+                <div class="genre-label">ROCK</div>
+                <div class="genre-label">JAZZ</div>
+                <div class="genre-label">CLASSIC</div>
+                
+                <!-- La manopola vera e propria -->
+                <div class="knob">
+                    <div class="knob-outer">
+                        <!-- Indicatore rosso che punta al genere -->
+                        <div class="knob-indicator"></div>
+                        <!-- Centro della manopola -->
+                        <div class="knob-center"></div>
+                    </div>
+                </div>
+            </div>
 
             <div class="bg-flower">
                 <div class="petal petal-top"></div>
@@ -95,6 +113,7 @@
     </body>
     <script src="../js/grass.js" type="text/javascript"></script>
     <script src="../js/flower.js" type="text/javascript"></script>
+    <script src="../js/knob.js" type="text/javascript"></script>
 
 </html>
 

@@ -67,3 +67,81 @@
 #volumeSlider::-webkit-slider-thumb:hover {
     background: #5BA3F5;
 }
+
+.genre-selector {
+    position: absolute;
+    width: 270px;
+    height: 270px;
+    margin-left: 100px;
+}
+
+.knob {
+    width: 80px;
+    height: 80px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.knob-outer {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    background-color: #EC407A;
+    border: solid #AD1457 4px;
+    transition: transform 0.3s ease;
+}
+
+.knob-center {
+    height: 50%;
+    width: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    background-color: #F48FB1;
+    border: 3px solid #F06292;
+}
+
+.knob-indicator {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 14px;
+    background: #FFEB3B;
+    box-shadow: 0 0 8px rgba(255, 235, 59, 0.8);
+    z-index: 10;
+}
+
+.genre-label {
+    position: absolute;
+    color: white;
+    font-size: 10px;
+}
+
+.genre-label:nth-child(1) { 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, calc(-70px - 100%)); /* 60px dal bordo + altezza etichetta */
+}
+
+.genre-label:nth-child(2) { 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(70px, -50%); /* 60px dal bordo del knob */
+}
+
+.genre-label:nth-child(3) { 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, 70px); /* 60px dal bordo del knob */
+}
+
+.genre-label:nth-child(4) { 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(calc(-70px - 100%), -50%); /* 60px + larghezza dell'etichetta */
+}
