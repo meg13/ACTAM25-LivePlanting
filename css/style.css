@@ -83,25 +83,28 @@ body {
     background-color: #FFD700;
     z-index: 1;
 }
-.nav-element{
-    height: 100px;
-    width: 82px;
+
+nav {
+    position: fixed;
+    right: 20px; 
+    top: 50%; /* Centro verticale della pagina */
+    transform: translateY(-50%); /* Centra verticalmente */
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-decoration: none;
+    gap: 40px; /* Spazio tra i vari elementi nav */
+    z-index: 100; 
 }
 
-#nav-concept {
-    width: 100px;
+.nav-element {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra tutto orizzontalmente rispetto al fiore */
+    text-decoration: none;
 }
 
 #nav-listening {
     width: 130px;
-}
-
-#listening-button {
-    height: 30px;
 }
 
 .menu-flower {
@@ -198,4 +201,31 @@ body {
     letter-spacing: 1px;
 }
 
+#concept-button, #home-button, #code-button, #listening-button {
+    width: auto;
+}
 
+#listening-button {
+    height: 30px;
+}
+
+.nav-element:hover .menu-flower {
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+}
+
+.nav-element:hover .flower-center {
+    animation: spin-center 1s linear infinite;
+}
+
+@keyframes spin-center {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.nav-element:hover .nav-button {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+    filter: brightness(1.1);
+    transition: all 0.2s ease;
+}
