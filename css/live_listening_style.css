@@ -83,6 +83,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    cursor: pointer;
 }
 
 .knob-outer {
@@ -112,7 +113,7 @@
     transform: translateX(-50%);
     width: 8px;
     height: 14px;
-    background: #FFEB3B;
+    background-color: #FFEB3B;
     box-shadow: 0 0 8px rgba(255, 235, 59, 0.8);
     z-index: 10;
 }
@@ -122,6 +123,7 @@
     color: white;
     font-size: 10px;
     text-align: center;
+    cursor: pointer;
 }
 
 .genre-label:nth-child(1) { 
@@ -146,4 +148,10 @@
     top: 52%; 
     left: 50%; 
     transform: translate(calc(-55px - 100%), -50%); /* 60px + larghezza dell'etichetta */
+}
+
+.genre-label.active {
+    color: #FFEB3B /*#AD1457*/;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+    font-size: 12px; /* Opzionale: ingrandisce leggermente */
 }

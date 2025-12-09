@@ -2,46 +2,50 @@ const knob = document.querySelector('.knob');
 const knobOuter = document.querySelector('.knob-outer');
 const genreLabels = document.querySelectorAll('.genre-label');
 
-let isDragging = false;
-let previousAngle = 0;
-let totalRotation = 0;
+const genreAngles = [0, 90, 180, 270]; // POP, ROCK, JAZZ, CLASSIC
+let currentAngle = 0;
+let currentGenreIndex = 0;
 
-knob.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    const rect = knob.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    previousAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
-});
-
-document.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-    
-    const rect = knob.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    let currentAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
-    
-    // Calcola la differenza gestendo il passaggio da 180 a -180
-    let delta = currentAngle - previousAngle;
-    if (delta > 180) delta -= 360;
-    if (delta < -180) delta += 360;
-    
-    totalRotation += delta;
-    previousAngle = currentAngle;
-    
-    // Snap alle 4 posizioni (ogni 90 gradi)
-    const snapAngle = Math.round(totalRotation / 90) * 90;
-    knobOuter.style.transform = `rotate(${snapAngle}deg)`;
-    
-    // Update genere attivo
-    let genreIndex = ((Math.round(totalRotation / 90) % 4) + 4) % 4;
-    
-    genreLabels.forEach((label, idx) => {
-        label.classList.toggle('active', idx === genreIndex);
+genreLabels.forEach((label, index) => {
+    label.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const targetAngle = genreAngles[index];
+        
+        // Normalizza currentAngle tra 0-360
+        const normalizedCurrent = ((currentAngle % 360) + 360) % 360;
+        
+        // Calcola la differenza
+        let diff = targetAngle - normalizedCurrent;
+        
+        // Trova il percorso più breve
+        if (diff > 180) {
+            diff -= 360;
+        } else if (diff < -180) {
+            diff += 360;
+        }
+        
+        // Aggiorna l'angolo corrente
+        currentAngle += diff;
+        currentGenreIndex = index;
+        
+        // Ruota il knob
+        knobOuter.style.transform = `rotate(${currentAngle}deg)`;
+        
+        // Aggiorna la classe active
+        genreLabels.forEach(lbl => lbl.classList.remove('active'));
+        label.classList.add('active');
     });
 });
 
-document.addEventListener('mouseup', () => {
-    isDragging = false;
+knob.addEventListener('click', (e) => {
+    console.log('Knob clicked!'); // Per verificare se l'evento viene catturato
+    
+    currentGenreIndex = (currentGenreIndex + 1) % 4;
+    currentAngle += 90;
+    
+    knobOuter.style.transform = `rotate(${currentAngle}deg)`;
+    
+    genreLabels.forEach((lbl, idx) => {
+        lbl.classList.toggle('active', idx === currentGenreIndex);
+    });
 });
