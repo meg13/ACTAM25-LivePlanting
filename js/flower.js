@@ -1,13 +1,11 @@
-// Array per tracciare le posizioni dei fiori
 const flowerPositions = [];
 
 function checkCollision(x, y, flowerSize, padding = 5) {
-  // Verifica se la posizione collide con fiori esistenti
+  //collision with other flowers
   for (let flower of flowerPositions) {
     const distance = Math.sqrt(
       Math.pow(x - flower.x, 2) + Math.pow(y - flower.y, 2)
     );
-    // Se la distanza è minore della somma dei raggi + padding, c'è collisione
     if (distance < flowerSize + padding) {
       return true;
     }
@@ -18,41 +16,53 @@ function checkCollision(x, y, flowerSize, padding = 5) {
 function getRandomPosition(flowerSize, maxAttempts = 50) {
   const maxX = window.innerWidth - flowerSize;
   const maxY = window.innerHeight - flowerSize;
-  
-  // Tenta di trovare una posizione valida fino a maxAttempts volte
+
+  //get position and dimension of genre-selector
+  const genreSelector = document.querySelector('.genre-selector');
+  let selectorRect = null;
+  if (genreSelector) {
+    selectorRect = genreSelector.getBoundingClientRect();
+  }
+
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const x = Math.random() * maxX;
     const y = Math.random() * maxY;
-    
-    // Se non c'è collisione, ritorna questa posizione
-    if (!checkCollision(x, y, flowerSize)) {
-      return { x, y };
+
+    //collision with other flowers
+    if (checkCollision(x, y, flowerSize)) {
+      continue;
     }
+
+    //collision with genre-selector
+    if (selectorRect && x < selectorRect.right && x + flowerSize > selectorRect.left &&
+        y < selectorRect.bottom && y + flowerSize > selectorRect.top) {
+      continue;
+    }
+
+    return { x, y };
   }
-  
-  // Se non trova posizione dopo maxAttempts, ritorna null
+
   return null;
 }
+
 
 function addFlowerItem() {
   const flower = document.createElement("div");
   flower.classList.add("bg-flower");
   flower.style.position = "absolute";
 
-  const flowerSize = 30; // larghezza/altezza del contenitore .bg-flower
+  const flowerSize = 30;
 
-  // Cerca una posizione libera
   const position = getRandomPosition(flowerSize);
   
   if (!position) {
     console.warn("Non riesco a posizionare il fiore: spazio insufficiente");
-    return; // Non aggiunge il fiore se non trova spazio
+    return;
   }
 
   flower.style.left = position.x + "px";
   flower.style.top = position.y + "px";
 
-  // Memorizza la posizione
   flowerPositions.push({
     x: position.x,
     y: position.y,
@@ -80,7 +90,6 @@ function addFlowerItem() {
   document.body.appendChild(flower);
 }
 
-// Aggiunge 10 fiori senza sovrapposizioni
 for (let i = 0; i < 10; i++) {
   addFlowerItem();
 }
