@@ -11,8 +11,7 @@ html, body {
 body > header {
     position: relative;
     text-align: left;
-    margin-top: 50px;
-    margin-bottom: 70px;
+    margin: 50px 0px;
 }
 
 body > header > h1 {

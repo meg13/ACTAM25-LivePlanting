@@ -30,10 +30,9 @@ main {
 }
 
 #waveform {
-    margin-top: 0px;
-    height: 250px;
+    height: 200px;
     width: 100%;
-    border: solid green;
+    border: solid green 4px;
     background-color: #F5F5DC;
 }
 
