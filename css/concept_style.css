@@ -3,13 +3,31 @@ html > body {
 }
 
 article {
-    width: 70%;
-    height: auto;
+    width: 100%;
+    margin-bottom: 50px;
 }
 
-p {
-    font-size: 15px;
+article > h2 {
+    font-size: 20px;
+    margin-bottom: 9px;
+}
+
+article > p {
+    width: 100%;
+    font-family: 'Oxygen Mono', monospace;
+    font-size: 18px;
+    font-style: normal;
     font-weight: 400;
     line-height: 120%; /* 21.6px */
-    letter-spacing: -0.36px;
+    letter-spacing: 0.3px;
+    text-align: justify;
+}
+
+article:last-child {
+    margin-bottom: 0;
+}
+
+.content-wrapper {
+    margin-right: clamp(200px, 15vw, 300px);
+    padding: 20px 40px 60px 40px;
 }
