@@ -7,6 +7,7 @@ main {
 }
 
 .audio-section {
+    height: 100vh;
     width: 60%;
     display: flex;
     flex-direction: column;
@@ -15,6 +16,7 @@ main {
 }
 
 .audio-container {
+    height: 40%;
     width: 100%;
     position: relative;
     z-index: 50;
@@ -30,7 +32,7 @@ main {
 }
 
 #waveform {
-    height: 200px;
+    height: 80%;
     width: 100%;
     border: solid green 4px;
     background-color: #F5F5DC;
