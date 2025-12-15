@@ -1,60 +1,7 @@
-<svg width="1280" height="707" viewBox="0 0 1280 707" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g opacity="0.6">
-<rect width="48" height="64" transform="translate(570 517)" fill="#689F38"/>
-</g>
-<g opacity="0.6">
-<rect width="32" height="40" transform="translate(770 72)" fill="#689F38"/>
-</g>
-<g opacity="0.6">
-<rect width="32" height="40" transform="translate(188 234)" fill="#689F38"/>
-</g>
-<g opacity="0.6">
-<rect width="40" height="48" transform="translate(108 403)" fill="#689F38"/>
-</g>
-<g opacity="0.4">
-<rect width="24" height="32" transform="translate(355.037 128.675)" fill="#AED581"/>
-</g>
-<g opacity="0.4">
-<rect width="32" height="40" transform="translate(906 112)" fill="#AED581"/>
-</g>
-<g opacity="0.4">
-<rect width="24" height="32" transform="translate(196 675)" fill="#AED581"/>
-</g>
-<path d="M782 333C782 329.686 784.686 327 788 327H840C843.314 327 846 329.686 846 333V369C846 372.314 843.314 375 840 375H788C784.686 375 782 372.314 782 369V333Z" fill="#A0826D"/>
-<path d="M814 317C814 313.686 816.686 311 820 311H848C851.314 311 854 313.686 854 317V345C854 348.314 851.314 351 848 351H820C816.686 351 814 348.314 814 345V317Z" fill="#A0826D"/>
-<rect width="16" height="16" transform="translate(846 327)" fill="#8B6F5E"/>
-<path d="M850 331C850 328.791 851.791 327 854 327C856.209 327 858 328.791 858 331C858 333.209 856.209 335 854 335C851.791 335 850 333.209 850 331Z" fill="white"/>
-<path d="M838 323C838 320.791 839.791 319 842 319C844.209 319 846 320.791 846 323C846 325.209 844.209 327 842 327C839.791 327 838 325.209 838 323Z" fill="black"/>
-<path d="M846 321C846 319.895 846.895 319 848 319C849.105 319 850 319.895 850 321C850 322.105 849.105 323 848 323C846.895 323 846 322.105 846 321Z" fill="white"/>
-<rect width="12" height="12" transform="translate(818 311)" fill="#8B6F5E"/>
-<rect width="12" height="12" transform="translate(790 363)" fill="#8B6F5E"/>
-<rect width="12" height="12" transform="translate(810 363)" fill="#8B6F5E"/>
-<rect width="8" height="8" transform="translate(439 675)" fill="white"/>
-<rect width="8" height="8" transform="translate(439 699)" fill="white"/>
-<rect width="8" height="8" transform="translate(427 687)" fill="white"/>
-<rect width="8" height="8" transform="translate(451 687)" fill="white"/>
-<rect width="8" height="8" transform="translate(439 687)" fill="#FDC700"/>
-<rect width="8" height="8" transform="translate(950 415)" fill="white"/>
-<rect width="8" height="8" transform="translate(950 439)" fill="white"/>
-<rect width="8" height="8" transform="translate(938 427)" fill="white"/>
-<rect width="8" height="8" transform="translate(962 427)" fill="white"/>
-<rect width="8" height="8" transform="translate(950 427)" fill="#FDC700"/>
-<rect width="8" height="8" transform="translate(594 210)" fill="white"/>
-<rect width="8" height="8" transform="translate(594 234)" fill="white"/>
-<rect width="8" height="8" transform="translate(582 222)" fill="white"/>
-<rect width="8" height="8" transform="translate(606 222)" fill="white"/>
-<rect width="8" height="8" transform="translate(594 222)" fill="#FDC700"/>
-<rect width="8" height="8" transform="translate(92 529)" fill="white"/>
-<rect width="8" height="8" transform="translate(92 553)" fill="white"/>
-<rect width="8" height="8" transform="translate(80 541)" fill="white"/>
-<rect width="8" height="8" transform="translate(104 541)" fill="white"/>
-<rect width="8" height="8" transform="translate(92 541)" fill="#FDC700"/>
-<rect width="8" height="8" transform="translate(351 351)" fill="white"/>
-<rect width="8" height="8" transform="translate(351 375)" fill="white"/>
-<rect width="8" height="8" transform="translate(339 363)" fill="white"/>
-<rect width="8" height="8" transform="translate(363 363)" fill="white"/>
-<rect width="8" height="8" transform="translate(351 363)" fill="#FDC700"/>
-<g opacity="0.4">
-<rect width="32" height="37" transform="translate(697 375)" fill="#AED581"/>
-</g>
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="40" height="32" transform="translate(8 24)" fill="#F5F5DC"/>
+<rect width="32" height="32" transform="translate(16)" fill="#F5F5DC"/>
+<rect width="12" height="8" transform="translate(48 16)" fill="#FF8904"/>
+<rect width="8" height="8" transform="translate(32 8)" fill="black"/>
+<rect width="16" height="12" transform="translate(24 40)" fill="#E8E8D0"/>
 </svg>
