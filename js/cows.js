@@ -1,14 +1,21 @@
 class SimpleCow {
     constructor() {
         this.element = null;
-        this.x = Math.random() * window.innerWidth;
+
+        // Calcola l'area valida evitando il nav
+        const nav = document.querySelector('nav');
+        const navWidth = nav ? nav.offsetWidth + 20 : 150;
+        const maxX = window.innerWidth - navWidth - 80;
+
+        // Posiziona le mucche solo nell'area del prato
+        this.x = Math.random() * maxX;
         this.y = Math.random() * (window.innerHeight - 250) + 150;
         this.vx = (Math.random() - 0.5) * 1.2;
         this.vy = (Math.random() - 0.5) * 0.3;
         this.direction = this.vx > 0 ? 1 : -1;
         this.paused = false;
         this.pauseTimer = 0;
-        
+
         this.create();
     }
     
@@ -46,29 +53,36 @@ class SimpleCow {
             }
             return;
         }
-        
+
         if (Math.random() < 0.01) {
             this.paused = true;
             this.pauseTimer = Math.random() * 100 + 50;
             return;
         }
-        
+
         // Muove la mucca
         this.x += this.vx;
         this.y += this.vy;
-        
-        // Rimbalzo sui bordi
-        if (this.x < -100) {
-            this.x = window.innerWidth + 100;
-        } else if (this.x > window.innerWidth + 100) {
-            this.x = -100;
+
+        // Calcola il margine destro in base al nav
+        const nav = document.querySelector('nav');
+        const navWidth = nav ? nav.offsetWidth + 20 : 150; // 40px per margine extra
+
+        // Rimbalzo dolce sui bordi orizzontali
+        if (this.x < 0) {
+            this.x = 0;
+            this.vx *= -1;
+        } else if (this.x > window.innerWidth - navWidth - 80) {
+            this.x = window.innerWidth - navWidth - 80;
+            this.vx *= -1;
         }
-        
+
+        // Rimbalzo dolce sui bordi verticali
         if (this.y < 100) {
             this.y = 100;
             this.vy *= -1;
-        } else if (this.y > window.innerHeight - 200) {
-            this.y = window.innerHeight - 200;
+        } else if (this.y > window.innerHeight - 150) {
+            this.y = window.innerHeight - 150;
             this.vy *= -1;
         }
         
