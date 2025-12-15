@@ -44,13 +44,30 @@ class LiveAudioPlayer {
 
     createCanvas() {
         this.canvas = document.createElement('canvas');
-        this.canvas.width = this.waveformDiv.clientWidth;
-        this.canvas.height = this.waveformDiv.clientHeight;
+
+        // Get actual dimensions from the #waveform div (after CSS is applied)
+        const rect = this.waveformDiv.getBoundingClientRect();
+        this.canvas.width = rect.width;
+        this.canvas.height = rect.height;
+
+        // Make canvas fill the container
+        this.canvas.style.width = '100%';
+        this.canvas.style.height = '100%';
+        this.canvas.style.display = 'block';
+
         this.waveformDiv.appendChild(this.canvas);
         this.canvasContext = this.canvas.getContext('2d');
 
         // Draw initial empty waveform
         this.drawEmptyWaveform();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            const rect = this.waveformDiv.getBoundingClientRect();
+            this.canvas.width = rect.width;
+            this.canvas.height = rect.height;
+            this.drawEmptyWaveform();
+        });
     }
 
     drawEmptyWaveform() {
