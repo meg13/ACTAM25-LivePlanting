@@ -8,7 +8,8 @@
     transition: left 0.1s linear, top 0.1s linear;
 }
 
-.walking-cow svg {
+.walking-cow img {
     width: 100%;
     height: 100%;
+    display: block;
 }
