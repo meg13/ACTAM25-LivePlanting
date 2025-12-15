@@ -79,7 +79,14 @@ class SimpleCow {
 
         // Calcola il margine destro in base al nav
         const nav = document.querySelector('nav');
-        const navWidth = nav ? nav.offsetWidth + 20 : 150; // 40px per margine extra
+        const navWidth = nav ? nav.offsetWidth + 20 : 150;
+
+        // Rileva il pulsante START
+        const startButton = document.querySelector('.startButton');
+        let buttonRect = null;
+        if (startButton) {
+            buttonRect = startButton.getBoundingClientRect();
+        }
 
         // Rimbalzo dolce sui bordi orizzontali
         if (this.x < 0) {
@@ -97,6 +104,45 @@ class SimpleCow {
         } else if (this.y > window.innerHeight - 150) {
             this.y = window.innerHeight - 150;
             this.vy *= -1;
+        }
+
+        // Rimbalzo dal pulsante START (con margine di 20px)
+        if (buttonRect) {
+            const margin = 20;
+            const cowElement = this.element;
+            const cowWidth = cowElement ? cowElement.offsetWidth : 70;
+            const cowHeight = cowElement ? cowElement.offsetHeight : 54;
+
+            // Controlla collisione con il pulsante
+            if (this.x + cowWidth > buttonRect.left - margin &&
+                this.x < buttonRect.right + margin &&
+                this.y + cowHeight > buttonRect.top - margin &&
+                this.y < buttonRect.bottom + margin) {
+
+                // Determina da quale lato rimbalzare
+                const fromLeft = this.x + cowWidth / 2 < buttonRect.left;
+                const fromRight = this.x + cowWidth / 2 > buttonRect.right;
+                const fromTop = this.y + cowHeight / 2 < buttonRect.top;
+                const fromBottom = this.y + cowHeight / 2 > buttonRect.bottom;
+
+                if (fromLeft || fromRight) {
+                    this.vx *= -1;
+                    if (fromLeft) {
+                        this.x = buttonRect.left - cowWidth - margin;
+                    } else {
+                        this.x = buttonRect.right + margin;
+                    }
+                }
+
+                if (fromTop || fromBottom) {
+                    this.vy *= -1;
+                    if (fromTop) {
+                        this.y = buttonRect.top - cowHeight - margin;
+                    } else {
+                        this.y = buttonRect.bottom + margin;
+                    }
+                }
+            }
         }
         
         // Cambio direzione casuale
