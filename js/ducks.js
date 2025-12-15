@@ -19,7 +19,8 @@ class SimpleDuck {
         // Inizializza variabili di salto
         this.jumping = false;
         this.jumpTimer = 0;
-        this.jumpHeight = 10; // Altezza del salto in pixel
+        this.jumpHeight = 20;
+        this.startY = this.y; // Memorizza la posizione di partenza
 
         this.create();
     }
@@ -54,17 +55,20 @@ class SimpleDuck {
         }
 
         // Salto casuale
-        if (!this.jumping && Math.random() < 0.005) { // Probabilità di salto
-            this.jumping = true;
-            this.jumpTimer = 10; // Durata del salto (frame)
+        // Salto casuale
+        if (!this.jumping && Math.random() < 0.005) {
+        this.jumping = true;
+        this.jumpTimer = 10;
+        this.startY = this.y; // Memorizza la posizione iniziale
         }
 
         if (this.jumping) {
-            this.y -= this.jumpHeight; // Salta in alto
-            this.jumpTimer--;
+        // Sposta la papera verso l'alto solo durante il salto
+        this.y = this.startY - this.jumpHeight;
+        this.jumpTimer--;
             if (this.jumpTimer <= 0) {
                 this.jumping = false;
-                this.y += this.jumpHeight; // Torna giù
+                this.y = this.startY; // Ripristina la posizione originale
             }
         }
 
