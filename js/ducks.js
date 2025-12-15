@@ -10,8 +10,8 @@ class SimpleDuck {
         // Posiziona le papere solo nell'area del prato
         this.x = Math.random() * maxX;
         this.y = Math.random() * (window.innerHeight - 250) + 150;
-        this.vx = (Math.random() - 0.5) * 1.2;
-        this.vy = (Math.random() - 0.5) * 0.3;
+        this.vx = (Math.random() - 0.5) * 2.0;
+        this.vy = (Math.random() - 0.5) * 0.5;
         this.direction = this.vx > 0 ? 1 : -1;
         this.paused = false;
         this.pauseTimer = 0;
@@ -76,10 +76,10 @@ class SimpleDuck {
         
         // Cambio direzione casuale
         if (Math.random() < 0.02) {
-            this.vx += (Math.random() - 0.5) * 0.3;
-            this.vy += (Math.random() - 0.5) * 0.2;
+            this.vx += (Math.random() - 0.5) * 0.5;
+            this.vy += (Math.random() - 0.5) * 0.3;
             
-            const maxSpeed = 1.5;
+            const maxSpeed = 2.5;
             if (Math.abs(this.vx) > maxSpeed) this.vx = maxSpeed * Math.sign(this.vx);
             if (Math.abs(this.vy) > maxSpeed * 0.3) this.vy = maxSpeed * 0.3 * Math.sign(this.vy);
         }
