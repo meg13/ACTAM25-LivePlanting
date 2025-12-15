@@ -1,29 +1,46 @@
 class SimpleDuck {
     constructor() {
         this.element = null;
-
         // Calcola l'area valida evitando il nav
         const nav = document.querySelector('nav');
         const navWidth = nav ? nav.offsetWidth + 20 : 150;
         const maxX = window.innerWidth - navWidth - 80;
 
-        // Posiziona le papere solo nell'area del prato
-        this.x = Math.random() * maxX;
-        this.y = Math.random() * (window.innerHeight - 250) + 150;
+        // Rileva il pulsante START
+        const startButton = document.querySelector('.startButton');
+        let buttonRect = null;
+        if (startButton) {
+            buttonRect = startButton.getBoundingClientRect();
+        }
+
+        // Posiziona le papere solo nell'area del prato, evitando anche il pulsante START
+        let x, y;
+        do {
+            x = Math.random() * maxX;
+            y = Math.random() * (window.innerHeight - 250) + 150;
+        } while (
+            buttonRect &&
+            x < buttonRect.right + 20 &&
+            x + 70 > buttonRect.left - 20 &&
+            y < buttonRect.bottom + 20 &&
+            y + 54 > buttonRect.top - 20
+        );
+
+        this.x = x;
+        this.y = y;
         this.vx = (Math.random() - 0.5) * 2.0;
         this.vy = (Math.random() - 0.5) * 0.5;
         this.direction = this.vx > 0 ? 1 : -1;
         this.paused = false;
         this.pauseTimer = 0;
-
         // Inizializza variabili di salto
         this.jumping = false;
         this.jumpTimer = 0;
         this.jumpHeight = 20;
         this.startY = this.y; // Memorizza la posizione di partenza
-
         this.create();
     }
+
 
     create() {
         this.element = document.createElement('div');

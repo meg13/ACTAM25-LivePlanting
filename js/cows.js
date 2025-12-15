@@ -10,7 +10,6 @@ class SimpleCow {
 
     constructor() {
         this.element = null;
-
         // Assegna i colori a giro
         this.colors = SimpleCow.colorPalettes[SimpleCow.colorIndex];
         SimpleCow.colorIndex = (SimpleCow.colorIndex + 1) % SimpleCow.colorPalettes.length;
@@ -20,17 +19,36 @@ class SimpleCow {
         const navWidth = nav ? nav.offsetWidth + 20 : 150;
         const maxX = window.innerWidth - navWidth - 80;
 
-        // Posiziona le mucche solo nell'area del prato
-        this.x = Math.random() * maxX;
-        this.y = Math.random() * (window.innerHeight - 250) + 150;
+        // Rileva il pulsante START
+        const startButton = document.querySelector('.startButton');
+        let buttonRect = null;
+        if (startButton) {
+            buttonRect = startButton.getBoundingClientRect();
+        }
+
+        // Posiziona le mucche solo nell'area del prato, evitando il pulsante START
+        let x, y;
+        do {
+            x = Math.random() * maxX;
+            y = Math.random() * (window.innerHeight - 250) + 150;
+        } while (
+            buttonRect &&
+            x < buttonRect.right + 20 &&
+            x + 70 > buttonRect.left - 20 &&
+            y < buttonRect.bottom + 20 &&
+            y + 54 > buttonRect.top - 20
+        );
+
+        this.x = x;
+        this.y = y;
         this.vx = (Math.random() - 0.5) * 1.2;
         this.vy = (Math.random() - 0.5) * 0.3;
         this.direction = this.vx > 0 ? 1 : -1;
         this.paused = false;
         this.pauseTimer = 0;
-
         this.create();
     }
+
 
     create() {
         this.element = document.createElement('div');
