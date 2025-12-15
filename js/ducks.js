@@ -16,6 +16,11 @@ class SimpleDuck {
         this.paused = false;
         this.pauseTimer = 0;
 
+        // Inizializza variabili di salto
+        this.jumping = false;
+        this.jumpTimer = 0;
+        this.jumpHeight = 10; // Altezza del salto in pixel
+
         this.create();
     }
 
@@ -46,6 +51,21 @@ class SimpleDuck {
             this.paused = true;
             this.pauseTimer = Math.random() * 100 + 50;
             return;
+        }
+
+        // Salto casuale
+        if (!this.jumping && Math.random() < 0.005) { // Probabilità di salto
+            this.jumping = true;
+            this.jumpTimer = 10; // Durata del salto (frame)
+        }
+
+        if (this.jumping) {
+            this.y -= this.jumpHeight; // Salta in alto
+            this.jumpTimer--;
+            if (this.jumpTimer <= 0) {
+                this.jumping = false;
+                this.y += this.jumpHeight; // Torna giù
+            }
         }
 
         // Muove la papera
