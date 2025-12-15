@@ -96,7 +96,7 @@ body {
 nav {
     position: fixed;
     right: 20px; 
-    top: 50%; /* Centro verticale della pagina */
+    top: 44.5%; 
     transform: translateY(-50%); /* Centra verticalmente */
     display: flex;
     flex-direction: column;
@@ -238,4 +238,14 @@ nav {
     box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
     filter: brightness(1.1);
     transition: all 0.2s ease;
+}
+
+#branch-svg {
+  position: fixed;
+  bottom: 0;
+  left: 0px;
+  width: 100px;
+  height: auto;
+  z-index: -1;
+  pointer-events: none;
 }
