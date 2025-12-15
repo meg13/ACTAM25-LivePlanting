@@ -1,7 +1,7 @@
 const flowerPositions = [];
 
 function checkCollision(x, y, flowerSize, padding = 5) {
-  //collision with other flowers
+  // collision with other flowers
   for (let flower of flowerPositions) {
     const distance = Math.sqrt(
       Math.pow(x - flower.x, 2) + Math.pow(y - flower.y, 2)
@@ -17,25 +17,38 @@ function getRandomPosition(flowerSize, maxAttempts = 50) {
   const maxX = window.innerWidth - flowerSize;
   const maxY = window.innerHeight - flowerSize;
 
-  //get position and dimension of genre-selector
+  // get position and dimension of genre-selector
   const genreSelector = document.querySelector('.genre-selector');
   let selectorRect = null;
   if (genreSelector) {
     selectorRect = genreSelector.getBoundingClientRect();
   }
 
+  // get position and dimension of nav bar ← AGGIUNTO
+  const navBar = document.querySelector('#nav-container');
+  let navRect = null;
+  if (navBar) {
+    navRect = navBar.getBoundingClientRect();
+  }
+
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const x = Math.random() * maxX;
     const y = Math.random() * maxY;
 
-    //collision with other flowers
+    // collision with other flowers
     if (checkCollision(x, y, flowerSize)) {
       continue;
     }
 
-    //collision with genre-selector
+    // collision with genre-selector
     if (selectorRect && x < selectorRect.right && x + flowerSize > selectorRect.left &&
         y < selectorRect.bottom && y + flowerSize > selectorRect.top) {
+      continue;
+    }
+
+    // collision with nav bar ← AGGIUNTO
+    if (navRect && x < navRect.right && x + flowerSize > navRect.left &&
+        y < navRect.bottom && y + flowerSize > navRect.top) {
       continue;
     }
 
@@ -45,7 +58,6 @@ function getRandomPosition(flowerSize, maxAttempts = 50) {
   return null;
 }
 
-
 function addFlowerItem() {
   const flower = document.createElement("div");
   flower.classList.add("bg-flower");
@@ -54,7 +66,7 @@ function addFlowerItem() {
   const flowerSize = 30;
 
   const position = getRandomPosition(flowerSize);
-  
+
   if (!position) {
     console.warn("Non riesco a posizionare il fiore: spazio insufficiente");
     return;
@@ -90,6 +102,9 @@ function addFlowerItem() {
   document.body.appendChild(flower);
 }
 
-for (let i = 0; i < 10; i++) {
-  addFlowerItem();
-}
+// Aspetta che DOM sia caricato e nav sia creata
+document.addEventListener('DOMContentLoaded', () => {
+  for (let i = 0; i < 10; i++) {
+    addFlowerItem();
+  }
+});
