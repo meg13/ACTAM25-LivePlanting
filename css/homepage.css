@@ -1,0 +1,14 @@
+.walking-cow{
+    position: fixed;
+    z-index: 10;
+    pointer-events: none;
+    user-select: none;
+    width: 70px;
+    height: 54px;
+    transition: left 0.1s linear, top 0.1s linear;
+}
+
+.walking-cow svg {
+    width: 100%;
+    height: 100%;
+}
