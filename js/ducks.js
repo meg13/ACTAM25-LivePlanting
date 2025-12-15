@@ -153,9 +153,9 @@ class SimpleDuck {
 
     // Cambio direzione casuale
     if (Math.random() < 0.02) {
-        this.vx += (Math.random() - 0.5) * 0.5;
-        this.vy += (Math.random() - 0.5) * 0.3;
-        const maxSpeed = 2.5;
+        this.vx += (Math.random() - 0.5) * 0.4;
+        this.vy += (Math.random() - 0.5) * 0.2;
+        const maxSpeed = 2.0;
         if (Math.abs(this.vx) > maxSpeed) this.vx = maxSpeed * Math.sign(this.vx);
         if (Math.abs(this.vy) > maxSpeed * 0.3) this.vy = maxSpeed * 0.3 * Math.sign(this.vy);
     }
