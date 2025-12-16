@@ -38,12 +38,16 @@ main {
     background-color: #F5F5DC;
 }
 
-.audio-controls {
+.audio-controls, .sound-management {
     font-family: 'Press Start 2P', cursive;
-    margin-top: 10px;
 }
 
-.audio-controls button {
+.audio-controls {
+    margin-top: 10px;
+
+}
+
+.audio-controls button, .sound-management button, .sound-management a{
     background-color: #F5F5DC;
     color: black;
     border: solid black;
@@ -91,6 +95,63 @@ main {
 #volumeSlider::-webkit-slider-thumb:hover {
     background: #5BA3F5;
 }
+
+.sound-management {
+    position: relative;
+    width: 500px;
+    height: 166px;
+    /*margin-left: 100px;*/
+    z-index: 10;
+    display: flex;
+    gap: 30px;
+    margin-top: 50px;
+}
+
+.sound-management img {
+    width: 80px;
+    height: 80px;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+.loopRecButton{
+    flex: 1;
+    height: 100%;
+    width: 40%;
+}
+
+.loopRecButton > a{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    background-color: #e95d8c;
+}
+
+.sound-management > div:last-child {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+#loopCLButton, #ambienceCLButton{
+    flex: 1;
+    margin-top: 0;
+}
+
+#ambienceCLButton {
+    background-color: #83dae0;
+}
+
+#loopCLButton {
+    background-color:  #FFD54F;
+}
+
 
 .genre-selector {
     position: relative;
