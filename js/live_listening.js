@@ -241,10 +241,9 @@ class LiveAudioPlayer {
         // Connect to analyser for visualization
         source.connect(this.analyser);
         
-        // Calculate when to play with buffer extra
+        // Calculate when to play
         const now = this.audioContext.currentTime;
-        const bufferTime = 0.1; // 100ms di buffer extra per evitare glitch
-        const playTime = Math.max(now + bufferTime, this.nextPlayTime);
+        const playTime = Math.max(now, this.nextPlayTime);
         
         // Play
         source.start(playTime);
