@@ -141,7 +141,8 @@ class LiveAudioPlayer {
                 this.gainNode = this.audioContext.createGain();
                 this.gainNode.gain.value = parseFloat(this.volumeSlider.value);
                 
-                // Connect gain to destination (analyser si connette per source)
+                // Connect: analyser -> gain -> destination
+                this.analyser.connect(this.gainNode);
                 this.gainNode.connect(this.audioContext.destination);
             }
             
@@ -237,13 +238,13 @@ class LiveAudioPlayer {
         const source = this.audioContext.createBufferSource();
         source.buffer = audioBuffer;
         
-        // Connect BOTH to analyser AND gain for visualization + playback
+        // Connect to analyser for visualization
         source.connect(this.analyser);
-        source.connect(this.gainNode);  // Aggiungiamo anche questa connessione diretta
         
-        // Calculate when to play
+        // Calculate when to play with buffer extra
         const now = this.audioContext.currentTime;
-        const playTime = Math.max(now, this.nextPlayTime);
+        const bufferTime = 0.1; // 100ms di buffer extra per evitare glitch
+        const playTime = Math.max(now + bufferTime, this.nextPlayTime);
         
         // Play
         source.start(playTime);
