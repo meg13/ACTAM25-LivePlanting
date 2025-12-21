@@ -168,9 +168,19 @@ class LiveAudioPlayer {
             if (this.audioContext.state === 'suspended') {
                 await this.audioContext.resume();
             }
+            
+            // ✅ DIAGNOSTICA: Verifica sample rate
+            if (this.audioContext.sampleRate !== 48000) {
+                console.warn(`⚠️ ATTENZIONE: Sample rate mismatch!`);
+                console.warn(`   AudioContext: ${this.audioContext.sampleRate} Hz`);
+                console.warn(`   Previsto: 48000 Hz`);
+                console.warn(`   Questo causerà clicks/distorsione!`);
+            } else {
+                console.log('✅ Sample rate OK: 48000 Hz');
+            }
 
-            // ✅ Reset scheduling per nuovo playback
-            this.nextPlayTime = this.audioContext.currentTime + 0.15; // 150ms buffer iniziale (più stabile)
+            // ✅ Reset scheduling per nuovo playback - BUFFER AUMENTATO
+            this.nextPlayTime = this.audioContext.currentTime + 0.5; // 500ms buffer iniziale (era 150ms)
             this.scheduledChunks = 0;
             this.lastChunkTail = null; // Reset crossfade
 
@@ -235,12 +245,64 @@ class LiveAudioPlayer {
         // Convert received data to Float32Array (stereo interleaved)
         const audioData = new Float32Array(arrayBuffer);
 
-        // Create audio buffer (STEREO)
+        // ✅ DIAGNOSTICA 1: Dimensione chunk
         const frameCount = audioData.length / 2;
+        
+        // ✅ DIAGNOSTICA 2: Controllo NaN
+        let hasNaN = false;
+        let maxAmplitude = 0;
+        for (let i = 0; i < audioData.length; i++) {
+            if (isNaN(audioData[i]) || !isFinite(audioData[i])) {
+                hasNaN = true;
+                break;
+            }
+            maxAmplitude = Math.max(maxAmplitude, Math.abs(audioData[i]));
+        }
+        
+        // ✅ DIAGNOSTICA: Log ogni 50 chunks
+        if (this.scheduledChunks % 50 === 0) {
+            const currentTime = this.audioContext.currentTime;
+            const bufferAhead = this.nextPlayTime - currentTime;
+            
+            console.log('📊 AUDIO DIAGNOSTICS:');
+            console.log(`  🔢 Chunk size: ${frameCount} frames (expected: 256)`);
+            console.log(`  📈 Max amplitude: ${maxAmplitude.toFixed(3)} (normal: 0.1-0.8)`);
+            console.log(`  ⏱️  Buffer ahead: ${(bufferAhead * 1000).toFixed(1)}ms (target: 80-500ms)`);
+            console.log(`  ❌ Has NaN: ${hasNaN}`);
+            console.log(`  📦 Total chunks: ${this.scheduledChunks}`);
+            
+            // Warnings
+            if (frameCount !== 256) {
+                console.warn('  ⚠️  INCONSISTENT CHUNK SIZE!');
+            }
+            if (maxAmplitude < 0.001) {
+                console.warn('  ⚠️  AUDIO TOO QUIET (possibly silent)');
+            }
+            if (maxAmplitude > 1.0) {
+                console.warn('  ⚠️  AUDIO CLIPPING (>1.0)');
+            }
+            if (bufferAhead < 0.08) {
+                console.warn('  ⚠️  BUFFER TOO LOW (<80ms) - expect clicks!');
+            }
+            if (hasNaN) {
+                console.error('  🚨 NaN DETECTED IN AUDIO DATA!');
+            }
+        }
+        
+        // ✅ Se ci sono NaN, non processare questo chunk
+        if (hasNaN) {
+            console.error('🚨 Skipping chunk with NaN values');
+            return;
+        }
+
+        // Create audio buffer (STEREO)
+        // ✅ USA IL SAMPLE RATE DELL'AUDIOCONTEXT (potrebbe non essere 48000!)
+        const sampleRate = this.audioContext.sampleRate;
+        
         const audioBuffer = this.audioContext.createBuffer(
             2, // stereo
             frameCount,
-            48000 // ✅ IMPORTANTE: sample rate fisso a 48000
+            sampleRate // Usa il sample rate effettivo dell'AudioContext
         );
 
         // De-interleave stereo data
@@ -255,8 +317,8 @@ class LiveAudioPlayer {
         // ✅ ANTI-CLICK: Applica crossfade tra chunk
         if (this.lastChunkTail) {
             const crossfadeSamples = Math.min(
-                Math.floor(this.crossfadeDuration * 48000),
-                this.lastChunkTail.length,
+                Math.floor(this.crossfadeDuration * this.audioContext.sampleRate), // Usa sample rate effettivo
+                this.lastChunkTail.length / 2,
                 frameCount
             );
             
@@ -271,7 +333,7 @@ class LiveAudioPlayer {
         }
         
         // Salva la coda di questo chunk per il prossimo crossfade
-        const tailSamples = Math.floor(this.crossfadeDuration * 48000);
+        const tailSamples = Math.floor(this.crossfadeDuration * this.audioContext.sampleRate); // Usa sample rate effettivo
         const tailStart = Math.max(0, frameCount - tailSamples);
         this.lastChunkTail = new Float32Array(tailSamples * 2);
         for (let i = 0; i < tailSamples && (tailStart + i) < frameCount; i++) {
@@ -284,14 +346,14 @@ class LiveAudioPlayer {
         
         // Se siamo troppo indietro, resetta lo scheduling
         if (this.nextPlayTime < currentTime) {
-            console.warn('Audio buffer underrun, resetting schedule');
-            this.nextPlayTime = currentTime + 0.1; // 100ms di buffer
+            console.warn('⚠️ Audio buffer underrun, resetting schedule');
+            this.nextPlayTime = currentTime + 0.3; // 300ms di buffer (era 100ms)
             this.scheduledChunks = 0;
             this.lastChunkTail = null; // Reset crossfade
         }
 
-        // Calcola durata di questo chunk
-        const chunkDuration = frameCount / 48000;
+        // Calcola durata di questo chunk con il sample rate effettivo
+        const chunkDuration = frameCount / this.audioContext.sampleRate;
 
         // Create buffer source
         const source = this.audioContext.createBufferSource();
@@ -306,12 +368,6 @@ class LiveAudioPlayer {
         // ✅ Aggiorna il prossimo tempo di playback
         this.nextPlayTime += chunkDuration;
         this.scheduledChunks++;
-
-        // Log ogni 100 chunks per debugging
-        if (this.scheduledChunks % 100 === 0) {
-            const bufferAhead = this.nextPlayTime - currentTime;
-            console.log(`Scheduled ${this.scheduledChunks} chunks, buffer ahead: ${(bufferAhead * 1000).toFixed(1)}ms`);
-        }
 
         // ✅ IMPORTANTE: pulizia automatica quando il source finisce
         source.onended = () => {
