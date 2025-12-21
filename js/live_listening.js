@@ -22,7 +22,7 @@ class LiveAudioPlayer {
         
         // ✅ ANTI-CLICK: Crossfade tra chunk
         this.lastChunkTail = null;
-        this.crossfadeDuration = 0.002; // 2ms crossfade
+        this.crossfadeDuration = 0.010; // 10ms crossfade (aumentato per eliminare click)
 
         // DOM Elements
         this.waveformDiv = document.getElementById('waveform');
@@ -180,7 +180,7 @@ class LiveAudioPlayer {
             }
 
             // ✅ Reset scheduling per nuovo playback - BUFFER AUMENTATO
-            this.nextPlayTime = this.audioContext.currentTime + 0.5; // 500ms buffer iniziale (era 150ms)
+            this.nextPlayTime = this.audioContext.currentTime + 1.0; // 1000ms buffer iniziale (era 500ms)
             this.scheduledChunks = 0;
             this.lastChunkTail = null; // Reset crossfade
 
@@ -347,7 +347,7 @@ class LiveAudioPlayer {
         // Se siamo troppo indietro, resetta lo scheduling
         if (this.nextPlayTime < currentTime) {
             console.warn('⚠️ Audio buffer underrun, resetting schedule');
-            this.nextPlayTime = currentTime + 0.3; // 300ms di buffer (era 100ms)
+            this.nextPlayTime = currentTime + 0.8; // 800ms di buffer (era 300ms)
             this.scheduledChunks = 0;
             this.lastChunkTail = null; // Reset crossfade
         }
