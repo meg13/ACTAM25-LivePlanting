@@ -15,8 +15,10 @@ class LiveAudioPlayer {
         this.canvasContext = null;
         this.animationId = null;
 
-        // Audio data buffer
-        this.audioQueue = [];
+        // âœ… MIGLIORAMENTO: Audio scheduling per playback continuo
+        this.nextPlayTime = 0;
+        this.audioChunkDuration = 0;
+        this.scheduledChunks = 0;
 
         // DOM Elements
         this.waveformDiv = document.getElementById('waveform');
@@ -132,25 +134,40 @@ class LiveAudioPlayer {
         try {
             // Initialize Audio Context
             if (!this.audioContext) {
-                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)({
+                    // âœ… IMPORTANTE: sample rate a 48000 per matchare Python
+                    sampleRate: 48000,
+                    // âœ… IMPORTANTE: latenza bassa ma non troppo (buffer stabile)
+                    latencyHint: 'playback' // o 'balanced'
+                });
 
                 // Create analyser for visualization
                 this.analyser = this.audioContext.createAnalyser();
                 this.analyser.fftSize = 2048;
+                this.analyser.smoothingTimeConstant = 0.8;
 
                 // Create gain node for volume control
                 this.gainNode = this.audioContext.createGain();
                 this.gainNode.gain.value = parseFloat(this.volumeSlider.value);
 
-                // Connect nodes: source -> analyser -> gain -> destination
+                // Connect nodes: analyser -> gain -> destination
                 this.analyser.connect(this.gainNode);
                 this.gainNode.connect(this.audioContext.destination);
+                
+                console.log('AudioContext initialized:');
+                console.log('- Sample Rate:', this.audioContext.sampleRate);
+                console.log('- Base Latency:', this.audioContext.baseLatency);
+                console.log('- Output Latency:', this.audioContext.outputLatency);
             }
 
             // Resume audio context if suspended
             if (this.audioContext.state === 'suspended') {
                 await this.audioContext.resume();
             }
+
+            // âœ… Reset scheduling per nuovo playback
+            this.nextPlayTime = this.audioContext.currentTime + 0.1; // Start con 100ms di buffer iniziale
+            this.scheduledChunks = 0;
 
             // Connect to WebSocket
             this.connectWebSocket();
@@ -218,7 +235,7 @@ class LiveAudioPlayer {
         const audioBuffer = this.audioContext.createBuffer(
             2, // stereo
             frameCount,
-            this.audioContext.sampleRate
+            48000 // âœ… IMPORTANTE: sample rate fisso a 48000
         );
 
         // De-interleave stereo data
@@ -230,6 +247,19 @@ class LiveAudioPlayer {
             channelR[i] = audioData[i * 2 + 1];
         }
 
+        // âœ… SCHEDULING INTELLIGENTE per playback continuo
+        const currentTime = this.audioContext.currentTime;
+        
+        // Se siamo troppo indietro, resetta lo scheduling
+        if (this.nextPlayTime < currentTime) {
+            console.warn('Audio buffer underrun, resetting schedule');
+            this.nextPlayTime = currentTime + 0.05; // 50ms di buffer
+            this.scheduledChunks = 0;
+        }
+
+        // Calcola durata di questo chunk
+        const chunkDuration = frameCount / 48000;
+
         // Create buffer source
         const source = this.audioContext.createBufferSource();
         source.buffer = audioBuffer;
@@ -237,8 +267,23 @@ class LiveAudioPlayer {
         // Connect to analyser and gain
         source.connect(this.analyser);
 
-        // Play audio
-        source.start(0);
+        // âœ… Schedule playback al momento giusto (playback continuo!)
+        source.start(this.nextPlayTime);
+        
+        // âœ… Aggiorna il prossimo tempo di playback
+        this.nextPlayTime += chunkDuration;
+        this.scheduledChunks++;
+
+        // Log ogni 100 chunks per debugging
+        if (this.scheduledChunks % 100 === 0) {
+            const bufferAhead = this.nextPlayTime - currentTime;
+            console.log(`Scheduled ${this.scheduledChunks} chunks, buffer ahead: ${(bufferAhead * 1000).toFixed(1)}ms`);
+        }
+
+        // âœ… IMPORTANTE: pulizia automatica quando il source finisce
+        source.onended = () => {
+            source.disconnect();
+        };
     }
     
     handleControlMessage(msg) {
