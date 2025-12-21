@@ -15,10 +15,14 @@ class LiveAudioPlayer {
         this.canvasContext = null;
         this.animationId = null;
 
-        // âœ… MIGLIORAMENTO: Audio scheduling per playback continuo
+        // ✅ MIGLIORAMENTO: Audio scheduling per playback continuo
         this.nextPlayTime = 0;
         this.audioChunkDuration = 0;
         this.scheduledChunks = 0;
+        
+        // ✅ ANTI-CLICK: Crossfade tra chunk
+        this.lastChunkTail = null;
+        this.crossfadeDuration = 0.002; // 2ms crossfade
 
         // DOM Elements
         this.waveformDiv = document.getElementById('waveform');
@@ -135,16 +139,16 @@ class LiveAudioPlayer {
             // Initialize Audio Context
             if (!this.audioContext) {
                 this.audioContext = new (window.AudioContext || window.webkitAudioContext)({
-                    // âœ… IMPORTANTE: sample rate a 48000 per matchare Python
+                    // ✅ IMPORTANTE: sample rate a 48000 per matchare Python
                     sampleRate: 48000,
-                    // âœ… IMPORTANTE: latenza bassa ma non troppo (buffer stabile)
+                    // ✅ IMPORTANTE: latenza bassa ma non troppo (buffer stabile)
                     latencyHint: 'playback' // o 'balanced'
                 });
 
                 // Create analyser for visualization
                 this.analyser = this.audioContext.createAnalyser();
                 this.analyser.fftSize = 2048;
-                this.analyser.smoothingTimeConstant = 0.8;
+                this.analyser.smoothingTimeConstant = 0.85; // Aumentato per smooth maggiore
 
                 // Create gain node for volume control
                 this.gainNode = this.audioContext.createGain();
@@ -165,9 +169,10 @@ class LiveAudioPlayer {
                 await this.audioContext.resume();
             }
 
-            // âœ… Reset scheduling per nuovo playback
-            this.nextPlayTime = this.audioContext.currentTime + 0.1; // Start con 100ms di buffer iniziale
+            // ✅ Reset scheduling per nuovo playback
+            this.nextPlayTime = this.audioContext.currentTime + 0.15; // 150ms buffer iniziale (più stabile)
             this.scheduledChunks = 0;
+            this.lastChunkTail = null; // Reset crossfade
 
             // Connect to WebSocket
             this.connectWebSocket();
@@ -235,7 +240,7 @@ class LiveAudioPlayer {
         const audioBuffer = this.audioContext.createBuffer(
             2, // stereo
             frameCount,
-            48000 // âœ… IMPORTANTE: sample rate fisso a 48000
+            48000 // ✅ IMPORTANTE: sample rate fisso a 48000
         );
 
         // De-interleave stereo data
@@ -246,15 +251,43 @@ class LiveAudioPlayer {
             channelL[i] = audioData[i * 2];
             channelR[i] = audioData[i * 2 + 1];
         }
+        
+        // ✅ ANTI-CLICK: Applica crossfade tra chunk
+        if (this.lastChunkTail) {
+            const crossfadeSamples = Math.min(
+                Math.floor(this.crossfadeDuration * 48000),
+                this.lastChunkTail.length,
+                frameCount
+            );
+            
+            for (let i = 0; i < crossfadeSamples; i++) {
+                const fadeIn = i / crossfadeSamples;
+                const fadeOut = 1.0 - fadeIn;
+                
+                // Crossfade tra la coda del chunk precedente e l'inizio di questo
+                channelL[i] = channelL[i] * fadeIn + this.lastChunkTail[i * 2] * fadeOut;
+                channelR[i] = channelR[i] * fadeIn + this.lastChunkTail[i * 2 + 1] * fadeOut;
+            }
+        }
+        
+        // Salva la coda di questo chunk per il prossimo crossfade
+        const tailSamples = Math.floor(this.crossfadeDuration * 48000);
+        const tailStart = Math.max(0, frameCount - tailSamples);
+        this.lastChunkTail = new Float32Array(tailSamples * 2);
+        for (let i = 0; i < tailSamples && (tailStart + i) < frameCount; i++) {
+            this.lastChunkTail[i * 2] = channelL[tailStart + i];
+            this.lastChunkTail[i * 2 + 1] = channelR[tailStart + i];
+        }
 
-        // âœ… SCHEDULING INTELLIGENTE per playback continuo
+        // ✅ SCHEDULING INTELLIGENTE per playback continuo
         const currentTime = this.audioContext.currentTime;
         
         // Se siamo troppo indietro, resetta lo scheduling
         if (this.nextPlayTime < currentTime) {
             console.warn('Audio buffer underrun, resetting schedule');
-            this.nextPlayTime = currentTime + 0.05; // 50ms di buffer
+            this.nextPlayTime = currentTime + 0.1; // 100ms di buffer
             this.scheduledChunks = 0;
+            this.lastChunkTail = null; // Reset crossfade
         }
 
         // Calcola durata di questo chunk
@@ -267,10 +300,10 @@ class LiveAudioPlayer {
         // Connect to analyser and gain
         source.connect(this.analyser);
 
-        // âœ… Schedule playback al momento giusto (playback continuo!)
+        // ✅ Schedule playback al momento giusto (playback continuo!)
         source.start(this.nextPlayTime);
         
-        // âœ… Aggiorna il prossimo tempo di playback
+        // ✅ Aggiorna il prossimo tempo di playback
         this.nextPlayTime += chunkDuration;
         this.scheduledChunks++;
 
@@ -280,7 +313,7 @@ class LiveAudioPlayer {
             console.log(`Scheduled ${this.scheduledChunks} chunks, buffer ahead: ${(bufferAhead * 1000).toFixed(1)}ms`);
         }
 
-        // âœ… IMPORTANTE: pulizia automatica quando il source finisce
+        // ✅ IMPORTANTE: pulizia automatica quando il source finisce
         source.onended = () => {
             source.disconnect();
         };
@@ -377,6 +410,9 @@ class LiveAudioPlayer {
             this.isRecording = false;
             this.updateRecordingUI();
         }
+        
+        // Reset crossfade
+        this.lastChunkTail = null;
     }
 
     setVolume(volume) {
