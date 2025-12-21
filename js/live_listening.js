@@ -265,14 +265,14 @@ class LiveAudioPlayer {
             const bufferAhead = this.nextPlayTime - currentTime;
             
             console.log('📊 AUDIO DIAGNOSTICS:');
-            console.log(`  🔢 Chunk size: ${frameCount} frames (expected: 256)`);
+            console.log(`  🔢 Chunk size: ${frameCount} frames (expected: 1024)`);
             console.log(`  📈 Max amplitude: ${maxAmplitude.toFixed(3)} (normal: 0.1-0.8)`);
             console.log(`  ⏱️  Buffer ahead: ${(bufferAhead * 1000).toFixed(1)}ms (target: 80-500ms)`);
             console.log(`  ❌ Has NaN: ${hasNaN}`);
             console.log(`  📦 Total chunks: ${this.scheduledChunks}`);
             
             // Warnings
-            if (frameCount !== 256) {
+            if (frameCount !== 1024) {
                 console.warn('  ⚠️  INCONSISTENT CHUNK SIZE!');
             }
             if (maxAmplitude < 0.001) {
