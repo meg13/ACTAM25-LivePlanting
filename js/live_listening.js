@@ -1,9 +1,11 @@
-class LiveAudioVisualizer {
+class LiveAudioController {
     constructor() {
-        // WebSocket
+        // HTTP per comandi (sempre funziona!)
+        this.httpUrl = 'http://localhost:8080';
+        
+        // WebSocket per visualizzazione (opzionale)
         this.websocket = null;
-        this.isConnected = false;
-        this.isAudioPlaying = false; // Stato audio
+        this.isWsConnected = false;
 
         // Canvas
         this.canvas = null;
@@ -19,10 +21,6 @@ class LiveAudioVisualizer {
         this.startButton = document.getElementById('startButton');
         this.stopButton = document.getElementById('stopButton');
         this.volumeSlider = document.getElementById('volumeSlider');
-        this.volumeIcons = {
-            on: document.querySelector('.fa-volume-up'),
-            mute: document.querySelector('.fa-volume-mute')
-        };
 
         // Recording controls
         this.recordButton = document.querySelector('.loopRecButton a');
@@ -32,6 +30,7 @@ class LiveAudioVisualizer {
         
         // Recording state
         this.isRecording = false;
+        this.isPlaying = false;
 
         this.init();
     }
@@ -47,33 +46,32 @@ class LiveAudioVisualizer {
         this.clearLoopButton.disabled = true;
         this.clearAmbienceButton.disabled = true;
         
-        // Nascondi volume controls (audio su PC)
+        // Nascondi volume (audio su PC)
         this.volumeSlider.style.display = 'none';
-        this.volumeIcons.on.style.display = 'none';
-        this.volumeIcons.mute.style.display = 'none';
+        
+        console.log('🎮 Controller pronto!');
+        console.log('🔊 Audio: casse del PC');
+        console.log('📡 Comandi: HTTP (sempre funzionano)');
+        console.log('📊 Visualizzazione: WebSocket (opzionale)');
     }
 
     createCanvas() {
         this.canvas = document.createElement('canvas');
-
         const rect = this.waveformDiv.getBoundingClientRect();
         this.canvas.width = rect.width;
         this.canvas.height = rect.height;
-
         this.canvas.style.width = '100%';
         this.canvas.style.height = '100%';
         this.canvas.style.display = 'block';
-
         this.waveformDiv.appendChild(this.canvas);
         this.canvasContext = this.canvas.getContext('2d');
-
         this.drawEmptyWaveform();
 
         window.addEventListener('resize', () => {
             const rect = this.waveformDiv.getBoundingClientRect();
             this.canvas.width = rect.width;
             this.canvas.height = rect.height;
-            if (!this.isAudioPlaying) {
+            if (!this.isPlaying) {
                 this.drawEmptyWaveform();
             }
         });
@@ -86,7 +84,6 @@ class LiveAudioVisualizer {
 
         ctx.fillStyle = '#F5F5DC';
         ctx.fillRect(0, 0, width, height);
-
         ctx.strokeStyle = '#8BC34A';
         ctx.lineWidth = 2;
         ctx.beginPath();
@@ -98,32 +95,35 @@ class LiveAudioVisualizer {
     setupEventListeners() {
         this.startButton.addEventListener('click', () => this.start());
         this.stopButton.addEventListener('click', () => this.stop());
-        
         this.recordButton.addEventListener('click', (e) => {
             e.preventDefault();
             this.toggleRecording();
         });
-        
         this.clearLoopButton.addEventListener('click', () => this.clearLoops());
         this.clearAmbienceButton.addEventListener('click', () => this.clearAmbience());
     }
 
     async start() {
         try {
-            console.log('🔄 Connessione al server...');
+            console.log('▶️  Invio comando START...');
             
-            // Connetti WebSocket
-            this.connectWebSocket();
-
-            // Attendi connessione
-            await this.waitForConnection();
+            // ✅ COMANDO HTTP (sempre funziona!)
+            const response = await fetch(`${this.httpUrl}/start`, {
+                method: 'POST'
+            });
             
-            console.log('✅ Connesso! Avvio audio...');
-
-            // ✅ INVIA COMANDO START AUDIO AL SERVER!
-            this.sendCommand({ command: 'start_audio' });
-            this.isAudioPlaying = true;
-
+            if (!response.ok) {
+                throw new Error('Errore HTTP: ' + response.status);
+            }
+            
+            const data = await response.json();
+            console.log('✅ START confermato:', data.message);
+            
+            this.isPlaying = true;
+            
+            // Prova a connettere WebSocket per visualizzazione (opzionale)
+            this.tryConnectWebSocket();
+            
             // Start visualizzazione
             this.startVisualization();
 
@@ -135,100 +135,51 @@ class LiveAudioVisualizer {
             this.clearLoopButton.disabled = false;
             this.clearAmbienceButton.disabled = false;
             
-            console.log('✅ Audio avviato sul PC');
-            console.log('📊 Visualizzazione attiva');
+            console.log('🎵 Dovresti sentire le note di test dal PC!');
 
         } catch (error) {
-            console.error('Errore:', error);
-            alert('Errore: ' + error.message);
+            console.error('❌ Errore:', error);
+            alert('Errore avvio audio!\n\nVerifica che Python sia in esecuzione.');
         }
     }
 
-    connectWebSocket() {
-        const wsUrl = 'ws://localhost:8765';
+    tryConnectWebSocket() {
+        // WebSocket opzionale per visualizzazione
+        try {
+            console.log('📊 Connessione WebSocket per visualizzazione...');
+            
+            this.websocket = new WebSocket('ws://localhost:8765');
+            this.websocket.binaryType = 'arraybuffer';
 
-        console.log('🔄 Tentativo connessione WebSocket...');
-        
-        this.websocket = new WebSocket(wsUrl);
-        this.websocket.binaryType = 'arraybuffer';
+            this.websocket.onopen = () => {
+                console.log('✅ WebSocket connesso! (visualizzazione attiva)');
+                this.isWsConnected = true;
+            };
 
-        this.websocket.onopen = () => {
-            console.log('✅ WebSocket connesso!');
-            this.isConnected = true;
-        };
-
-        this.websocket.onmessage = (event) => {
-            if (event.data instanceof ArrayBuffer) {
-                this.handleVisualizationData(event.data);
-            } else {
-                try {
-                    const msg = JSON.parse(event.data);
-                    this.handleControlMessage(msg);
-                } catch (e) {
-                    // Not JSON
+            this.websocket.onmessage = (event) => {
+                if (event.data instanceof ArrayBuffer) {
+                    this.handleVisualizationData(event.data);
                 }
-            }
-        };
+            };
 
-        this.websocket.onerror = (error) => {
-            console.error('❌ WebSocket error:', error);
-            console.log('💡 Verifica che Python sia in esecuzione!');
-        };
+            this.websocket.onerror = () => {
+                console.log('⚠️  WebSocket non disponibile (non è un problema!)');
+            };
 
-        this.websocket.onclose = () => {
-            console.log('❌ WebSocket disconnesso');
-            this.isConnected = false;
-        };
-    }
-
-    async waitForConnection(timeout = 15000) {
-        console.log('⏳ Attendo connessione...');
-        const start = Date.now();
-        let lastLog = 0;
-        
-        while (!this.isConnected) {
-            const elapsed = Date.now() - start;
-            
-            // Log ogni secondo
-            if (elapsed - lastLog > 1000) {
-                console.log(`⏳ Attesa: ${Math.floor(elapsed/1000)}s...`);
-                lastLog = elapsed;
-            }
-            
-            if (elapsed > timeout) {
-                throw new Error('⚠️  Timeout connessione WebSocket!\n\nVerifica che:\n1. Python sia in esecuzione\n2. Vedi "WebSocket server su ws://localhost:8765"\n3. Non ci siano firewall che bloccano la porta 8765');
-            }
-            await new Promise(resolve => setTimeout(resolve, 100));
+            this.websocket.onclose = () => {
+                this.isWsConnected = false;
+            };
+        } catch (e) {
+            console.log('⚠️  WebSocket non disponibile (non è un problema!)');
         }
-        
-        console.log('✅ Connessione stabilita!');
     }
 
     handleVisualizationData(arrayBuffer) {
         const floatData = new Float32Array(arrayBuffer);
-        
         for (let i = 0; i < floatData.length && i < this.vizBuffer.length; i++) {
             this.vizBuffer[(this.vizIndex + i) % this.vizBuffer.length] = floatData[i];
         }
         this.vizIndex = (this.vizIndex + floatData.length) % this.vizBuffer.length;
-    }
-    
-    handleControlMessage(msg) {
-        if (msg.status === 'audio_started') {
-            console.log('▶️  Audio START confermato');
-        } else if (msg.status === 'audio_stopped') {
-            console.log('⏸️  Audio STOP confermato');
-        } else if (msg.status === 'recording') {
-            this.isRecording = msg.recording;
-            this.updateRecordingUI();
-        } else if (msg.status === 'stopped') {
-            this.isRecording = false;
-            this.updateRecordingUI();
-        } else if (msg.status === 'ambient_cleared') {
-            console.log('🗑️  Ambience cleared');
-        } else if (msg.status === 'loops_cleared') {
-            console.log('🗑️  Loops cleared');
-        }
     }
 
     startVisualization() {
@@ -239,11 +190,8 @@ class LiveAudioVisualizer {
             const width = this.canvas.width;
             const height = this.canvas.height;
 
-            // Clear
             ctx.fillStyle = '#F5F5DC';
             ctx.fillRect(0, 0, width, height);
-
-            // Draw waveform
             ctx.lineWidth = 3;
             ctx.strokeStyle = '#4A90E2';
             ctx.beginPath();
@@ -255,8 +203,6 @@ class LiveAudioVisualizer {
             for (let i = 0; i < bufferLength; i++) {
                 const idx = (this.vizIndex + i) % bufferLength;
                 const v = this.vizBuffer[idx];
-                
-                // Normalizza [-1,1] → [0,1]
                 const normalized = (v + 1.0) / 2.0;
                 const y = normalized * height;
 
@@ -265,7 +211,6 @@ class LiveAudioVisualizer {
                 } else {
                     ctx.lineTo(x, y);
                 }
-
                 x += sliceWidth;
             }
 
@@ -275,12 +220,22 @@ class LiveAudioVisualizer {
         draw();
     }
 
-    stop() {
-        // ✅ INVIA COMANDO STOP AUDIO AL SERVER!
-        if (this.isConnected) {
-            this.sendCommand({ command: 'stop_audio' });
+    async stop() {
+        try {
+            console.log('⏸️  Invio comando STOP...');
+            
+            const response = await fetch(`${this.httpUrl}/stop`, {
+                method: 'POST'
+            });
+            
+            const data = await response.json();
+            console.log('✅ STOP confermato:', data.message);
+            
+            this.isPlaying = false;
+
+        } catch (error) {
+            console.error('❌ Errore stop:', error);
         }
-        this.isAudioPlaying = false;
 
         // Close WebSocket
         if (this.websocket) {
@@ -294,13 +249,11 @@ class LiveAudioVisualizer {
             this.animationId = null;
         }
 
-        // Draw empty
         this.drawEmptyWaveform();
 
         // Update UI
         this.startButton.disabled = false;
         this.stopButton.disabled = true;
-        this.isConnected = false;
         this.recordButton.style.pointerEvents = 'none';
         this.recordButton.style.opacity = '0.5';
         this.clearLoopButton.disabled = true;
@@ -310,20 +263,33 @@ class LiveAudioVisualizer {
             this.isRecording = false;
             this.updateRecordingUI();
         }
-        
-        console.log('⏸️  Audio fermato');
     }
 
-    toggleRecording() {
-        if (!this.isConnected) {
-            alert('Devi prima avviare l\'audio!');
+    async toggleRecording() {
+        if (!this.isPlaying) {
+            alert('Avvia prima l\'audio!');
             return;
         }
         
-        if (this.isRecording) {
-            this.sendCommand({ command: 'stop_rec' });
-        } else {
-            this.sendCommand({ command: 'start_rec' });
+        try {
+            if (this.isRecording) {
+                const response = await fetch(`${this.httpUrl}/stop_rec`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                console.log('⏹️  Recording stop:', data);
+                this.isRecording = false;
+            } else {
+                const response = await fetch(`${this.httpUrl}/start_rec`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                console.log('🔴 Recording start:', data);
+                this.isRecording = true;
+            }
+            this.updateRecordingUI();
+        } catch (error) {
+            console.error('❌ Errore recording:', error);
         }
     }
     
@@ -331,38 +297,36 @@ class LiveAudioVisualizer {
         if (this.isRecording) {
             this.pauseIcon.style.display = 'inline';
             this.recordButton.style.backgroundColor = '#ff4444';
-            console.log('🔴 Recording...');
         } else {
             this.pauseIcon.style.display = 'none';
             this.recordButton.style.backgroundColor = '#e95d8c';
         }
     }
     
-    clearLoops() {
-        if (!this.isConnected) return;
-        this.sendCommand({ command: 'clear_loops' });
+    async clearLoops() {
+        try {
+            await fetch(`${this.httpUrl}/clear_loops`, {
+                method: 'POST'
+            });
+            console.log('🗑️  Loops cleared');
+        } catch (error) {
+            console.error('❌ Errore:', error);
+        }
     }
     
-    clearAmbience() {
-        if (!this.isConnected) return;
-        this.sendCommand({ command: 'clear_ambient' });
-    }
-    
-    sendCommand(command) {
-        if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
-            this.websocket.send(JSON.stringify(command));
-        } else {
-            console.warn('⚠️  WebSocket non connesso');
+    async clearAmbience() {
+        try {
+            await fetch(`${this.httpUrl}/clear_ambient`, {
+                method: 'POST'
+            });
+            console.log('🗑️  Ambience cleared');
+        } catch (error) {
+            console.error('❌ Errore:', error);
         }
     }
 }
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    const visualizer = new LiveAudioVisualizer();
-    
-    console.log('🌱 Plant Audio Visualizer & Controller');
-    console.log('🔊 Audio: casse del PC (qualità originale sounddevice)');
-    console.log('📊 Visualizzazione: questo browser');
-    console.log('🎛️  Controlli: Start/Stop dal web');
+    const controller = new LiveAudioController();
 });
