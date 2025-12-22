@@ -1,5 +1,5 @@
 class SimpleCow {
-    // Palette di colori condivisa tra tutte le mucche
+    // Shared color palettes for cows
     static colorPalettes = [
         { body: '#A6561B', details: '#854516' },
         { body: '#4B3627', details: '#5D4A3D' },
@@ -10,23 +10,23 @@ class SimpleCow {
 
     constructor() {
         this.element = null;
-        // Assegna i colori a giro
+        // Assigns colors in rotation
         this.colors = SimpleCow.colorPalettes[SimpleCow.colorIndex];
         SimpleCow.colorIndex = (SimpleCow.colorIndex + 1) % SimpleCow.colorPalettes.length;
 
-        // Calcola l'area valida evitando il nav
+        // Checks valied area avoiding nav
         const nav = document.querySelector('nav');
         const navWidth = nav ? nav.offsetWidth + 20 : 150;
         const maxX = window.innerWidth - navWidth - 80;
 
-        // Rileva il pulsante START
+        // Detects the START button
         const startButton = document.querySelector('.startButton');
         let buttonRect = null;
         if (startButton) {
             buttonRect = startButton.getBoundingClientRect();
         }
 
-        // Posiziona le mucche solo nell'area del prato, evitando il pulsante START
+        // Positions the cows only in the grass area, avoiding the START button
         let x, y;
         do {
             x = Math.random() * maxX;
@@ -73,7 +73,7 @@ class SimpleCow {
     }
     
     update() {
-        // Pausa casuale
+        // Random pause
         if (this.paused) {
             this.pauseTimer--;
             if (this.pauseTimer <= 0) {
@@ -91,22 +91,22 @@ class SimpleCow {
             return;
         }
 
-        // Muove la mucca
+        // Moves the cow
         this.x += this.vx;
         this.y += this.vy;
 
-        // Calcola il margine destro in base al nav
+        // Calculates the right margin based on the nav
         const nav = document.querySelector('nav');
         const navWidth = nav ? nav.offsetWidth + 20 : 150;
 
-        // Rileva il pulsante START
+        // Detects the START button
         const startButton = document.querySelector('.startButton');
         let buttonRect = null;
         if (startButton) {
             buttonRect = startButton.getBoundingClientRect();
         }
 
-        // Rimbalzo dolce sui bordi orizzontali
+        // Gentle bounce on the horizontal edges
         if (this.x < 0) {
             this.x = 0;
             this.vx *= -1;
@@ -115,7 +115,7 @@ class SimpleCow {
             this.vx *= -1;
         }
 
-        // Rimbalzo dolce sui bordi verticali
+        // Gentle bounce on the vertical edges
         if (this.y < 100) {
             this.y = 100;
             this.vy *= -1;
@@ -124,20 +124,20 @@ class SimpleCow {
             this.vy *= -1;
         }
 
-        // Rimbalzo dal pulsante START (con margine di 20px)
+        // Bounce from the START button (with a margin of 20px)
         if (buttonRect) {
             const margin = 20;
             const cowElement = this.element;
             const cowWidth = cowElement ? cowElement.offsetWidth : 70;
             const cowHeight = cowElement ? cowElement.offsetHeight : 54;
 
-            // Controlla collisione con il pulsante
+            // Checks collision with button
             if (this.x + cowWidth > buttonRect.left - margin &&
                 this.x < buttonRect.right + margin &&
                 this.y + cowHeight > buttonRect.top - margin &&
                 this.y < buttonRect.bottom + margin) {
 
-                // Determina da quale lato rimbalzare
+                // Determines to which side the cow should bounce
                 const fromLeft = this.x + cowWidth / 2 < buttonRect.left;
                 const fromRight = this.x + cowWidth / 2 > buttonRect.right;
                 const fromTop = this.y + cowHeight / 2 < buttonRect.top;
@@ -162,8 +162,8 @@ class SimpleCow {
                 }
             }
         }
-        
-        // Cambio direzione casuale
+
+        // Random direction change
         if (Math.random() < 0.02) {
             this.vx += (Math.random() - 0.5) * 0.3;
             this.vy += (Math.random() - 0.5) * 0.2;
@@ -176,8 +176,8 @@ class SimpleCow {
         if (this.vx !== 0) {
             this.direction = this.vx > 0 ? 1 : -1;
         }
-        
-        // Aggiorna posizione
+
+        // Updates position
         this.element.style.left = this.x + 'px';
         this.element.style.top = this.y + 'px';
         this.element.style.transform = `scaleX(${this.direction})`;
@@ -198,7 +198,7 @@ function animateCows() {
 }
 
 window.addEventListener('load', () => {
-    initCows(5); // Cambia il numero qui per più o meno mucche
+    initCows(5); // Change number of cows here
     animateCows();
 });
 
