@@ -106,18 +106,23 @@ class LiveAudioController {
     async start() {
         try {
             console.log('▶️  Invio comando START...');
+            console.log('📡 URL:', `${this.httpUrl}/start`);
             
             // ✅ COMANDO HTTP (sempre funziona!)
             const response = await fetch(`${this.httpUrl}/start`, {
-                method: 'POST'
+                method: 'POST',
+                mode: 'cors'
             });
             
+            console.log('📥 Risposta ricevuta:', response.status, response.statusText);
+            
             if (!response.ok) {
-                throw new Error('Errore HTTP: ' + response.status);
+                throw new Error(`Errore HTTP: ${response.status} ${response.statusText}`);
             }
             
             const data = await response.json();
-            console.log('✅ START confermato:', data.message);
+            console.log('✅ START confermato:', data);
+            console.log('🎵 Dovresti sentire 3 note dal PC!');
             
             this.isPlaying = true;
             
