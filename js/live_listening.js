@@ -147,11 +147,13 @@ class LiveAudioVisualizer {
     connectWebSocket() {
         const wsUrl = 'ws://localhost:8765';
 
+        console.log('🔄 Tentativo connessione WebSocket...');
+        
         this.websocket = new WebSocket(wsUrl);
         this.websocket.binaryType = 'arraybuffer';
 
         this.websocket.onopen = () => {
-            console.log('✅ WebSocket connesso');
+            console.log('✅ WebSocket connesso!');
             this.isConnected = true;
         };
 
@@ -169,7 +171,8 @@ class LiveAudioVisualizer {
         };
 
         this.websocket.onerror = (error) => {
-            console.error('WebSocket error:', error);
+            console.error('❌ WebSocket error:', error);
+            console.log('💡 Verifica che Python sia in esecuzione!');
         };
 
         this.websocket.onclose = () => {
@@ -178,14 +181,27 @@ class LiveAudioVisualizer {
         };
     }
 
-    async waitForConnection(timeout = 10000) {
+    async waitForConnection(timeout = 15000) {
+        console.log('⏳ Attendo connessione...');
         const start = Date.now();
+        let lastLog = 0;
+        
         while (!this.isConnected) {
-            if (Date.now() - start > timeout) {
-                throw new Error('Timeout connessione WebSocket - Verifica che Python sia in esecuzione!');
+            const elapsed = Date.now() - start;
+            
+            // Log ogni secondo
+            if (elapsed - lastLog > 1000) {
+                console.log(`⏳ Attesa: ${Math.floor(elapsed/1000)}s...`);
+                lastLog = elapsed;
+            }
+            
+            if (elapsed > timeout) {
+                throw new Error('⚠️  Timeout connessione WebSocket!\n\nVerifica che:\n1. Python sia in esecuzione\n2. Vedi "WebSocket server su ws://localhost:8765"\n3. Non ci siano firewall che bloccano la porta 8765');
             }
             await new Promise(resolve => setTimeout(resolve, 100));
         }
+        
+        console.log('✅ Connessione stabilita!');
     }
 
     handleVisualizationData(arrayBuffer) {
