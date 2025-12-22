@@ -25,21 +25,21 @@
                         <p>
                         The application has a <b>multi-page design</b> with a common navigation system for easier access to other pages. 
                         <br> Since the whole project revolves around plants, we decided that the web app <b>theme</b> would be completely <b>inspired by nature</b>: grass, flowers and animals. 
-                        <br> For this reason, the navigation system is visually made of flowers, the homepage has cute cows and ducks that move around and jump with random mechanisms, the color palette is made of soft pastel colors that recall nature, and the background recalls a flowery meadow. 
+                        <br> For this reason, the navigation system is visually made of flowers, the homepage has cows and ducks that move around and jump with random mechanisms, the color palette is made of soft pastel colors that recall nature, and the background recalls a flowery meadow. 
                         <br>All images are created using <b>Figma</b>, and this contributes to a cohesive look for the entire project.
-                        <br>The page for audio streaming and visualization uses <b>WebSocket</b>.
 
-                        <br>The project consists of four main pages:
+                        <br><br>The project consists of four main pages:
                         <br><br><b>1.</b> <b>Home Page</b> (homepage.html) - Landing page with animal animations
                         <br><b>2.</b> <b>Live Listening</b> (live_listening.html) - Webpage about audio listening and visualization of waveforms
                         <br><b>3.</b> <b>Codes</b> (codes.html) - Page with code documentation
                         <br><b>4.</b> <b>Concept</b> (concept.html) – The concept of the project is explained
-                        <br><br>Every page is handled by a <b>specific stylesheet</b> that ensures consistency with the overall design of the system. The backend part is handled by an <b>asynchronous Python server</b> that communicates with the frontend using <b>WebSocket</b> technology.
+                        <br><br>Every page is handled by a <b>specific stylesheet</b> that ensures consistency with the overall design of the system. 
+                        <br>The backend part is handled by an <b>asynchronous Python server</b> that communicates with the frontend using <b>WebSocket</b> technology.
                         </p>
                 </article>
 
                 <article>
-                    <h2>Navigation system</h2>
+                    <h2>Navigation system <img src="../images/pxlFlowe.svg" alt="Pixel Plant" class="plant-image"> </h2>
                         <p>
                         The code for the navigation system is in `nav.js` and follows a <b>DOM-based dynamic approach</b>. 
                         <br>Our navigation system element consists of:
@@ -57,15 +57,78 @@
 
                 <article>
                     <h2>Interactive Animations - Cows, Ducks, and the Environment</h2>
+
                         <h3><br>Cow Animation <img src="../images/cow.svg" alt="Pixel Plant" class="plant-image"></h3>
                             <p>
-                                The code for the navigation system is in `nav.js` and follows a <b>DOM-based dynamic approach</b>. 
-                            </p>
+                            The `SimpleCow` class has a <b>simulated physical movement system</b> that responds to collisions.
+                            <br>Each cow:
+                            <br>
+                            <br><b>-</b> Has <b>movement properties</b> (x, y, vx, vy), which model movement along horizontal and vertical axes
+                            <br><b>-</b> Has a <b>common color scheme</b> that is cyclically distributed among instances (4 variants)
+                            <br><b>-</b> Uses <b>random pauses</b>, timers which introduce random movement (1% probability per frame)
+                            <br><b>-</b> Nicely <b>bounces</b> on the edges of the screen and of the START button
+                            <br>
+                            <br>In the <b>constructor</b> of the SimpleCow class, we calculate the <b>valid area</b>, 
+                            where the cows can move, avoiding the navigation menu and the START button:</p>
+
+                            <pre class="line-numbers">
+                            <code class="language-javascript">
+                            // Checks valid area avoiding nav
+                            const nav = document.querySelector('nav');
+                            const navWidth = nav ? nav.offsetWidth + 20 : 150;
+                            const maxX = window.innerWidth - navWidth - 80;
+                            </code>
+                            </pre>
+
+                            <pre class="line-numbers">
+                            <code class="language-javascript">
+                            // Detects the START button
+                            const startButton = document.querySelector('.startButton');
+                            let startButtonRect = null;
+                            if (startButton) {
+                                startButtonRect = startButton.getBoundingClientRect();
+                            }
+                            </code>
+                            </pre>
+
+                            <p><br>We <b>place</b> the cows <b>randomly</b> in the valid area, avoiding the START button:</p>
+
+                            <pre class="line-numbers">
+                            <code class="language-javascript">
+                            // Positions the cows only in the grass area, avoiding the START button
+                            let x, y;
+                            do {
+                                x = Math.random() * maxX;
+                                y = Math.random() * (window.innerHeight - 250) + 150;
+                            } while (
+                                startButtonRect &&
+                                x < startButtonRect.right + 20 &&
+                                x + 70 > startButtonRect.left - 20 &&
+                                y < startButtonRect.bottom + 20 &&
+                                y + 54 > startButtonRect.top - 20
+                            );
+                            </code>
+                            </pre>
+
+                            <p>We also initialize the attributes <b>vx</b>, <b>vy</b> and <b>direction</b>, that will "guide" the random movements:</p>
+
+                            <pre class="line-numbers">
+                            <code class="language-javascript">
+                            this.vx = (Math.random() - 0.5) * 1.2;
+                            this.vy = (Math.random() - 0.5) * 0.3;
+                            this.direction = this.vx > 0 ? 1 : -1;
+                            </code>
+                            </pre>
+
+                            <p><br>In the <b>update</b> method, we handle the <b>movement</b> of the Cows.
+                            <br><br>We implement <b>random pauses</b> in the movement *spiega a parole, in sintesi, altrimenti troppo lungo*</p>
+                            <br>
                         
                         <h3>Duck Animation</h3>
                             <p>
                                 The code for the navigation system is in `nav.js` and follows a <b>DOM-based dynamic approach</b>. 
                             </p>
+                            <br>
                         
                         <h3>Decorative Grass</h3>
                             <p>
@@ -73,7 +136,7 @@
                             </p>
                 </article>
 
-
+                <article><h2>Template codice</h2></article>
                 <!-- Esempio HTML -->
                 <pre class="line-numbers">
                     <code class="language-html">&lt;div class="container"&gt;

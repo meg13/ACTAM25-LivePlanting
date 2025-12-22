@@ -21,9 +21,9 @@ class SimpleCow {
 
         // Detects the START button
         const startButton = document.querySelector('.startButton');
-        let buttonRect = null;
+        let startButtonRect = null;
         if (startButton) {
-            buttonRect = startButton.getBoundingClientRect();
+            startButtonRect = startButton.getBoundingClientRect();
         }
 
         // Positions the cows only in the grass area, avoiding the START button
@@ -32,11 +32,11 @@ class SimpleCow {
             x = Math.random() * maxX;
             y = Math.random() * (window.innerHeight - 250) + 150;
         } while (
-            buttonRect &&
-            x < buttonRect.right + 20 &&
-            x + 70 > buttonRect.left - 20 &&
-            y < buttonRect.bottom + 20 &&
-            y + 54 > buttonRect.top - 20
+            startButtonRect &&
+            x < startButtonRect.right + 20 &&
+            x + 70 > startButtonRect.left - 20 &&
+            y < startButtonRect.bottom + 20 &&
+            y + 54 > startButtonRect.top - 20
         );
 
         this.x = x;
