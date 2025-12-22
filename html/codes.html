@@ -14,6 +14,31 @@
         </header>
         <main>
             <div class="content-wrapper">
+                <article>
+                    
+                        <p>For the front-end part of our project, we implemented an interactive web application that combines <b>dynamic animations</b> and <b>real-time audio visualization</b> coupled with the <b>Python backend architecture</b>.
+                        </p>
+                </article>
+
+                <article>
+                    <h2>General Architecture and Project Structure</h2>
+                        <p>
+                        The application has a <b>multi-page design</b> with a common navigation system for easier access to other pages. 
+                        <br> Since the whole project revolves around plants, we decided that the web app <b>theme</b> would be completely <b>inspired by nature</b>: grass, flowers and animals. 
+                        <br> For this reason, the navigation system is visually made of flowers, the homepage has cute cows and ducks that move around and jump with random mechanisms, the color palette is made of soft pastel colors that recall nature, and the background recalls a flowery meadow. 
+                        <br>All images are created using <b>Figma</b>, and this contributes to a cohesive look for the entire project.
+                        <br>The page for audio streaming and visualization uses <b>WebSocket</b>.
+
+                        <br>The project consists of four main pages:
+                        <br><br><b>1.</b> <b>Home Page</b> (homepage.html) - Landing page with animal animations
+                        <br><b>2.</b> <b>Live Listening</b> (live_listening.html) - Webpage about audio listening and visualization of waveforms
+                        <br><b>3.</b> <b>Codes</b> (codes.html) - Page with code documentation
+                        <br><b>4.</b> <b>Concept</b> (concept.html) – The concept of the project is explained
+                        <br><br>Every page is handled by a <b>specific stylesheet</b> that ensures consistency with the overall design of the system. The backend part is handled by an <b>asynchronous Python server</b> that communicates with the frontend using <b>WebSocket</b> technology.
+                        </p>
+                </article>
+
+
                 <!-- Esempio HTML -->
                 <pre class="line-numbers">
                     <code class="language-html">&lt;div class="container"&gt;
