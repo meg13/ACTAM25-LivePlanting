@@ -110,11 +110,15 @@ class LiveAudioVisualizer {
 
     async start() {
         try {
+            console.log('🔄 Connessione al server...');
+            
             // Connetti WebSocket
             this.connectWebSocket();
 
             // Attendi connessione
             await this.waitForConnection();
+            
+            console.log('✅ Connesso! Avvio audio...');
 
             // ✅ INVIA COMANDO START AUDIO AL SERVER!
             this.sendCommand({ command: 'start_audio' });
@@ -174,11 +178,11 @@ class LiveAudioVisualizer {
         };
     }
 
-    async waitForConnection(timeout = 5000) {
+    async waitForConnection(timeout = 10000) {
         const start = Date.now();
         while (!this.isConnected) {
             if (Date.now() - start > timeout) {
-                throw new Error('Timeout connessione WebSocket');
+                throw new Error('Timeout connessione WebSocket - Verifica che Python sia in esecuzione!');
             }
             await new Promise(resolve => setTimeout(resolve, 100));
         }
