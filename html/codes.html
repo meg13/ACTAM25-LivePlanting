@@ -23,7 +23,7 @@
                 <article>
                     <h2>General Architecture and Project Structure</h2>
                         <p>
-                        The application has a <b>multi-page design</b> with a common navigation system for easier access to other pages. 
+                        The application has a <b>multi-page design</b> with a navigation system in common for all the pages, for easier access to other pages. 
                         <br> Since the whole project revolves around plants, we decided that the web app <b>theme</b> would be completely <b>inspired by nature</b>: grass, flowers and animals. 
                         <br> For this reason, the navigation system is visually made of flowers, the homepage has cows and ducks that move around and jump with random mechanisms, the color palette is made of soft pastel colors that recall nature, and the background recalls a flowery meadow. 
                         <br>All images are created using <b>Figma</b>, and this contributes to a cohesive look for the entire project.
@@ -39,10 +39,10 @@
                 </article>
 
                 <article>
-                    <h2>Navigation system <img src="../images/pxlFlowe.svg" alt="Pixel Plant" class="plant-image"> </h2>
+                    <h2>Navigation system <img src="../images/pxlFlowe.svg"> </h2>
                         <p>
                         The code for the navigation system is in `nav.js` and follows a <b>DOM-based dynamic approach</b>. 
-                        <br>Our navigation system element consists of:
+                        <br>It consists of:
 
                         <br><br><b>-</b> Personalized flower (menu-flower) with colored petals
 
@@ -58,7 +58,7 @@
                 <article>
                     <h2>Interactive Animations - Cows, Ducks, and the Environment</h2>
 
-                        <h3><br>Cow Animation <img src="../images/cow.svg" alt="Pixel Plant" class="plant-image"></h3>
+                        <h3><br>Cow Animation <img src="../images/cow.svg"></h3>
                             <p>
                             The `SimpleCow` class has a <b>simulated physical movement system</b> that responds to collisions.
                             <br>Each cow:
@@ -68,71 +68,161 @@
                             <br><b>-</b> Uses <b>random pauses</b>, timers which introduce random movement (1% probability per frame)
                             <br><b>-</b> Nicely <b>bounces</b> on the edges of the screen and of the START button
                             <br>
-                            <br>In the <b>constructor</b> of the SimpleCow class, we calculate the <b>valid area</b>, 
-                            where the cows can move, avoiding the navigation menu and the START button:</p>
+                            <br>In the <b>constructor</b> of the SimpleCow class, the <b>valid area</b> is calculated, 
+                            where the cows can move, avoiding the navigation menu and the START button. 
+                            For this task the property offsetWidth of nav and the method getBoundingClientRect for the START button are used.
 
+                            <p><br>In the <b>update</b> method, the <b>movement</b> of the Cows is handled.
+                            <br><br><b>Random pauses</b> are implemented in the movement simply using boolean property 'paused' of the class SimpleCow.
+                            Cows have a 1% probability of being paused at each frame. 
+                            When paused, the cow does not move for a random time between 500ms and 2000ms, after which it resumes its movement.
+
+                            <br><br>The <b>bouncing mechanism</b> is implemented by checking if the cow's position exceeds the valid area boundaries. 
+                            If it does, the corresponding velocity component (vx or vy) is inverted and the cow bounces back into the valid area:
+                            <br>
+                            </p>
+                            
                             <pre class="line-numbers">
                             <code class="language-javascript">
-                            // Checks valid area avoiding nav
-                            const nav = document.querySelector('nav');
-                            const navWidth = nav ? nav.offsetWidth + 20 : 150;
-                            const maxX = window.innerWidth - navWidth - 80;
-                            </code>
-                            </pre>
-
-                            <pre class="line-numbers">
-                            <code class="language-javascript">
-                            // Detects the START button
-                            const startButton = document.querySelector('.startButton');
-                            let startButtonRect = null;
-                            if (startButton) {
-                                startButtonRect = startButton.getBoundingClientRect();
+                            // Gentle bounce on the horizontal edges
+                            if (this.x < 0) {
+                                this.x = 0;
+                                this.vx *= -1;
+                            } else if (this.x > window.innerWidth - navWidth - 80) {
+                                this.x = window.innerWidth - navWidth - 80;
+                                this.vx *= -1;
                             }
                             </code>
                             </pre>
 
-                            <p><br>We <b>place</b> the cows <b>randomly</b> in the valid area, avoiding the START button:</p>
+                            <p>For the START button, the same logic is used, but
+                            the cow's direction is reversed by inverting vx or vy
+                            depending on which side it approaches from. 
+                            <br></p>
 
                             <pre class="line-numbers">
                             <code class="language-javascript">
-                            // Positions the cows only in the grass area, avoiding the START button
-                            let x, y;
-                            do {
-                                x = Math.random() * maxX;
-                                y = Math.random() * (window.innerHeight - 250) + 150;
-                            } while (
-                                startButtonRect &&
-                                x < startButtonRect.right + 20 &&
-                                x + 70 > startButtonRect.left - 20 &&
-                                y < startButtonRect.bottom + 20 &&
-                                y + 54 > startButtonRect.top - 20
-                            );
+                            // Checks collision with button
+                            if (this.x + cowWidth > buttonRect.left - margin &&
+                                this.x < buttonRect.right + margin &&
+                                this.y + cowHeight > buttonRect.top - margin &&
+                                this.y < buttonRect.bottom + margin) {
+
+                                // Determines to which side the cow should bounce
+                                const fromLeft = this.x + cowWidth / 2 < buttonRect.left;
+                                const fromRight = this.x + cowWidth / 2 > buttonRect.right;
+                                const fromTop = this.y + cowHeight / 2 < buttonRect.top;
+                                const fromBottom = this.y + cowHeight / 2 > buttonRect.bottom;
+
+                                if (fromLeft || fromRight) {
+                                    this.vx *= -1;
+                                    if (fromLeft) {
+                                        this.x = buttonRect.left - cowWidth - margin;
+                                    } else {
+                                        this.x = buttonRect.right + margin;
+                                    }
+                                }
+
+                                if (fromTop || fromBottom) {
+                                    this.vy *= -1;
+                                    if (fromTop) {
+                                        this.y = buttonRect.top - cowHeight - margin;
+                                    } else {
+                                        this.y = buttonRect.bottom + margin;
+                                    }
+                                }
+                            }
                             </code>
                             </pre>
 
-                            <p>We also initialize the attributes <b>vx</b>, <b>vy</b> and <b>direction</b>, that will "guide" the random movements:</p>
+                            <p><b>Random changes of direction and speed</b> are also implemented: every update, the velocity components might
+                            change with a probability of 2%, simulating a small, spontaneous change in direction and speed.
+                            <br></p>
 
                             <pre class="line-numbers">
                             <code class="language-javascript">
-                            this.vx = (Math.random() - 0.5) * 1.2;
-                            this.vy = (Math.random() - 0.5) * 0.3;
-                            this.direction = this.vx > 0 ? 1 : -1;
+                            // Random direction change
+                            if (Math.random() < 0.02) {
+                                this.vx += (Math.random() - 0.5) * 0.3;
+                                this.vy += (Math.random() - 0.5) * 0.2;
+                                
+                                const maxSpeed = 1.5; //prevents excessive speed
+                                if (Math.abs(this.vx) > maxSpeed) this.vx = maxSpeed * Math.sign(this.vx);
+                                if (Math.abs(this.vy) > maxSpeed * 0.3) this.vy = maxSpeed * 0.3 * Math.sign(this.vy);
+                            }
+                            
+                            if (this.vx !== 0) {
+                                this.direction = this.vx > 0 ? 1 : -1; //change of direction
+                            }
                             </code>
                             </pre>
-
-                            <p><br>In the <b>update</b> method, we handle the <b>movement</b> of the Cows.
-                            <br><br>We implement <b>random pauses</b> in the movement *spiega a parole, in sintesi, altrimenti troppo lungo*</p>
-                            <br>
-                        
-                        <h3>Duck Animation</h3>
-                            <p>
-                                The code for the navigation system is in `nav.js` and follows a <b>DOM-based dynamic approach</b>. 
+                
+                        <br>
+                        <h3>Duck Animation<img src="../images/duck_for_code_report.svg">
+                        </h3>
+                            <p>Ducks move similarly to cows, but with a <b>higher speed</b>. Also, a logic for <b>random jumps</b> is implemented.
+                            <br>Each duck has a 0.5% probability of jumping at each frame. 
+                            When jumping, the duck's y position is temporarily decreased by a fixed jumpHeight value for a short duration
+                            (jumpTimer), then it returns to its original y position.
                             </p>
-                            <br>
-                        
-                        <h3>Decorative Grass</h3>
+
+                            <pre class="line-numbers">
+                            <code class="language-javascript">
+                            // Salto casuale
+                            if (!this.jumping && Math.random() < 0.005) {
+                                this.jumping = true;
+                                this.jumpTimer = 10;
+                                this.startY = this.y;
+                            }
+
+                            if (this.jumping) {
+                                this.y = this.startY - this.jumpHeight;
+                                this.jumpTimer--;
+                                if (this.jumpTimer <= 0) {
+                                    this.jumping = false;
+                                    this.y = this.startY;
+                                }
+                            }
+                            </code>
+                            </pre>
+
+                        <br>       
+                        <h3>Decorative Grass <img src="../images/grass.svg" height="30px"></h3>
                             <p>
-                                The code for the navigation system is in `nav.js` and follows a <b>DOM-based dynamic approach</b>. 
+                            The grass items are added dinamically to the pages using the function addGrassItem() in javascript. 
+                            Each grass item has <b>random dimensions, position and color</b>. Also, a z-index of 1 is assigned to the grass items 
+                            to ensure they stay in the background.
+                            </p>
+
+                            <pre class="line-numbers">
+                            <code class="language-javascript">
+                            function addGrassItem() {
+                            const e = document.createElement("div");
+                            e.classList.add("grass");
+
+                            const maxX = window.innerWidth;
+                            const maxY = window.innerHeight;
+                            e.style.position = "absolute";
+                            e.style.left = Math.random() * maxX + "px";
+                            e.style.top  = Math.random() * maxY + "px";
+
+                            const color = Math.round(Math.random());
+                            (color === 0) ? e.classList.add("grass_dark") : e.classList.add("grass_light");
+
+                            const size = Math.random() * 20 + 20; // [20, 150)
+                            e.style.width  = size + "px";
+                            e.style.height = size + "px";
+
+                            document.body.appendChild(e);
+}
+                            </code>
+                            </pre>
+
+                        <h3>Background flowers <img src="../images/bg_flower.svg"></h3>
+                            <p>
+                            Some flowers are added dinamically to the pages using the function addFlowerItem() in javascript. 
+                            Their position is random, but some <b>constraints</b> are added to <b>avoid overlapping</b> with the navigation 
+                            menu and with other flowers. Their z-index is put to 2, to stay over the grass, but under everything else.
                             </p>
                 </article>
 

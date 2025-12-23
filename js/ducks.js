@@ -107,7 +107,6 @@ class SimpleDuck {
         this.vy *= -1;
     }
 
-    // --- Aggiunta: Rileva il pulsante START e gestisce collisione ---
     const startButton = document.querySelector('.startButton');
     let buttonRect = null;
     if (startButton) {

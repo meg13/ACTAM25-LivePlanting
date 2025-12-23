@@ -24,7 +24,7 @@ function getRandomPosition(flowerSize, maxAttempts = 50) {
     selectorRect = genreSelector.getBoundingClientRect();
   }
 
-  // get position and dimension of nav bar ← AGGIUNTO
+  // get position and dimension of nav bar
   const navBar = document.querySelector('#nav-container');
   let navRect = null;
   if (navBar) {
@@ -46,7 +46,7 @@ function getRandomPosition(flowerSize, maxAttempts = 50) {
       continue;
     }
 
-    // collision with nav bar ← AGGIUNTO
+    // collision with nav bar 
     if (navRect && x < navRect.right && x + flowerSize > navRect.left &&
         y < navRect.bottom && y + flowerSize > navRect.top) {
       continue;
