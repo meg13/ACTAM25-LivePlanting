@@ -40,8 +40,6 @@ class LiveAudioController {
 
         // Initial state
         this.stopButton.disabled = true;
-        this.recordButton.style.pointerEvents = 'none';
-        this.recordButton.style.opacity = '0.5';
         this.clearLoopButton.disabled = true;
         this.clearAmbienceButton.disabled = true;
         
@@ -132,8 +130,6 @@ class LiveAudioController {
             // Update UI
             this.startButton.disabled = true;
             this.stopButton.disabled = false;
-            this.recordButton.style.pointerEvents = 'auto';
-            this.recordButton.style.opacity = '1';
             this.clearLoopButton.disabled = false;
             this.clearAmbienceButton.disabled = false;
             
@@ -256,8 +252,6 @@ class LiveAudioController {
         // Update UI
         this.startButton.disabled = false;
         this.stopButton.disabled = true;
-        this.recordButton.style.pointerEvents = 'none';
-        this.recordButton.style.opacity = '0.5';
         this.clearLoopButton.disabled = true;
         this.clearAmbienceButton.disabled = true;
         
@@ -299,9 +293,11 @@ class LiveAudioController {
         if (this.isRecording) {
             this.pauseIcon.style.display = 'inline';
             this.recordButton.style.backgroundColor = '#ff4444';
+            this.recordButton.innerHTML = ' Recording';
         } else {
             this.pauseIcon.style.display = 'none';
             this.recordButton.style.backgroundColor = '#e95d8c';
+            this.recordButton.innerHTML = 'Record Loop';
         }
     }
     
