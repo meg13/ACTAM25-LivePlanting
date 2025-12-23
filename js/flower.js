@@ -24,6 +24,13 @@ function getRandomPosition(flowerSize, maxAttempts = 50) {
     audioContainerRect = audioContainer.getBoundingClientRect();
   }
 
+  // get position and dimension of plant image
+  const plantImage = document.querySelector('.plant-image');
+  let plantImageRect = null;
+  if (plantImage) {
+    plantImageRect = plantImage.getBoundingClientRect();
+  }
+
   // get position and dimension of sound management
   const soundManagement = document.querySelector('.sound-management');
   let soundManagementRect = null;
@@ -62,6 +69,12 @@ function getRandomPosition(flowerSize, maxAttempts = 50) {
     // collision with nav bar 
     if (navRect && x < navRect.right && x + flowerSize > navRect.left &&
         y < navRect.bottom && y + flowerSize > navRect.top) {
+      continue;
+    }
+
+    // collision with plant image 
+    if (plantImageRect && x < plantImageRect.right && x + flowerSize > plantImageRect.left &&
+        y < plantImageRect.bottom && y + flowerSize > plantImageRect.top) {
       continue;
     }
 
