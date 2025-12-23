@@ -197,24 +197,24 @@
                             <pre class="line-numbers">
                             <code class="language-javascript">
                             function addGrassItem() {
-                            const e = document.createElement("div");
-                            e.classList.add("grass");
+                                const e = document.createElement("div");
+                                e.classList.add("grass");
 
-                            const maxX = window.innerWidth;
-                            const maxY = window.innerHeight;
-                            e.style.position = "absolute";
-                            e.style.left = Math.random() * maxX + "px";
-                            e.style.top  = Math.random() * maxY + "px";
+                                const maxX = window.innerWidth;
+                                const maxY = window.innerHeight;
+                                e.style.position = "absolute";
+                                e.style.left = Math.random() * maxX + "px"; //random position
+                                e.style.top  = Math.random() * maxY + "px"; //random position
 
-                            const color = Math.round(Math.random());
-                            (color === 0) ? e.classList.add("grass_dark") : e.classList.add("grass_light");
+                                const color = Math.round(Math.random()); //random color (dark or light)
+                                (color === 0) ? e.classList.add("grass_dark") : e.classList.add("grass_light");
 
-                            const size = Math.random() * 20 + 20; // [20, 150)
-                            e.style.width  = size + "px";
-                            e.style.height = size + "px";
+                                const size = Math.random() * 20 + 20; //random size between 20 and 40px
+                                e.style.width  = size + "px";
+                                e.style.height = size + "px";
 
-                            document.body.appendChild(e);
-}
+                                document.body.appendChild(e);
+                            }
                             </code>
                             </pre>
 
@@ -222,8 +222,57 @@
                             <p>
                             Some flowers are added dinamically to the pages using the function addFlowerItem() in javascript. 
                             Their position is random, but some <b>constraints</b> are added to <b>avoid overlapping</b> with the navigation 
-                            menu and with other flowers. Their z-index is put to 2, to stay over the grass, but under everything else.
+                            menu, other flowers or audio settings in the live listening page.
+                            A number of attempts is set to try to find a valid position for each flower, if none is found, 
+                            the flower is not added.
+                            <br>Their z-index is put to 2, to stay over the grass, but under everything else.
                             </p>
+
+                            <pre class="line-numbers">
+                            <code class="language-javascript">
+                            function getRandomPosition(flowerSize, maxAttempts = 50) {
+                                const maxX = window.innerWidth - flowerSize;
+                                const maxY = window.innerHeight - flowerSize;
+
+                                // get position and dimension of audio container
+                                const audioContainer = document.querySelector('.audio-container');
+                                let audioContainerRect = null;
+                                if (audioContainer) {
+                                    audioContainerRect = audioContainer.getBoundingClientRect();
+                                }
+
+                                //...get other positions to avoid... 
+
+                                for (let attempt = 0; attempt < maxAttempts; attempt++) { //maxAttempt = 50
+                                    const x = Math.random() * maxX;
+                                    const y = Math.random() * maxY;
+
+                                    // check collision with other flowers
+                                    if (checkCollision(x, y, flowerSize)) {
+                                    continue;
+                                    }
+
+                                    //...check for other collisions...
+
+                                    return { x, y };
+                                }
+
+                                return null; //if no valid position, don't add the flower
+                            }
+                        </code>
+                        </pre>
+
+                            <pre class="line-numbers">
+                            <code class="language-javascript">
+                            function addFlowerItem() {
+                                //...
+
+                                if (!position) {
+                                    console.warn("The flower could not be added: insufficient space");
+                                    return;
+                                }
+                        </code>
+                        </pre>
                 </article>
 
                 <article><h2>Template codice</h2></article>

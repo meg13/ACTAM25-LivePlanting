@@ -81,7 +81,7 @@ function addFlowerItem() {
   const position = getRandomPosition(flowerSize);
 
   if (!position) {
-    console.warn("Non riesco a posizionare il fiore: spazio insufficiente");
+    console.warn("The flower could not be added: insufficient space");
     return;
   }
 
