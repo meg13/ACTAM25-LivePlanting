@@ -20,7 +20,6 @@ class LiveAudioController {
         this.waveformDiv = document.getElementById('waveform');
         this.startButton = document.getElementById('startButton');
         this.stopButton = document.getElementById('stopButton');
-        this.volumeSlider = document.getElementById('volumeSlider');
 
         // Recording controls
         this.recordButton = document.querySelector('.loopRecButton a');
@@ -46,8 +45,6 @@ class LiveAudioController {
         this.clearLoopButton.disabled = true;
         this.clearAmbienceButton.disabled = true;
         
-        // Nascondi volume (audio su PC)
-        this.volumeSlider.style.display = 'none';
         
         console.log('🎮 Controller pronto!');
         console.log('🔊 Audio: casse del PC');
