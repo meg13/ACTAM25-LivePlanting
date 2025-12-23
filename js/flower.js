@@ -17,11 +17,18 @@ function getRandomPosition(flowerSize, maxAttempts = 50) {
   const maxX = window.innerWidth - flowerSize;
   const maxY = window.innerHeight - flowerSize;
 
-  // get position and dimension of genre-selector
-  const genreSelector = document.querySelector('.genre-selector');
-  let selectorRect = null;
-  if (genreSelector) {
-    selectorRect = genreSelector.getBoundingClientRect();
+  // get position and dimension of audio container
+  const audioContainer = document.querySelector('.audio-container');
+  let audioContainerRect = null;
+  if (audioContainer) {
+    audioContainerRect = audioContainer.getBoundingClientRect();
+  }
+
+  // get position and dimension of sound management
+  const soundManagement = document.querySelector('.sound-management');
+  let soundManagementRect = null;
+  if (soundManagement) {
+    soundManagementRect = soundManagement.getBoundingClientRect();
   }
 
   // get position and dimension of nav bar
@@ -40,9 +47,15 @@ function getRandomPosition(flowerSize, maxAttempts = 50) {
       continue;
     }
 
-    // collision with genre-selector
-    if (selectorRect && x < selectorRect.right && x + flowerSize > selectorRect.left &&
-        y < selectorRect.bottom && y + flowerSize > selectorRect.top) {
+    // collision with audio container
+    if (audioContainerRect && x < audioContainerRect.right && x + flowerSize > audioContainerRect.left &&
+        y < audioContainerRect.bottom && y + flowerSize > audioContainerRect.top) {
+      continue;
+    }
+
+    // collision with sound management
+    if (soundManagementRect && x < soundManagementRect.right && x + flowerSize > soundManagementRect.left &&
+        y < soundManagementRect.bottom && y + flowerSize > soundManagementRect.top) {
       continue;
     }
 
