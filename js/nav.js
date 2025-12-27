@@ -11,7 +11,7 @@ const navItems = [
   },
   {
     href: 'codes.html',
-    label: 'codes',
+    label: 'code',
     id: 'code'
   },
   {
