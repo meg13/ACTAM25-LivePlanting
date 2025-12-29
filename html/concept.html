@@ -25,14 +25,36 @@
                         </p>
                 </article>
                 <article>
-                    <h2>How it works</h2>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In at iaculis lectus, in congue eros. Ut ultrices magna id semper fermentum. 
-                            Vivamus varius velit non quam suscipit sagittis. Suspendisse potenti. Nullam rhoncus elit quam, in vehicula nibh porttitor a. Ut non tempus felis, non pretium nisi. 
-                            Vivamus eget erat id eros tristique viverra vitae ac odio. Sed molestie posuere dictum. Quisque imperdiet blandit condimentum.
-                            Vivamus vitae congue risus. Mauris porta in eros nec mollis. Fusce lacinia justo turpis, id tempus nisi sodales pellentesque. Nam in justo ante. 
-                            Integer et nulla ornare, congue nulla ut, mollis magna. Aenean nisl justo, mollis vel tortor sit amet, molestie tristique ex. Aenean ligula mi, pretium quis magna a, gravida malesuada magna. 
-                            Donec eget lacus pharetra, consequat turpis eu, aliquet lorem. Integer tempus iaculis ipsum, at pretium massa lacinia a. Etiam hendrerit urna et nibh sagittis, eget rutrum purus viverra. 
-                            Nam non aliquam elit, at euismod nunc. Morbi commodo rhoncus sem vel tempus.
+                    <h2>Web Interface and Visual Design</h2>
+                        <p>The user interface of our project was developed as a multi-page web application that combines real-time audio visualization with interactive animations inspired by 8-bit video games aesthetics. 
+                            The entire visual design was initially prototyped in Figma and subsequently implemented using HTML, CSS and JavaScript.
+                        </p>
+                        <p>
+                            The <b>Home page</b> serves as the entry point with a clear "START" button in retro gaming style, surrounded by animated pixel-art animals (cows and ducks) that move across the screen. 
+                            All animal graphics were custom-designed as SVG vector images in Figma. 
+                            Each animal is implemented through dedicated JavaScript classes (<code>SimpleCow</code> and <code>SimpleDuck</code>) that feature random movement patterns, collision detection, and pause behaviors.
+                        </p>
+                        <p>
+                            The <b>Live Listening</b> page represents the core of the user interface, where real-time interaction with the plant's biodata occurs. 
+                            This page is centered around a large canvas-based waveform visualization that provides immediate visual feedback of the audio signal being generated starting from the plant's sensors.
+                        </p>
+                        <p>
+                            The waveform rendering is implemented using the <b>HTML5 Canvas API</b> for high-performance graphics. 
+                            The visualization operates through a circular buffer system that stores 256 audio samples in a Float32Array. 
+                            This buffer continuously updates with new data while discarding the oldest samples, creating a smooth scrolling effect. 
+                            The actual rendering occurs through <code>requestAnimationFrame</code> at 60fps, ensuring fluid animation synchronized with the browser's refresh rate.
+                            For each frame, the canvas displays the waveform as a continuous blue line that traces the audio signal's amplitude. 
+                            Audio samples, arriving as normalized float values from -1.0 to +1.0, are mapped to vertical canvas coordinates, with horizontal spacing calculated to distribute the waveform evenly across the display width. 
+                            When no audio is playing, a static horizontal line appears at the center as a visual baseline.
+
+                        </p>
+                        <p>
+                            The page features a set of interactive controls positioned below the waveform visualization. 
+                            The <b><i>Start Listening</i></b> and <b><i>Stop Listening</i></b> buttons manage the audio stream, complemented by recording controls that allow users to capture loops. 
+                            The <b><i>Record Loop</i></b> button provides visual feedback by changing color during active recording. Separate controls enable clearing accumulated loops or resetting ambient notes. 
+                        </p>
+                        <p>
+                            The <b>Code</b> page contains comprehensive documentation of both frontend and backend implementation, with syntax-highlighted code snippets rendered using <b>Prism.js</b>. 
                         </p>
                 </article>
             </div>
