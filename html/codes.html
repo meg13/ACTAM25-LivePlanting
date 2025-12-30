@@ -20,29 +20,136 @@
                     <p>
                         The true core of our "Live Planting" project, behind the webpage, is a python code that is responsible for the conversion of the Arduino outputs into audio signals and for actually reproducing them, accordingly with the user's inputs from the webpage. 
                         <br>This code mainly revolves around the definition of three servers, including:
-                    </p>
-                    
+                    </p>                   
                     <ol>
                         <li>A <b>real time audio engine</b>, responsible for generating audio signals and sending them to the hardware of the computer. It uses the sounddevice API for communication with audio hardware.</li>
                         <li>A <b>control server</b>, responsible for translating command from the webpage into internal actions on the audio generation code. It uses the HTTP control API.</li>
                         <li>A <b>visualization server</b>, which reads the audio signals, ready to be visualized, and sends them to the part of the webpage that is responsible for such visualization. It uses a Websocket API for data streaming.</li>
                     </ol>
-
                     <h2>The synthesizer</h2>
+                    <pre class="line-numbers"><code class="language-python">
+                    class CombinedSynth:
+                        """
+                        Synth di alta qualità con sounddevice.
+                        Audio esce sempre dalle casse del PC.
+                        Invia dati decimati per visualizzazione via queue.
+                        """
+                        def __init__(self, samplerate=48000, blocksize=2048, max_ambient_voices=24, max_pulse_voices=24):
+                            self.sr = samplerate
+                            self.blocksize = blocksize
+
+                            self.max_ambient = max_ambient_voices
+                            self.max_pulse = max_pulse_voices
+
+                            self.ambient_voices = []
+                            self.pulse_voices = []
+                            self.lock = threading.Lock()
+
+                            self.master_gain = 0.30
+
+                            # Reverb per le PULSE
+                            self.pulse_reverb = SchroederReverb(self.sr)
+
+                            # Queue per visualizzazione (non-blocking)
+                            self.viz_queue = queue.Queue(maxsize=50)
+
+                            # Decimazione per viz: invia 1 chunk ogni N
+                            self.viz_decimation = 4
+                            self.viz_counter = 0
+
+                            # sounddevice stream
+                            self.stream = sd.OutputStream(
+                                samplerate=self.sr,
+                                channels=2,
+                                blocksize=self.blocksize,
+                                dtype="float32",
+                                callback=self._callback
+                            )
+                    </code></pre>
                     <p>
                         These three servers all <b>revolve around interactions with</b> a digital object, a <b>synthesizer</b>, which is <b>implemented</b> in the code through a <b>Python class</b>. 
                         <br>A Python class is a blueprint that defines the structure and behavior of objects by grouping data (attributes) and functions (methods) together. 
                         <br>Within the synth class, the most important attributes are:
-                    </p>
-                    
+                    </p>                   
                     <ul>
                         <li>Two lists, <span class="tag-verde">self.ambient_voices</span> and <span class="tag-verde">self.pulse_voices</span> respectively responsible for <b>containing the ambient voices and the pulse voices</b> which are generated.</li>
                         <li>An object, <span class="tag-verde">self.pulse_reverb</span>, responsible for applying a <b>reverb effect</b> on the pulse notes.</li>
                         <li>An object, <span class="tag-verde">self.viz_queue</span>, responsible for <b>containing the processed information</b> for the clients of the visualization server.</li>
                         <li>An Output stream, <span class="tag-verde">self.stream</span>, responsible for actually <b>obtaining the final audio signals</b> communicating them to the hardware.</li>
                     </ul>
-                    
                     <p>Let's now focus on each one of these objects, considering which functions or classes they implement.</p>
+                    <h3>Voices</h3>
+                    <p>
+                    When considering the two voices lists, it is important to ask ourselves what a voice actually is and how it is defined. 
+                    A voice is not an audio signal, but a parameter structure in which all the information of a to-be-generated audio signal
+                    are contained. In other words, it is a list of instructions for the future creation of a sound. The functions for the 
+                    creation of pulse and ambient voices are defined <b>within the synth class</b>. These functions mainly revolve around taking 
+                    as inputs the parameters of a voice and grouping them within one single element, while adding some missing ones as well, 
+                    therefore creating the voice itself
+                    </p>
+                    <pre class="line-numbers"><code class="language-python">
+                        def add_ambient_voice(self, midi_note: int, volume=0.12, pan=0.5,
+                          vibrato_hz=5.0, vibrato_cents=10.0,
+                          tremolo_hz=0.20, tremolo_depth=0.10):
+                    v = {
+                        "freq_base": float(midi_to_freq(midi_note)),
+                        "phase": 0.0,
+                        "volume": float(volume),
+                        "pan": float(pan),
+                        "t": 0.0,
+                        "attack": 1.5,
+                        "h1": 1.0, "h2": 0.20, "h3": 0.06,
+                        "vib_rate_hz": float(vibrato_hz),
+                        "vib_depth_hz": 0.08,
+                        "vib_depth_min": 0.5,
+                        "vib_depth_max": float(vibrato_cents),
+                        "trem_hz": float(tremolo_hz),
+                        "trem_depth": float(tremolo_depth),
+                    }
+                    with self.lock:
+                        self.ambient_voices.append(v)
+                        if len(self.ambient_voices) > self.max_ambient:
+                            self.ambient_voices = self.ambient_voices[-self.max_ambient:]
+
+                    def add_ambient_voice_moving(self, midi_note: int, volume=0.12, pan=0.5):
+                        vib_rate = 4.8 + np.random.rand() * 0.8
+                        vib_max_cents = 8.0 + np.random.rand() * 6.0
+                        trem_hz = 0.10 + np.random.rand() * 0.20
+                        trem_depth = 0.06 + np.random.rand() * 0.10
+                        self.add_ambient_voice(
+                            midi_note,
+                            volume=volume,
+                            pan=pan,
+                            vibrato_hz=vib_rate,
+                            vibrato_cents=vib_max_cents,
+                            tremolo_hz=trem_hz,
+                            tremolo_depth=trem_depth
+                        )
+
+                        def add_pulse_voice(self, midi_note: int, volume=0.58, duration=0.35, pan=0.5):
+                            """Aggiunge una nota PULSE con inviluppo e reverb - VERSIONE ANTI-CLICK"""
+                            v = {
+                                "freq_base": float(midi_to_freq(midi_note)),
+                                "phase": 0.0,
+                                "t": 0.0,
+                                "duration": float(duration),
+                                "h1": 1.0,
+                                "h2": 0.16,
+                                "h3": 0.045,
+                                "vib_rate_hz": 5.2,
+                                "vib_cents": 7.0,
+                                "trem_hz": 0.35,
+                                "trem_depth": 0.12,
+                                "volume": float(volume)
+                            }
+                    </code></pre>
+                    <p>
+                        The functions for the pulse and ambient voices are different because so are the sounds that these voices are 
+                        associated with. In fact, on one side the  <span class="tag-verde">add_pulse_voice</span> function establishes a duration and fixed vibrato and 
+                        tremolo parameters for the pulse voice. On the other,  <span class="tag-verde">add_ambient_voice_moving</span> does not define a duration 
+                        (the pulse voices are infinite until user interruption), chooses random values for the vibrato and tremolo and 
+                        then calls the  <span class="tag-verde">add_ambient_voice</span> functions, which actually creates the pulse voice.
+                    </p>
 
                     <h1>Frontend</h1>
                     <p>For the frontend part of our project, we implemented an interactive web application that combines <b>dynamic animations</b> and <b>real-time audio visualization</b> coupled with the <b>Python backend architecture</b>.</p>
@@ -109,67 +216,67 @@
                     </p>
                     
                     <pre class="line-numbers"><code class="language-javascript">
-// Gentle bounce on the horizontal edges
-if (this.x < 0) {
-    this.x = 0;
-    this.vx *= -1;
-} else if (this.x > window.innerWidth - navWidth - 80) {
-    this.x = window.innerWidth - navWidth - 80;
-    this.vx *= -1;
-}
+                    // Gentle bounce on the horizontal edges
+                    if (this.x < 0) {
+                        this.x = 0;
+                        this.vx *= -1;
+                    } else if (this.x > window.innerWidth - navWidth - 80) {
+                        this.x = window.innerWidth - navWidth - 80;
+                        this.vx *= -1;
+                    }
                     </code></pre>
 
                     <p>For the START button, the same logic is used, but the cow's direction is reversed by inverting vx or vy depending on which side it approaches from.</p>
 
                     <pre class="line-numbers"><code class="language-javascript">
-// Checks collision with button
-if (this.x + cowWidth > buttonRect.left - margin &&
-    this.x < buttonRect.right + margin &&
-    this.y + cowHeight > buttonRect.top - margin &&
-    this.y < buttonRect.bottom + margin) {
+                    // Checks collision with button
+                    if (this.x + cowWidth > buttonRect.left - margin &&
+                        this.x < buttonRect.right + margin &&
+                        this.y + cowHeight > buttonRect.top - margin &&
+                        this.y < buttonRect.bottom + margin) {
 
-    // Determines to which side the cow should bounce
-    const fromLeft = this.x + cowWidth / 2 < buttonRect.left;
-    const fromRight = this.x + cowWidth / 2 > buttonRect.right;
-    const fromTop = this.y + cowHeight / 2 < buttonRect.top;
-    const fromBottom = this.y + cowHeight / 2 > buttonRect.bottom;
+                        // Determines to which side the cow should bounce
+                        const fromLeft = this.x + cowWidth / 2 < buttonRect.left;
+                        const fromRight = this.x + cowWidth / 2 > buttonRect.right;
+                        const fromTop = this.y + cowHeight / 2 < buttonRect.top;
+                        const fromBottom = this.y + cowHeight / 2 > buttonRect.bottom;
 
-    if (fromLeft || fromRight) {
-        this.vx *= -1;
-        if (fromLeft) {
-            this.x = buttonRect.left - cowWidth - margin;
-        } else {
-            this.x = buttonRect.right + margin;
-        }
-    }
+                        if (fromLeft || fromRight) {
+                            this.vx *= -1;
+                            if (fromLeft) {
+                                this.x = buttonRect.left - cowWidth - margin;
+                            } else {
+                                this.x = buttonRect.right + margin;
+                            }
+                        }
 
-    if (fromTop || fromBottom) {
-        this.vy *= -1;
-        if (fromTop) {
-            this.y = buttonRect.top - cowHeight - margin;
-        } else {
-            this.y = buttonRect.bottom + margin;
-        }
-    }
-}
+                        if (fromTop || fromBottom) {
+                            this.vy *= -1;
+                            if (fromTop) {
+                                this.y = buttonRect.top - cowHeight - margin;
+                            } else {
+                                this.y = buttonRect.bottom + margin;
+                            }
+                        }
+                    }
                     </code></pre>
 
                     <p><b>Random changes of direction and speed</b> are also implemented: every update, the velocity components might change with a probability of 2%, simulating a small, spontaneous change in direction and speed.</p>
 
                     <pre class="line-numbers"><code class="language-javascript">
-// Random direction change
-if (Math.random() < 0.02) {
-    this.vx += (Math.random() - 0.5) * 0.3;
-    this.vy += (Math.random() - 0.5) * 0.2;
-    
-    const maxSpeed = 1.5; //prevents excessive speed
-    if (Math.abs(this.vx) > maxSpeed) this.vx = maxSpeed * Math.sign(this.vx);
-    if (Math.abs(this.vy) > maxSpeed * 0.3) this.vy = maxSpeed * 0.3 * Math.sign(this.vy);
-}
+                    // Random direction change
+                    if (Math.random() < 0.02) {
+                        this.vx += (Math.random() - 0.5) * 0.3;
+                        this.vy += (Math.random() - 0.5) * 0.2;
+                        
+                        const maxSpeed = 1.5; //prevents excessive speed
+                        if (Math.abs(this.vx) > maxSpeed) this.vx = maxSpeed * Math.sign(this.vx);
+                        if (Math.abs(this.vy) > maxSpeed * 0.3) this.vy = maxSpeed * 0.3 * Math.sign(this.vy);
+                    }
 
-if (this.vx !== 0) {
-    this.direction = this.vx > 0 ? 1 : -1; //change of direction
-}
+                    if (this.vx !== 0) {
+                        this.direction = this.vx > 0 ? 1 : -1; //change of direction
+                    }
                     </code></pre>
 
                     <h3>Duck Animation <img src="../images/duck_for_code_report.svg"></h3>
@@ -177,21 +284,21 @@ if (this.vx !== 0) {
                     <br>Each duck has a 0.5% probability of jumping at each frame. When jumping, the duck's y position is temporarily decreased by a fixed jumpHeight value for a short duration (jumpTimer), then it returns to its original y position.</p>
 
                     <pre class="line-numbers"><code class="language-javascript">
-// Salto casuale
-if (!this.jumping && Math.random() < 0.005) {
-    this.jumping = true;
-    this.jumpTimer = 10;
-    this.startY = this.y;
-}
+                    // Salto casuale
+                    if (!this.jumping && Math.random() < 0.005) {
+                        this.jumping = true;
+                        this.jumpTimer = 10;
+                        this.startY = this.y;
+                    }
 
-if (this.jumping) {
-    this.y = this.startY - this.jumpHeight;
-    this.jumpTimer--;
-    if (this.jumpTimer <= 0) {
-        this.jumping = false;
-        this.y = this.startY;
-    }
-}
+                    if (this.jumping) {
+                        this.y = this.startY - this.jumpHeight;
+                        this.jumpTimer--;
+                        if (this.jumpTimer <= 0) {
+                            this.jumping = false;
+                            this.y = this.startY;
+                        }
+                    }
                     </code></pre>
 
                     <h3>Decorative Grass <img src="../images/grass.svg" height="30px"></h3>
@@ -199,25 +306,25 @@ if (this.jumping) {
                     Each grass item has <b>random dimensions, position and color</b>. Also, a z-index of 1 is assigned to the grass items to ensure they stay in the background.</p>
 
                     <pre class="line-numbers"><code class="language-javascript">
-function addGrassItem() {
-    const e = document.createElement("div");
-    e.classList.add("grass");
+                    function addGrassItem() {
+                        const e = document.createElement("div");
+                        e.classList.add("grass");
 
-    const maxX = window.innerWidth;
-    const maxY = window.innerHeight;
-    e.style.position = "absolute";
-    e.style.left = Math.random() * maxX + "px"; //random position
-    e.style.top  = Math.random() * maxY + "px"; //random position
+                        const maxX = window.innerWidth;
+                        const maxY = window.innerHeight;
+                        e.style.position = "absolute";
+                        e.style.left = Math.random() * maxX + "px"; //random position
+                        e.style.top  = Math.random() * maxY + "px"; //random position
 
-    const color = Math.round(Math.random()); //random color (dark or light)
-    (color === 0) ? e.classList.add("grass_dark") : e.classList.add("grass_light");
+                        const color = Math.round(Math.random()); //random color (dark or light)
+                        (color === 0) ? e.classList.add("grass_dark") : e.classList.add("grass_light");
 
-    const size = Math.random() * 20 + 20; //random size between 20 and 40px
-    e.style.width  = size + "px";
-    e.style.height = size + "px";
+                        const size = Math.random() * 20 + 20; //random size between 20 and 40px
+                        e.style.width  = size + "px";
+                        e.style.height = size + "px";
 
-    document.body.appendChild(e);
-}
+                        document.body.appendChild(e);
+                    }
                     </code></pre>
 
                     <h3>Background flowers <img src="../images/bg_flower.svg"></h3>
@@ -227,45 +334,45 @@ function addGrassItem() {
                     <br>Their z-index is put to 2, to stay over the grass, but under everything else.</p>
 
                     <pre class="line-numbers"><code class="language-javascript">
-function getRandomPosition(flowerSize, maxAttempts = 50) {
-    const maxX = window.innerWidth - flowerSize;
-    const maxY = window.innerHeight - flowerSize;
+                    function getRandomPosition(flowerSize, maxAttempts = 50) {
+                        const maxX = window.innerWidth - flowerSize;
+                        const maxY = window.innerHeight - flowerSize;
 
-    // get position and dimension of audio container
-    const audioContainer = document.querySelector('.audio-container');
-    let audioContainerRect = null;
-    if (audioContainer) {
-        audioContainerRect = audioContainer.getBoundingClientRect();
-    }
+                        // get position and dimension of audio container
+                        const audioContainer = document.querySelector('.audio-container');
+                        let audioContainerRect = null;
+                        if (audioContainer) {
+                            audioContainerRect = audioContainer.getBoundingClientRect();
+                        }
 
-    //...get other positions to avoid... 
+                        //...get other positions to avoid... 
 
-    for (let attempt = 0; attempt < maxAttempts; attempt++) { //maxAttempt = 50
-        const x = Math.random() * maxX;
-        const y = Math.random() * maxY;
+                        for (let attempt = 0; attempt < maxAttempts; attempt++) { //maxAttempt = 50
+                            const x = Math.random() * maxX;
+                            const y = Math.random() * maxY;
 
-        // check collision with other flowers
-        if (checkCollision(x, y, flowerSize)) {
-        continue;
-        }
+                            // check collision with other flowers
+                            if (checkCollision(x, y, flowerSize)) {
+                            continue;
+                            }
 
-        //...check for other collisions...
+                            //...check for other collisions...
 
-        return { x, y };
-    }
+                            return { x, y };
+                        }
 
-    return null; //if no valid position, don't add the flower
-}
+                        return null; //if no valid position, don't add the flower
+                    }
                     </code></pre>
 
                     <pre class="line-numbers"><code class="language-javascript">
-function addFlowerItem() {
-    //...
+                    function addFlowerItem() {
+                        //...
 
-    if (!position) {
-        console.warn("The flower could not be added: insufficient space");
-        return;
-    }
+                        if (!position) {
+                            console.warn("The flower could not be added: insufficient space");
+                            return;
+                        }
                     </code></pre>
                 </article>
             </div>
