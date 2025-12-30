@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en"> 
+    <head>
+        <title>Live Listening</title>
+        <meta charset="UTF-8">
+        <link rel="preload" href="../images/branch.svg" as="image">
+        <link href="../css/live_listening_style.css" type="text/css" rel="stylesheet"/>
+        <link href="../css/style.css" type="text/css" rel="stylesheet"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    </head>
+    <body>
+        <header>
+        <h1>LISTEN TO YOUR PLANT</h1>
+        </header>
+        <main>
+            <img src="../images/Plant.png" alt="Pixel Plant" class="plant-image">
+            <div class="audio-section"> 
+                <div class="audio-container">
+                    <div id="waveform"></div>
+                    <div class="audio-controls">
+                        <button id="startButton">Start Listening</button>
+                        <button id="stopButton">Stop Listening</button>
+                    </div>
+                </div>
+
+                <div class="sound-management">
+                    <div class="loopRecButton">
+                        <a>Record Loop</a>
+                    </div>
+                    <div>
+                        <button id="loopCLButton">Clear Loop</button>
+                        <button id="ambienceCLButton">Clear Ambience</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+    </body>
+    <script src="../js/nav.js" type="text/javascript"></script>
+    <script src="../js/grass.js" type="text/javascript"></script>
+    <script src="../js/flower.js" type="text/javascript"></script>
+    <script src="../js/live_listening.js" type="text/javascript"></script>
+
+</html>
+

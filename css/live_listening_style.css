@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+main {
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+}
+
+.audio-section {
+    height: 100vh;
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    z-index: 50;
+}
+
+.audio-container {
+    height: 40%;
+    width: 100%;
+    position: relative;
+    z-index: 50;
+}
+
+.plant-image {
+    width: 200px;
+    height: auto;
+    z-index: 50;
+    image-rendering: pixelated; 
+    image-rendering: crisp-edges;
+    margin-top: 10px;
+}
+
+#waveform {
+    height: 80%;
+    width: 100%;
+    border: solid green 4px;
+    background-color: #F5F5DC;
+    box-sizing: border-box;
+}
+
+.audio-controls, .sound-management {
+    font-family: 'Press Start 2P', cursive;
+}
+
+.audio-controls {
+    margin-top: 10px;
+    display: flex;
+    gap: 10%;
+}
+
+.audio-controls button, .sound-management button, .sound-management a{
+    background-color: #F5F5DC;
+    color: black;
+    border: solid black;
+    padding: 10px;
+    margin: 5px 20px 0px 0px;
+    cursor: pointer;
+    font-family: 'Press Start 2P', cursive;
+}
+
+.audio-controls button {
+    flex: 1;
+    margin-right: 0;
+}
+
+.sound-management {
+    position: relative;
+    width: 500px;
+    height: 166px;
+    /*margin-left: 100px;*/
+    z-index: 10;
+    display: flex;
+    gap: 30px;
+    margin-top: 50px;
+}
+
+.loopRecButton{
+    flex: 1;
+    height: 100%;
+    width: 40%;
+}
+
+.loopRecButton > a{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    background-color: #e95d8c;
+}
+
+.sound-management > div:last-child {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+#loopCLButton, #ambienceCLButton{
+    flex: 1;
+    margin-top: 0;
+}
+
+#ambienceCLButton {
+    background-color: #83dae0;
+}
+
+#loopCLButton {
+    background-color:  #FFD54F;
+}
+
+.loopRecButton a {
+    transition: background-color 0.3s ease;
+}
+
+#pauseIcon {
+    display: none;
+}
+

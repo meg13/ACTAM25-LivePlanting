@@ -1,0 +1,63 @@
+.walking-cow{
+    position: fixed;
+    z-index: 10;
+    pointer-events: none;
+    user-select: none;
+    width: 80px;
+    height: 64px;
+    transition: left 0.1s linear, top 0.1s linear;
+}
+
+.walking-cow svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.walking-duck{
+    position: fixed;
+    z-index: 10;
+    pointer-events: none;
+    user-select: none;
+    width: 70px;
+    height: 54px;
+    transition: left 0.1s linear, top 0.1s linear;
+}
+
+.walking-duck img {
+    width: 60%;
+    height: 60%;
+    display: block;
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    margin-bottom: 10%;
+    height: 60vh;
+    margin-right: calc(130px + 20px);
+}
+
+.startButton {
+    height: 70px;
+    width: 200px;
+    background-color: #FD86AE;
+    border: 3px solid black;
+    color: #000;
+    text-align: center;
+    font-family: "Press Start 2P";
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 30px; /* 150% */
+    letter-spacing: 4px;
+    z-index: 50;
+    cursor: pointer;
+}
+
+.startButton:hover {
+    background-color: rgba(253, 134, 174, 1); /* colore più solido */
+    transform: scale(1.05); 
+    filter: drop-shadow(0px 0px 20px rgb(199, 140, 160));
+}

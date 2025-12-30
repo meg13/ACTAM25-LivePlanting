@@ -1,0 +1,251 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oxygen+Mono&display=swap');
+
+html, body {
+    overflow-x: hidden;
+    overflow-y: auto;
+    width: 100%;
+    min-height: 100%;
+    margin-left: 20px;
+}
+
+body > header {
+    position: relative;
+    text-align: left;
+    margin: 50px 0px;
+}
+
+body > header > h1 {
+    position: relative;
+    color: black;
+    margin: 0;
+    padding: 0;
+    letter-spacing: 2px;
+    z-index: 100;
+}
+
+body {
+    background-color: #8BC34A;
+    font-family: 'Press Start 2P', cursive;
+}
+
+.grass{
+    z-index: 1;
+}
+
+.grass_dark{
+    opacity: 0.6;
+    background: #689F38;
+}
+
+.grass_light{
+    opacity: 0.4;
+    background: #AED581;
+}
+
+.bg-flower {
+    width: 30px;
+    height: 30px;
+    position: relative;
+    margin-bottom: 8px;
+    z-index: 2;
+}
+
+.petal {
+    width: 8px;
+    height: 8px;
+    position: absolute;
+    background-color: white;
+}
+
+.bg-flower > .petal-top, .petal-front-top {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.bg-flower > .petal-right, .petal-front-right {
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.bg-flower > .petal-bottom, .petal-front-bottom {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.bg-flower > .petal-left, .petal-front-left {
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.flower-center {
+    width: 8px;
+    height: 8px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #FFD700;
+    z-index: 1;
+}
+
+nav {
+    position: fixed;
+    right: 20px; 
+    top: 5%; 
+    transform: none; /* Centra verticalmente */
+    display: flex;
+    flex-direction: column;
+    gap: 40px; /* Spazio tra i vari elementi nav */
+    z-index: 100; 
+}
+
+.nav-element {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra tutto orizzontalmente rispetto al fiore */
+    text-decoration: none;
+}
+
+#nav-listening {
+    width: 130px;
+}
+
+.menu-flower {
+    position: relative;
+    display: flex;
+    width: 56px;
+    height: 56px;
+}
+
+.menu-flower > .petal-left, .menu-flower > .petal-right {
+    position: absolute;
+    width: 12px;
+    height: 16px;
+}
+
+.menu-flower > .petal-top, .menu-flower > .petal-bottom {
+    position: absolute;
+    width: 16px;
+    height: 12px;
+}
+
+.menu-flower > .flower-center {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background-color: #FFEB3B;
+    z-index: 10;
+}
+
+.menu-flower > [class^="petal-front"] {
+    position: absolute;
+    
+}
+
+#home-flower > [class^="petal-front"], #home-flower > .petal, #home-button {
+    background-color: #FD86AE;
+}
+
+#code-flower > [class^="petal-front"], #code-flower > .petal, #code-button {
+    background-color: #2D88FF;
+}
+
+#concept-flower > [class^="petal-front"], #concept-flower > .petal, #concept-button {
+    background-color: #FF5100;
+}
+
+#listening-flower > [class^="petal-front"], #listening-flower > .petal, #listening-button {
+    background-color: #8D33FF;
+}
+
+.petal-front-right, .petal-front-left {
+    width: 4px;
+    height: 12px;
+}
+
+.menu-flower > .petal-right {
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.menu-flower > .petal-left {
+    left: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+
+.petal-front-top, .petal-front-bottom {
+    width: 12px;
+    height: 4px;
+}
+
+.menu-flower > .petal-top {
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.menu-flower > .petal-bottom {
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.nav-button {
+    height: 16px;
+    width: 100%;
+    color: white;
+    padding: 7px 3px;
+    margin-top: 8px;
+    text-align: center;
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+
+#concept-button, #home-button, #code-button, #listening-button {
+    width: auto;
+}
+
+#listening-button {
+    height: 30px;
+}
+
+.nav-element:hover .menu-flower {
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+}
+
+.nav-element:hover .flower-center {
+    animation: spin-center 1s linear infinite;
+}
+
+/* Animazione di rotazione per il centro del fiore */
+@keyframes spin-center {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.nav-element:hover .nav-button {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+    filter: brightness(1.1);
+    transition: all 0.2s ease;
+}
+
+#branch-svg {
+  position: absolute;
+  bottom: 0;
+  left: 0px;
+  width: 100px;
+  height: auto;
+  z-index: -1;
+  pointer-events: none;
+}
