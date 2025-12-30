@@ -11,332 +11,266 @@
     </head>
     <body>
         <header>
-        <h1>CODE</h1>
+            <h1>CODE</h1>
         </header>
         <main>
             <div class="content-wrapper">
-                 <article>
+                <article>
                     <h1>Backend</h1>
                     <p>
-                        The true core of our “Live Planting” project, behind the webpage, is a python code that is responsible for the conversion of the Arduino outputs into audio signals and for actually reproducing them, accordingly with the user’s inputs from the webpage. 
+                        The true core of our "Live Planting" project, behind the webpage, is a python code that is responsible for the conversion of the Arduino outputs into audio signals and for actually reproducing them, accordingly with the user's inputs from the webpage. 
                         <br>This code mainly revolves around the definition of three servers, including:
-
-                        <br><br><b>1.</b>A <b>real time audio engine</b>, responsible for generating audio signals and sending them to the hardware of the computer. It uses the &nbsp;&nbsp;sounddevice API for communication with audio hardware.
-                        <br><br><b>2.</b>A <b>control server</b>, responsible for translating command from the webpage into internal actions on the audio generation code. It uses the &nbsp;&nbsp;HTTP control API
-                        <br><br><b>3.</b>A <b>visualization server</b>, which reads the audio signals, ready to be visualized, and sends them to the part of the webpage that is &nbsp;&nbsp;responsible for such visualization. It uses a Websokcet API for data streaming.
                     </p>
+                    
+                    <ol>
+                        <li>A <b>real time audio engine</b>, responsible for generating audio signals and sending them to the hardware of the computer. It uses the sounddevice API for communication with audio hardware.</li>
+                        <li>A <b>control server</b>, responsible for translating command from the webpage into internal actions on the audio generation code. It uses the HTTP control API.</li>
+                        <li>A <b>visualization server</b>, which reads the audio signals, ready to be visualized, and sends them to the part of the webpage that is responsible for such visualization. It uses a Websocket API for data streaming.</li>
+                    </ol>
 
                     <h2>The synthesizer</h2>
-
-                    <p>These three servers all <b>revolve around interactions with</b> a digital object, a <b>synthesizer</b>, which is <b>implemented</b> in the code 
-                        through a <b>Python class</b>. 
-                        <br>A Python class is a blueprint that defines the structure and behavior of objects by grouping data 
-                        (attributes) and functions (methods) together. 
+                    <p>
+                        These three servers all <b>revolve around interactions with</b> a digital object, a <b>synthesizer</b>, which is <b>implemented</b> in the code through a <b>Python class</b>. 
+                        <br>A Python class is a blueprint that defines the structure and behavior of objects by grouping data (attributes) and functions (methods) together. 
                         <br>Within the synth class, the most important attributes are:
-                    <br><br>&nbsp;&nbsp;•	Two lists, <span class="tag-verde">self.ambient_voices</span> and <span class="tag-verde">self.pulse_voices</span> respectively responsible for <b>containing the ambient voices and the pulse voices</b> &nbsp;&nbsp;&nbsp;&nbsp;which are generated
-                    <br><br>&nbsp;&nbsp;•	An object, <span class="tag-verde">self.pulse_reverb</span>, responsible for applying a <b>reverb effect</b> on the pulse notes.
-                    <br><br>&nbsp;&nbsp;•	An object, <span class="tag-verde">self.viz_queue</span>, responsible for <b>containing the processed information</b> for the clients of the visualization server.
-                    <br><br>&nbsp;&nbsp;•	An Output stream, <span class="tag-verde">self.stream</span>, responsible for actually <b>obtaining the final audio signals</b> communicating them to the hardware.
-                    <br><br>Let's now focus on each one of these objects, considering which functions or classes they implement.
                     </p>
+                    
+                    <ul>
+                        <li>Two lists, <span class="tag-verde">self.ambient_voices</span> and <span class="tag-verde">self.pulse_voices</span> respectively responsible for <b>containing the ambient voices and the pulse voices</b> which are generated.</li>
+                        <li>An object, <span class="tag-verde">self.pulse_reverb</span>, responsible for applying a <b>reverb effect</b> on the pulse notes.</li>
+                        <li>An object, <span class="tag-verde">self.viz_queue</span>, responsible for <b>containing the processed information</b> for the clients of the visualization server.</li>
+                        <li>An Output stream, <span class="tag-verde">self.stream</span>, responsible for actually <b>obtaining the final audio signals</b> communicating them to the hardware.</li>
+                    </ul>
+                    
+                    <p>Let's now focus on each one of these objects, considering which functions or classes they implement.</p>
 
-                    <br><br><br>
                     <h1>Frontend</h1>
-                    <p>For the frontend part of our project, we implemented an interactive web application that combines <b>dynamic animations</b> and <b>real-time audio visualization</b> coupled with the <b>Python backend architecture</b>.
-                    </p>
+                    <p>For the frontend part of our project, we implemented an interactive web application that combines <b>dynamic animations</b> and <b>real-time audio visualization</b> coupled with the <b>Python backend architecture</b>.</p>
+                    
                     <h2>General Architecture and Project Structure</h2>
-                        <p>
+                    <p>
                         The application has a <b>multi-page design</b> with a navigation system in common for all the pages, for easier access to other pages. 
-                        <br> Since the whole project revolves around plants, we decided that the web app <b>theme</b> would be completely <b>inspired by nature</b>: grass, flowers and animals. 
-                        <br> For this reason, the navigation system is visually made of flowers, the homepage has cows and ducks that move around and jump with random mechanisms, the color palette is made of soft pastel colors that recall nature, and the background recalls a flowery meadow. 
+                        <br>Since the whole project revolves around plants, we decided that the web app <b>theme</b> would be completely <b>inspired by nature</b>: grass, flowers and animals. 
+                        <br>For this reason, the navigation system is visually made of flowers, the homepage has cows and ducks that move around and jump with random mechanisms, the color palette is made of soft pastel colors that recall nature, and the background recalls a flowery meadow. 
                         <br>All images are created using <b>Figma</b>, and this contributes to a cohesive look for the entire project.
+                    </p>
 
-                        <br><br>The project consists of four main pages:
-                        <br><br><b>1.</b> <b>Home Page</b> (homepage.html) - Landing page with animal animations
-                        <br><b>2.</b> <b>Live Listening</b> (live_listening.html) - Webpage about audio listening and visualization of waveforms
-                        <br><b>3.</b> <b>Codes</b> (codes.html) - Page with code documentation
-                        <br><b>4.</b> <b>Concept</b> (concept.html) – The concept of the project is explained
-                        <br><br>Every page is handled by a <b>specific stylesheet</b> that ensures consistency with the overall design of the system. 
-                        <br>The backend part is handled by an <b>asynchronous Python server</b> that communicates with the frontend using <b>WebSocket</b> technology.
-                        </p>
+                    <p>The project consists of four main pages:</p>
+                    <ol>
+                        <li><b>Home Page</b> (homepage.html) - Landing page with animal animations</li>
+                        <li><b>Live Listening</b> (live_listening.html) - Webpage about audio listening and visualization of waveforms</li>
+                        <li><b>Codes</b> (codes.html) - Page with code documentation</li>
+                        <li><b>Concept</b> (concept.html) - The concept of the project is explained</li>
+                    </ol>
 
-                    <h2>Navigation system <img src="../images/pxlFlowe.svg"> </h2>
-                        <p>
+                    <p>Every page is handled by a <b>specific stylesheet</b> that ensures consistency with the overall design of the system. 
+                    <br>The backend part is handled by an <b>asynchronous Python server</b> that communicates with the frontend using <b>WebSocket</b> technology.</p>
+
+                    <h2>Navigation system <img src="../images/pxlFlowe.svg"></h2>
+                    <p>
                         The code for the navigation system is in `nav.js` and follows a <b>DOM-based dynamic approach</b>. 
                         <br>It consists of:
-
-                        <br><br><b>-</b> Personalized flower (menu-flower) with colored petals
-
-                        <br><b>-</b> Text button with the label of the section
-
-                        <br><b>-</b> CSS Animations on hover (center rotation, scale up)
-                        <br><br>
-                        The navigation menu is <b>fixed on the right side of the screen</b>, which means it always stays visible no matter the scroll position.
-
-                        </p>
+                    </p>
                     
-                    <br><br>
+                    <ul>
+                        <li>Personalized flower (menu-flower) with colored petals</li>
+                        <li>Text button with the label of the section</li>
+                        <li>CSS Animations on hover (center rotation, scale up)</li>
+                    </ul>
+                    
+                    <p>The navigation menu is <b>fixed on the right side of the screen</b>, which means it always stays visible no matter the scroll position.</p>
+
                     <h2>Interactive Animations - Cows, Ducks, and the Environment</h2>
 
-                        <h3><br>Cow Animation <img src="../images/cow.svg"></h3>
-                            <p>
-                            The `SimpleCow` class has a <b>simulated physical movement system</b> that responds to collisions.
-                            <br>Each cow:
-                            <br>
-                            <br><b>-</b> Has <b>movement properties</b> (x, y, vx, vy), which model movement along horizontal and vertical axes
-                            <br><b>-</b> Has a <b>common color scheme</b> that is cyclically distributed among instances (4 variants)
-                            <br><b>-</b> Uses <b>random pauses</b>, timers which introduce random movement (1% probability per frame)
-                            <br><b>-</b> Nicely <b>bounces</b> on the edges of the screen and of the START button
-                            <br>
-                            <br>In the <b>constructor</b> of the SimpleCow class, the <b>valid area</b> is calculated, 
-                            where the cows can move, avoiding the navigation menu and the START button. 
-                            For this task the property offsetWidth of nav and the method getBoundingClientRect for the START button are used.
+                    <h3>Cow Animation <img src="../images/cow.svg"></h3>
+                    <p>
+                        The `SimpleCow` class has a <b>simulated physical movement system</b> that responds to collisions.
+                        <br>Each cow:
+                    </p>
+                    
+                    <ul>
+                        <li>Has <b>movement properties</b> (x, y, vx, vy), which model movement along horizontal and vertical axes</li>
+                        <li>Has a <b>common color scheme</b> that is cyclically distributed among instances (4 variants)</li>
+                        <li>Uses <b>random pauses</b>, timers which introduce random movement (1% probability per frame)</li>
+                        <li>Nicely <b>bounces</b> on the edges of the screen and of the START button</li>
+                    </ul>
 
-                            <p><br>In the <b>update</b> method, the <b>movement</b> of the Cows is handled.
-                            <br><br><b>Random pauses</b> are implemented in the movement simply using boolean property 'paused' of the class SimpleCow.
-                            Cows have a 1% probability of being paused at each frame. 
-                            When paused, the cow does not move for a random time between 500ms and 2000ms, after which it resumes its movement.
+                    <p>
+                        In the <b>constructor</b> of the SimpleCow class, the <b>valid area</b> is calculated, where the cows can move, avoiding the navigation menu and the START button. 
+                        For this task the property offsetWidth of nav and the method getBoundingClientRect for the START button are used.
+                    </p>
 
-                            <br><br>The <b>bouncing mechanism</b> is implemented by checking if the cow's position exceeds the valid area boundaries. 
-                            If it does, the corresponding velocity component (vx or vy) is inverted and the cow bounces back into the valid area:
-                            <br>
-                            </p>
-                            
-                            <pre class="line-numbers">
-                            <code class="language-javascript">
-                            // Gentle bounce on the horizontal edges
-                            if (this.x < 0) {
-                                this.x = 0;
-                                this.vx *= -1;
-                            } else if (this.x > window.innerWidth - navWidth - 80) {
-                                this.x = window.innerWidth - navWidth - 80;
-                                this.vx *= -1;
-                            }
-                            </code>
-                            </pre>
+                    <p>
+                        In the <b>update</b> method, the <b>movement</b> of the Cows is handled.
+                        <br><b>Random pauses</b> are implemented in the movement simply using boolean property 'paused' of the class SimpleCow. Cows have a 1% probability of being paused at each frame. 
+                        When paused, the cow does not move for a random time between 500ms and 2000ms, after which it resumes its movement.
+                        <br><br>The <b>bouncing mechanism</b> is implemented by checking if the cow's position exceeds the valid area boundaries. 
+                        If it does, the corresponding velocity component (vx or vy) is inverted and the cow bounces back into the valid area:
+                    </p>
+                    
+                    <pre class="line-numbers"><code class="language-javascript">
+// Gentle bounce on the horizontal edges
+if (this.x < 0) {
+    this.x = 0;
+    this.vx *= -1;
+} else if (this.x > window.innerWidth - navWidth - 80) {
+    this.x = window.innerWidth - navWidth - 80;
+    this.vx *= -1;
+}
+                    </code></pre>
 
-                            <p>For the START button, the same logic is used, but
-                            the cow's direction is reversed by inverting vx or vy
-                            depending on which side it approaches from. 
-                            <br></p>
+                    <p>For the START button, the same logic is used, but the cow's direction is reversed by inverting vx or vy depending on which side it approaches from.</p>
 
-                            <pre class="line-numbers">
-                            <code class="language-javascript">
-                            // Checks collision with button
-                            if (this.x + cowWidth > buttonRect.left - margin &&
-                                this.x < buttonRect.right + margin &&
-                                this.y + cowHeight > buttonRect.top - margin &&
-                                this.y < buttonRect.bottom + margin) {
+                    <pre class="line-numbers"><code class="language-javascript">
+// Checks collision with button
+if (this.x + cowWidth > buttonRect.left - margin &&
+    this.x < buttonRect.right + margin &&
+    this.y + cowHeight > buttonRect.top - margin &&
+    this.y < buttonRect.bottom + margin) {
 
-                                // Determines to which side the cow should bounce
-                                const fromLeft = this.x + cowWidth / 2 < buttonRect.left;
-                                const fromRight = this.x + cowWidth / 2 > buttonRect.right;
-                                const fromTop = this.y + cowHeight / 2 < buttonRect.top;
-                                const fromBottom = this.y + cowHeight / 2 > buttonRect.bottom;
+    // Determines to which side the cow should bounce
+    const fromLeft = this.x + cowWidth / 2 < buttonRect.left;
+    const fromRight = this.x + cowWidth / 2 > buttonRect.right;
+    const fromTop = this.y + cowHeight / 2 < buttonRect.top;
+    const fromBottom = this.y + cowHeight / 2 > buttonRect.bottom;
 
-                                if (fromLeft || fromRight) {
-                                    this.vx *= -1;
-                                    if (fromLeft) {
-                                        this.x = buttonRect.left - cowWidth - margin;
-                                    } else {
-                                        this.x = buttonRect.right + margin;
-                                    }
-                                }
+    if (fromLeft || fromRight) {
+        this.vx *= -1;
+        if (fromLeft) {
+            this.x = buttonRect.left - cowWidth - margin;
+        } else {
+            this.x = buttonRect.right + margin;
+        }
+    }
 
-                                if (fromTop || fromBottom) {
-                                    this.vy *= -1;
-                                    if (fromTop) {
-                                        this.y = buttonRect.top - cowHeight - margin;
-                                    } else {
-                                        this.y = buttonRect.bottom + margin;
-                                    }
-                                }
-                            }
-                            </code>
-                            </pre>
+    if (fromTop || fromBottom) {
+        this.vy *= -1;
+        if (fromTop) {
+            this.y = buttonRect.top - cowHeight - margin;
+        } else {
+            this.y = buttonRect.bottom + margin;
+        }
+    }
+}
+                    </code></pre>
 
-                            <p><b>Random changes of direction and speed</b> are also implemented: every update, the velocity components might
-                            change with a probability of 2%, simulating a small, spontaneous change in direction and speed.
-                            <br></p>
+                    <p><b>Random changes of direction and speed</b> are also implemented: every update, the velocity components might change with a probability of 2%, simulating a small, spontaneous change in direction and speed.</p>
 
-                            <pre class="line-numbers">
-                            <code class="language-javascript">
-                            // Random direction change
-                            if (Math.random() < 0.02) {
-                                this.vx += (Math.random() - 0.5) * 0.3;
-                                this.vy += (Math.random() - 0.5) * 0.2;
-                                
-                                const maxSpeed = 1.5; //prevents excessive speed
-                                if (Math.abs(this.vx) > maxSpeed) this.vx = maxSpeed * Math.sign(this.vx);
-                                if (Math.abs(this.vy) > maxSpeed * 0.3) this.vy = maxSpeed * 0.3 * Math.sign(this.vy);
-                            }
-                            
-                            if (this.vx !== 0) {
-                                this.direction = this.vx > 0 ? 1 : -1; //change of direction
-                            }
-                            </code>
-                            </pre>
-                
-                        <br>
-                        <h3>Duck Animation<img src="../images/duck_for_code_report.svg">
-                        </h3>
-                            <p>Ducks move similarly to cows, but with a <b>higher speed</b>. Also, a logic for <b>random jumps</b> is implemented.
-                            <br>Each duck has a 0.5% probability of jumping at each frame. 
-                            When jumping, the duck's y position is temporarily decreased by a fixed jumpHeight value for a short duration
-                            (jumpTimer), then it returns to its original y position.
-                            </p>
+                    <pre class="line-numbers"><code class="language-javascript">
+// Random direction change
+if (Math.random() < 0.02) {
+    this.vx += (Math.random() - 0.5) * 0.3;
+    this.vy += (Math.random() - 0.5) * 0.2;
+    
+    const maxSpeed = 1.5; //prevents excessive speed
+    if (Math.abs(this.vx) > maxSpeed) this.vx = maxSpeed * Math.sign(this.vx);
+    if (Math.abs(this.vy) > maxSpeed * 0.3) this.vy = maxSpeed * 0.3 * Math.sign(this.vy);
+}
 
-                            <pre class="line-numbers">
-                            <code class="language-javascript">
-                            // Salto casuale
-                            if (!this.jumping && Math.random() < 0.005) {
-                                this.jumping = true;
-                                this.jumpTimer = 10;
-                                this.startY = this.y;
-                            }
+if (this.vx !== 0) {
+    this.direction = this.vx > 0 ? 1 : -1; //change of direction
+}
+                    </code></pre>
 
-                            if (this.jumping) {
-                                this.y = this.startY - this.jumpHeight;
-                                this.jumpTimer--;
-                                if (this.jumpTimer <= 0) {
-                                    this.jumping = false;
-                                    this.y = this.startY;
-                                }
-                            }
-                            </code>
-                            </pre>
+                    <h3>Duck Animation <img src="../images/duck_for_code_report.svg"></h3>
+                    <p>Ducks move similarly to cows, but with a <b>higher speed</b>. Also, a logic for <b>random jumps</b> is implemented.
+                    <br>Each duck has a 0.5% probability of jumping at each frame. When jumping, the duck's y position is temporarily decreased by a fixed jumpHeight value for a short duration (jumpTimer), then it returns to its original y position.</p>
 
-                        <br>       
-                        <h3>Decorative Grass <img src="../images/grass.svg" height="30px"></h3>
-                            <p>
-                            The grass items are added dinamically to the pages using the function addGrassItem() in javascript. 
-                            Each grass item has <b>random dimensions, position and color</b>. Also, a z-index of 1 is assigned to the grass items 
-                            to ensure they stay in the background.
-                            </p>
+                    <pre class="line-numbers"><code class="language-javascript">
+// Salto casuale
+if (!this.jumping && Math.random() < 0.005) {
+    this.jumping = true;
+    this.jumpTimer = 10;
+    this.startY = this.y;
+}
 
-                            <pre class="line-numbers">
-                            <code class="language-javascript">
-                            function addGrassItem() {
-                                const e = document.createElement("div");
-                                e.classList.add("grass");
+if (this.jumping) {
+    this.y = this.startY - this.jumpHeight;
+    this.jumpTimer--;
+    if (this.jumpTimer <= 0) {
+        this.jumping = false;
+        this.y = this.startY;
+    }
+}
+                    </code></pre>
 
-                                const maxX = window.innerWidth;
-                                const maxY = window.innerHeight;
-                                e.style.position = "absolute";
-                                e.style.left = Math.random() * maxX + "px"; //random position
-                                e.style.top  = Math.random() * maxY + "px"; //random position
+                    <h3>Decorative Grass <img src="../images/grass.svg" height="30px"></h3>
+                    <p>The grass items are added dinamically to the pages using the function addGrassItem() in javascript. 
+                    Each grass item has <b>random dimensions, position and color</b>. Also, a z-index of 1 is assigned to the grass items to ensure they stay in the background.</p>
 
-                                const color = Math.round(Math.random()); //random color (dark or light)
-                                (color === 0) ? e.classList.add("grass_dark") : e.classList.add("grass_light");
+                    <pre class="line-numbers"><code class="language-javascript">
+function addGrassItem() {
+    const e = document.createElement("div");
+    e.classList.add("grass");
 
-                                const size = Math.random() * 20 + 20; //random size between 20 and 40px
-                                e.style.width  = size + "px";
-                                e.style.height = size + "px";
+    const maxX = window.innerWidth;
+    const maxY = window.innerHeight;
+    e.style.position = "absolute";
+    e.style.left = Math.random() * maxX + "px"; //random position
+    e.style.top  = Math.random() * maxY + "px"; //random position
 
-                                document.body.appendChild(e);
-                            }
-                            </code>
-                            </pre>
+    const color = Math.round(Math.random()); //random color (dark or light)
+    (color === 0) ? e.classList.add("grass_dark") : e.classList.add("grass_light");
 
-                        <h3>Background flowers <img src="../images/bg_flower.svg"></h3>
-                            <p>
-                            Some flowers are added dinamically to the pages using the function addFlowerItem() in javascript. 
-                            Their position is random, but some <b>constraints</b> are added to <b>avoid overlapping</b> with the navigation 
-                            menu, other flowers or audio settings in the live listening page.
-                            A number of attempts is set to try to find a valid position for each flower, if none is found, 
-                            the flower is not added.
-                            <br>Their z-index is put to 2, to stay over the grass, but under everything else.
-                            </p>
+    const size = Math.random() * 20 + 20; //random size between 20 and 40px
+    e.style.width  = size + "px";
+    e.style.height = size + "px";
 
-                            <pre class="line-numbers">
-                            <code class="language-javascript">
-                            function getRandomPosition(flowerSize, maxAttempts = 50) {
-                                const maxX = window.innerWidth - flowerSize;
-                                const maxY = window.innerHeight - flowerSize;
+    document.body.appendChild(e);
+}
+                    </code></pre>
 
-                                // get position and dimension of audio container
-                                const audioContainer = document.querySelector('.audio-container');
-                                let audioContainerRect = null;
-                                if (audioContainer) {
-                                    audioContainerRect = audioContainer.getBoundingClientRect();
-                                }
+                    <h3>Background flowers <img src="../images/bg_flower.svg"></h3>
+                    <p>Some flowers are added dinamically to the pages using the function addFlowerItem() in javascript. 
+                    Their position is random, but some <b>constraints</b> are added to <b>avoid overlapping</b> with the navigation menu, other flowers or audio settings in the live listening page.
+                    A number of attempts is set to try to find a valid position for each flower, if none is found, the flower is not added.
+                    <br>Their z-index is put to 2, to stay over the grass, but under everything else.</p>
 
-                                //...get other positions to avoid... 
+                    <pre class="line-numbers"><code class="language-javascript">
+function getRandomPosition(flowerSize, maxAttempts = 50) {
+    const maxX = window.innerWidth - flowerSize;
+    const maxY = window.innerHeight - flowerSize;
 
-                                for (let attempt = 0; attempt < maxAttempts; attempt++) { //maxAttempt = 50
-                                    const x = Math.random() * maxX;
-                                    const y = Math.random() * maxY;
+    // get position and dimension of audio container
+    const audioContainer = document.querySelector('.audio-container');
+    let audioContainerRect = null;
+    if (audioContainer) {
+        audioContainerRect = audioContainer.getBoundingClientRect();
+    }
 
-                                    // check collision with other flowers
-                                    if (checkCollision(x, y, flowerSize)) {
-                                    continue;
-                                    }
+    //...get other positions to avoid... 
 
-                                    //...check for other collisions...
+    for (let attempt = 0; attempt < maxAttempts; attempt++) { //maxAttempt = 50
+        const x = Math.random() * maxX;
+        const y = Math.random() * maxY;
 
-                                    return { x, y };
-                                }
+        // check collision with other flowers
+        if (checkCollision(x, y, flowerSize)) {
+        continue;
+        }
 
-                                return null; //if no valid position, don't add the flower
-                            }
-                        </code>
-                        </pre>
+        //...check for other collisions...
 
-                            <pre class="line-numbers">
-                            <code class="language-javascript">
-                            function addFlowerItem() {
-                                //...
+        return { x, y };
+    }
 
-                                if (!position) {
-                                    console.warn("The flower could not be added: insufficient space");
-                                    return;
-                                }
-                        </code>
-                        </pre>
+    return null; //if no valid position, don't add the flower
+}
+                    </code></pre>
+
+                    <pre class="line-numbers"><code class="language-javascript">
+function addFlowerItem() {
+    //...
+
+    if (!position) {
+        console.warn("The flower could not be added: insufficient space");
+        return;
+    }
+                    </code></pre>
                 </article>
-
-                <article><h2>Template codice (DA ELIMINARE)</h2></article>
-                <!-- Esempio HTML -->
-                <pre class="line-numbers">
-                    <code class="language-html">&lt;div class="container"&gt;
-                    &lt;h1&gt;Titolo&lt;/h1&gt;
-                    &lt;/div&gt;
-                    </code>
-                </pre>
-
-                <!-- Esempio CSS -->
-                <pre class="line-numbers">
-                    <code class="language-css">.container {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    gap: 20px;
-                    }   
-                    </code>
-                </pre>
-
-                <!-- Esempio JS -->
-                <pre class="line-numbers">
-                    <code class="language-javascript">const button = document.querySelector('.btn');
-                    button.addEventListener('click', () => {
-                        console.log('Clicked!');
-                        button.classList.toggle('active');
-                    });
-                    </code>
-                </pre>
-
-                <!-- Python - Loop e condizioni -->
-                <pre class="line-numbers">
-                    <code class="language-python">numeri = [1, 2, 3, 4, 5, 6, 7, 8]
-                    for n in numeri:
-                        if n % 2 == 0:
-                            print(f"{n} è pari")
-                    </code>
-                </pre>
             </div>
         </main>
     </body>
     <script src="../js/nav.js" type="text/javascript"></script>
     <script src="../js/prism.js" type="text/javascript"></script>
 </html>
-
