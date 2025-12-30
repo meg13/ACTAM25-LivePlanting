@@ -5,6 +5,7 @@
         <meta charset="UTF-8">
         <link rel="preload" href="../images/branch.svg" as="image">
         <link href="../css/concept_style.css" type="text/css" rel="stylesheet"/>
+        <link href="../css/codes_style.css" type="text/css" rel="stylesheet"/>
         <link href="../css/style.css" type="text/css" rel="stylesheet"/>
         <link href="../css/prism.css" type="text/css" rel="stylesheet">
     </head>
@@ -14,13 +15,35 @@
         </header>
         <main>
             <div class="content-wrapper">
-                <article>
-                    
-                        <p>For the front-end part of our project, we implemented an interactive web application that combines <b>dynamic animations</b> and <b>real-time audio visualization</b> coupled with the <b>Python backend architecture</b>.
-                        </p>
-                </article>
+                 <article>
+                    <h1>Backend</h1>
+                    <p>
+                        The true core of our “Live Planting” project, behind the webpage, is a python code that is responsible for the conversion of the Arduino outputs into audio signals and for actually reproducing them, accordingly with the user’s inputs from the webpage. 
+                        <br>This code mainly revolves around the definition of three servers, including:
 
-                <article>
+                        <br><br><b>1.</b>A <b>real time audio engine</b>, responsible for generating audio signals and sending them to the hardware of the computer. It uses the &nbsp;&nbsp;sounddevice API for communication with audio hardware.
+                        <br><br><b>2.</b>A <b>control server</b>, responsible for translating command from the webpage into internal actions on the audio generation code. It uses the &nbsp;&nbsp;HTTP control API
+                        <br><br><b>3.</b>A <b>visualization server</b>, which reads the audio signals, ready to be visualized, and sends them to the part of the webpage that is &nbsp;&nbsp;responsible for such visualization. It uses a Websokcet API for data streaming.
+                    </p>
+
+                    <h2>The synthesizer</h2>
+
+                    <p>These three servers all <b>revolve around interactions with</b> a digital object, a <b>synthesizer</b>, which is <b>implemented</b> in the code 
+                        through a <b>Python class</b>. 
+                        <br>A Python class is a blueprint that defines the structure and behavior of objects by grouping data 
+                        (attributes) and functions (methods) together. 
+                        <br>Within the synth class, the most important attributes are:
+                    <br><br>&nbsp;&nbsp;•	Two lists, <span class="tag-verde">self.ambient_voices</span> and <span class="tag-verde">self.pulse_voices</span> respectively responsible for <b>containing the ambient voices and the pulse voices</b> &nbsp;&nbsp;&nbsp;&nbsp;which are generated
+                    <br><br>&nbsp;&nbsp;•	An object, <span class="tag-verde">self.pulse_reverb</span>, responsible for applying a <b>reverb effect</b> on the pulse notes.
+                    <br><br>&nbsp;&nbsp;•	An object, <span class="tag-verde">self.viz_queue</span>, responsible for <b>containing the processed information</b> for the clients of the visualization server.
+                    <br><br>&nbsp;&nbsp;•	An Output stream, <span class="tag-verde">self.stream</span>, responsible for actually <b>obtaining the final audio signals</b> communicating them to the hardware.
+                    <br><br>Let's now focus on each one of these objects, considering which functions or classes they implement.
+                    </p>
+
+                    <br><br><br>
+                    <h1>Frontend</h1>
+                    <p>For the frontend part of our project, we implemented an interactive web application that combines <b>dynamic animations</b> and <b>real-time audio visualization</b> coupled with the <b>Python backend architecture</b>.
+                    </p>
                     <h2>General Architecture and Project Structure</h2>
                         <p>
                         The application has a <b>multi-page design</b> with a navigation system in common for all the pages, for easier access to other pages. 
@@ -36,9 +59,7 @@
                         <br><br>Every page is handled by a <b>specific stylesheet</b> that ensures consistency with the overall design of the system. 
                         <br>The backend part is handled by an <b>asynchronous Python server</b> that communicates with the frontend using <b>WebSocket</b> technology.
                         </p>
-                </article>
 
-                <article>
                     <h2>Navigation system <img src="../images/pxlFlowe.svg"> </h2>
                         <p>
                         The code for the navigation system is in `nav.js` and follows a <b>DOM-based dynamic approach</b>. 
@@ -53,9 +74,8 @@
                         The navigation menu is <b>fixed on the right side of the screen</b>, which means it always stays visible no matter the scroll position.
 
                         </p>
-                </article>
-
-                <article>
+                    
+                    <br><br>
                     <h2>Interactive Animations - Cows, Ducks, and the Environment</h2>
 
                         <h3><br>Cow Animation <img src="../images/cow.svg"></h3>
