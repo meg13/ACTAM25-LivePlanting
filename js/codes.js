@@ -4,23 +4,28 @@ class HoverTableOfContents {
   /**
    * Constructor - Initialize the hover TOC generator
    * @param {string} triggerSelector - CSS selector for the hover trigger area
-   * @param {array} headingLevels - Array of heading levels to include
-   * @param {string} tocId - ID for the TOC container
+   * @param {array} headingLevels - Array of heading levels to include (h1, h2, etc.)
+   * @param {string} tocId - ID for the TOC container element
    */
   constructor(triggerSelector = '#toc-trigger', headingLevels = ['h1', 'h2', 'h3', 'h4'], tocId = 'toc-container') {
     this.triggerSelector = triggerSelector;
     this.headingLevels = headingLevels;
     this.tocId = tocId;
-    this.headings = [];
-    this.tocElement = null;
-    this.triggerElement = null;
+    this.headings = [];        // Store collected heading data
+    this.tocElement = null;    // TOC container reference
+    this.triggerElement = null; // Trigger button reference
   }
 
-  // Collect all headings from the page
+  /**
+   * Collect all headings from the page matching specified levels
+   * Automatically generates IDs for headings without them
+   */
   collectHeadings() {
     const selector = this.headingLevels.join(', ');
     const elements = document.querySelectorAll(selector);
+    
     this.headings = Array.from(elements).map((heading, index) => {
+      // Generate ID if heading doesn't have one
       if (!heading.id) {
         heading.id = `heading-${index}`;
       }
@@ -28,17 +33,21 @@ class HoverTableOfContents {
       return {
         id: heading.id,
         text: heading.textContent.trim(),
-        level: parseInt(heading.tagName[1])
+        level: parseInt(heading.tagName[1])  // Extract level from tag (h1=1, h2=2, etc.)
       };
     });
   }
 
-  // Build TOC HTML structure con mouseover per h2 e h3
+  /**
+   * Build nested TOC HTML structure with hover functionality for h2/h3
+   * Hides h2/h3 by default, reveals on h1/h2 hover with delay
+   */
   buildTocStructure() {
     const container = document.createElement('div');
     container.id = this.tocId;
     container.className = 'toc-wrapper hover-toc';
 
+    // TOC title
     const header = document.createElement('h3');
     header.className = 'toc-title';
     header.textContent = 'Table of Contents';
@@ -46,7 +55,7 @@ class HoverTableOfContents {
 
     let currentList = null;
     let lastLevel = null;
-    const listStack = [];
+    const listStack = [];  // Stack for nested list management
 
     this.headings.forEach((heading, index) => {
       const level = heading.level;
@@ -57,6 +66,7 @@ class HoverTableOfContents {
       link.textContent = heading.text;
       link.className = `toc-link toc-level-${level}`;
 
+      // Smooth scroll on click
       link.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -66,20 +76,23 @@ class HoverTableOfContents {
       listItem.appendChild(link);
       listItem.className = `toc-item toc-level-${level}`;
 
-      // Nascondi h2 e h3 di default
+      // Hide h2 and h3 items by default
       if (level === 2 || level === 3) {
         listItem.classList.add('toc-hidden');
       }
 
-      // Aggiungi data-attribute per identificare gli elementi
+      // Add data attribute for easy selection in hover logic
       listItem.setAttribute('data-toc-id', heading.id);
 
-      // LOGICA PER H1: mostra/nascondi h2 (e le h3 sotto)
+      /**
+       * H1 HOVER LOGIC: Show/hide child h2 (and their h3 children)
+       * Collects all h2 until next h1
+       */
       if (level === 1) {
         const nextItems = [];
         let tempIndex = index + 1;
 
-        // Raccogli tutte le h2 fino alla prossima h1
+        // Gather all h2 headings until next h1
         while (tempIndex < this.headings.length && this.headings[tempIndex].level > 1) {
           if (this.headings[tempIndex].level === 2) {
             nextItems.push(`heading-${tempIndex}`);
@@ -87,6 +100,7 @@ class HoverTableOfContents {
           tempIndex++;
         }
 
+        // Show children on hover
         link.addEventListener('mouseenter', () => {
           nextItems.forEach(id => {
             const el = document.querySelector(`[data-toc-id="${id}"]`);
@@ -94,8 +108,8 @@ class HoverTableOfContents {
           });
         });
 
+        // Hide children on mouseleave with 200ms delay (allows moving to h2)
         link.addEventListener('mouseleave', () => {
-          // Aspetta 200ms prima di nascondere, per permettere il passaggio alle h2
           setTimeout(() => {
             if (!link.parentElement.matches(':hover')) {
               nextItems.forEach(id => {
@@ -107,12 +121,15 @@ class HoverTableOfContents {
         });
       }
 
-      // LOGICA PER H2: mostra/nascondi h3
+      /**
+       * H2 HOVER LOGIC: Show/hide child h3 items
+       * Collects all h3 until next h2 or h1
+       */
       if (level === 2) {
         const nextItems = [];
         let tempIndex = index + 1;
 
-        // Raccogli tutte le h3 fino alla prossima h2 o h1
+        // Gather all h3 headings until next h2/h1
         while (tempIndex < this.headings.length && this.headings[tempIndex].level > 2) {
           if (this.headings[tempIndex].level === 3) {
             nextItems.push(`heading-${tempIndex}`);
@@ -120,6 +137,7 @@ class HoverTableOfContents {
           tempIndex++;
         }
 
+        // Show h3 children on h2 hover
         link.addEventListener('mouseenter', () => {
           nextItems.forEach(id => {
             const el = document.querySelector(`[data-toc-id="${id}"]`);
@@ -127,8 +145,8 @@ class HoverTableOfContents {
           });
         });
 
+        // Hide h3 on mouseleave with delay
         link.addEventListener('mouseleave', () => {
-          // Aspetta 200ms prima di nascondere
           setTimeout(() => {
             if (!link.parentElement.matches(':hover')) {
               nextItems.forEach(id => {
@@ -140,14 +158,16 @@ class HoverTableOfContents {
         });
       }
 
-      // Nested list logic
+      // NESTED LIST LOGIC: Create proper hierarchy (h1 > h2 > h3)
       if (lastLevel === null) {
+        // First heading - create root list
         currentList = document.createElement('ul');
         currentList.className = 'toc-list';
         listStack.push(currentList);
         currentList.appendChild(listItem);
         lastLevel = level;
       } else if (level > lastLevel) {
+        // Deeper level - create nested list
         for (let i = lastLevel; i < level; i++) {
           const newList = document.createElement('ul');
           newList.className = 'toc-list';
@@ -162,6 +182,7 @@ class HoverTableOfContents {
         currentList.appendChild(listItem);
         lastLevel = level;
       } else if (level < lastLevel) {
+        // Go up levels
         for (let i = level; i < lastLevel; i++) {
           listStack.pop();
         }
@@ -169,10 +190,12 @@ class HoverTableOfContents {
         currentList.appendChild(listItem);
         lastLevel = level;
       } else {
+        // Same level - add to current list
         currentList.appendChild(listItem);
       }
     });
 
+    // Add root list to container
     if (listStack.length > 0) {
       container.appendChild(listStack[0]);
     }
@@ -180,26 +203,36 @@ class HoverTableOfContents {
     return container;
   }
 
-  // Smooth scroll with highlight
+  /**
+   * Smooth scroll to target heading with temporary highlight effect
+   * @param {string} headingId - ID of target heading
+   */
   smoothScrollToHeading(headingId) {
     const element = document.getElementById(headingId);
     if (element) {
+      // Scroll with 80px offset for fixed headers
       const offsetTop = element.offsetTop - 80;
       window.scrollTo({
         top: offsetTop,
         behavior: 'smooth'
       });
+      
+      // Highlight effect
       element.classList.add('highlight-heading');
       setTimeout(() => element.classList.remove('highlight-heading'), 2000);
     }
   }
 
-  // Create or get trigger element
+  /**
+   * Create or retrieve the trigger button element
+   * Creates floating button if no existing trigger found
+   */
   createTriggerElement() {
-    // Try to find existing trigger
+    // Try to find existing trigger element
     this.triggerElement = document.querySelector(this.triggerSelector);
+    
     if (!this.triggerElement) {
-      // Create floating trigger button
+      // Create new floating trigger button
       this.triggerElement = document.createElement('div');
       this.triggerElement.id = 'toc-trigger';
       this.triggerElement.innerHTML = 'Summary';
@@ -209,11 +242,14 @@ class HoverTableOfContents {
     }
   }
 
-  // Inject enhanced CSS styles for hover effect
+  /**
+   * Inject all required CSS styles for hover TOC functionality
+   * Includes animations, hover effects, responsive design
+   */
   injectStyles() {
     const style = document.createElement('style');
     style.textContent = `
-      /* TOC Trigger Button */
+      /* TOC Trigger Button - Fixed floating button */
       .toc-trigger {
         position: fixed;
         top: 20px;
@@ -241,7 +277,7 @@ class HoverTableOfContents {
         background: linear-gradient(135deg, #6EC35C, #5EB052);
       }
 
-      /* Hover TOC Container */
+      /* Hover TOC Container - Shows on trigger hover */
       .hover-toc {
         position: fixed;
         top: 80px;
@@ -303,23 +339,23 @@ class HoverTableOfContents {
         margin: 6px 0;
       }
 
-      /* Nascondi h2 e h3 di default nel TOC */
+      /* Hide h2/h3 items by default */
       .toc-hidden {
         display: none;
       }
 
-      /* Mostra h2 e h3 quando visibili */
+      /* Show animation for revealed items */
       .toc-item:not(.toc-hidden) {
         display: list-item;
-        animation: slideDown 0.6s ease;
+        animation: slideDown 1.5s ease;
         margin: 6px 0;
       }
 
-      /* Animazione di apparizione */
+      /* Slide down appearance animation */
       @keyframes slideDown {
         from {
           opacity: 0;
-          transform: translateY(-8px);
+          transform: translateY(-12px);
         }
         to {
           opacity: 1;
@@ -327,7 +363,7 @@ class HoverTableOfContents {
         }
       }
 
-      /* Piccolo padding per h3 per indentazione visiva */
+      /* Extra indentation for h3 level */
       .toc-item.toc-level-3:not(.toc-hidden) {
         margin-left: 12px;
       }
@@ -349,12 +385,13 @@ class HoverTableOfContents {
         transform: translateX(4px);
       }
 
+      /* Level-specific styling */
       .toc-link.toc-level-1 { font-weight: 600; font-size: 15px; }
       .toc-link.toc-level-2 { color: #3A7A3A; padding-left: 8px; }
       .toc-link.toc-level-3 { color: #4A9F4A; font-size: 13px; }
       .toc-link.toc-level-4 { color: #5EB052; font-size: 12px; padding-left: 16px; }
 
-      /* Highlight animation */
+      /* Target heading highlight effect */
       .highlight-heading {
         animation: highlight-pulse 2s ease-out;
         background: linear-gradient(90deg, rgba(94, 176, 82, 0.2), rgba(94, 176, 82, 0.1));
@@ -367,7 +404,7 @@ class HoverTableOfContents {
         100% { background: transparent; }
       }
 
-      /* Responsive */
+      /* Mobile responsive adjustments */
       @media (max-width: 768px) {
         .toc-trigger {
           top: 15px;
@@ -392,30 +429,32 @@ class HoverTableOfContents {
   }
 
   /**
-   * Initialize everything
+   * Initialize the entire hover TOC system
+   * Collects headings, creates elements, injects styles
    */
   init() {
     this.injectStyles();
     this.collectHeadings();
+    
     if (this.headings.length === 0) {
-      console.warn('No headings found');
+      console.warn('No headings found matching specified levels');
       return;
     }
 
     this.createTriggerElement();
     this.tocElement = this.buildTocStructure();
 
-    // Insert TOC after trigger
+    // Position TOC after trigger element
     this.triggerElement.insertAdjacentElement('afterend', this.tocElement);
   }
 }
 
-// Auto-initialize when DOM is ready
+// Auto-initialize when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
   const toc = new HoverTableOfContents();
   toc.init();
 
-  // Make it refreshable
+  // Make TOC refreshable for dynamic content
   window.refreshHoverTOC = () => {
     toc.collectHeadings();
     const newToc = toc.buildTocStructure();
