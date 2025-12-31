@@ -1,0 +1,327 @@
+// Dynamic Table of Contents Generator - HOVER ONLY
+
+
+class HoverTableOfContents {
+  /**
+   * Constructor - Initialize the hover TOC generator
+   * @param {string} triggerSelector - CSS selector for the hover trigger area
+   * @param {array} headingLevels - Array of heading levels to include
+   * @param {string} tocId - ID for the TOC container
+   */
+  constructor(triggerSelector = '#toc-trigger', headingLevels = ['h1', 'h2', 'h3', 'h4'], tocId = 'toc-container') {
+    this.triggerSelector = triggerSelector;
+    this.headingLevels = headingLevels;
+    this.tocId = tocId;
+    this.headings = [];
+    this.tocElement = null;
+    this.triggerElement = null;
+  }
+
+  //Collect all headings from the page
+  collectHeadings() {
+    const selector = this.headingLevels.join(', ');
+    const elements = document.querySelectorAll(selector);
+    
+    this.headings = Array.from(elements).map((heading, index) => {
+      if (!heading.id) {
+        heading.id = `heading-${index}`;
+      }
+      
+      return {
+        id: heading.id,
+        text: heading.textContent.trim(),
+        level: parseInt(heading.tagName[1])
+      };
+    });
+  }
+
+  //Build TOC HTML structure (same as before)
+  buildTocStructure() {
+    const container = document.createElement('div');
+    container.id = this.tocId;
+    container.className = 'toc-wrapper hover-toc';
+
+    const header = document.createElement('h3');
+    header.className = 'toc-title';
+    header.textContent = 'Table of Contents';
+    container.appendChild(header);
+
+    let currentList = null;
+    let lastLevel = null;
+    const listStack = [];
+
+    this.headings.forEach((heading) => {
+      const level = heading.level;
+      const listItem = document.createElement('li');
+      const link = document.createElement('a');
+      
+      link.href = `#${heading.id}`;
+      link.textContent = heading.text;
+      link.className = `toc-link toc-level-${level}`;
+
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation(); // Prevent hiding on click
+        this.smoothScrollToHeading(heading.id);
+      });
+
+      listItem.appendChild(link);
+      listItem.className = `toc-item toc-level-${level}`;
+
+      // Nested list logic (same as before)
+      if (lastLevel === null) {
+        currentList = document.createElement('ul');
+        currentList.className = 'toc-list';
+        listStack.push(currentList);
+        currentList.appendChild(listItem);
+        lastLevel = level;
+      } else if (level > lastLevel) {
+        for (let i = lastLevel; i < level; i++) {
+          const newList = document.createElement('ul');
+          newList.className = 'toc-list';
+          if (currentList.lastElementChild) {
+            currentList.lastElementChild.appendChild(newList);
+          } else {
+            currentList.appendChild(newList);
+          }
+          listStack.push(newList);
+          currentList = newList;
+        }
+        currentList.appendChild(listItem);
+        lastLevel = level;
+      } else if (level < lastLevel) {
+        for (let i = level; i < lastLevel; i++) {
+          listStack.pop();
+        }
+        currentList = listStack[listStack.length - 1];
+        currentList.appendChild(listItem);
+        lastLevel = level;
+      } else {
+        currentList.appendChild(listItem);
+      }
+    });
+
+    if (listStack.length > 0) {
+      container.appendChild(listStack[0]);
+    }
+
+    return container;
+  }
+
+  //Smooth scroll with highlight
+  smoothScrollToHeading(headingId) {
+    const element = document.getElementById(headingId);
+    if (element) {
+      const offsetTop = element.offsetTop - 80;
+      
+      window.scrollTo({
+        top: offsetTop,
+        behavior: 'smooth'
+      });
+
+      element.classList.add('highlight-heading');
+      setTimeout(() => element.classList.remove('highlight-heading'), 2000);
+    }
+  }
+
+  //Create or get trigger element
+  createTriggerElement() {
+    // Try to find existing trigger
+    this.triggerElement = document.querySelector(this.triggerSelector);
+    
+    if (!this.triggerElement) {
+      // Create floating trigger button
+      this.triggerElement = document.createElement('div');
+      this.triggerElement.id = 'toc-trigger';
+      this.triggerElement.innerHTML = 'Summary';
+      this.triggerElement.className = 'toc-trigger';
+      this.triggerElement.title = 'Show Table of Contents';
+      
+      document.body.appendChild(this.triggerElement);
+    }
+  }
+
+  //Inject enhanced CSS styles for hover effect
+  injectStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+      /* TOC Trigger Button */
+      .toc-trigger {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #5EB052, #4A9F4A);
+        border: none;
+        border-radius: 50%;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(94, 176, 82, 0.4);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        backdrop-filter: blur(10px);
+      }
+
+      .toc-trigger:hover {
+        transform: scale(1.1) rotate(10deg);
+        box-shadow: 0 8px 25px rgba(94, 176, 82, 0.6);
+        background: linear-gradient(135deg, #6EC35C, #5EB052);
+      }
+
+      /* Hover TOC Container */
+      .hover-toc {
+        position: fixed;
+        top: 80px;
+        left: 20px;
+        width: 320px;
+        max-height: 70vh;
+        overflow-y: auto;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateX(-100%);
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        z-index: 9999;
+        scroll-behavior: smooth;
+      }
+
+      .toc-trigger:hover + .hover-toc,
+      .hover-toc:hover {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(0);
+      }
+
+      /* TOC Content Styling */
+      .toc-wrapper {
+        background: linear-gradient(135deg, rgba(255, 253, 208, 0.95) 0%, rgba(200, 220, 200, 0.95) 100%);
+        backdrop-filter: blur(20px);
+        border: 2px solid rgba(94, 176, 82, 0.3);
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      }
+
+      .toc-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #2D5A27;
+        margin: 0 0 20px 0;
+        padding-bottom: 12px;
+        border-bottom: 2px solid rgba(94, 176, 82, 0.4);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .toc-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .toc-list ul {
+        list-style: none;
+        padding-left: 20px;
+        margin: 8px 0;
+        border-left: 2px solid rgba(94, 176, 82, 0.3);
+      }
+
+      .toc-item {
+        margin: 6px 0;
+      }
+
+      .toc-link {
+        color: #2D5A27;
+        text-decoration: none;
+        font-size: 14px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        display: block;
+        line-height: 1.4;
+      }
+
+      .toc-link:hover {
+        background: rgba(94, 176, 82, 0.2);
+        color: #1A3D14;
+        transform: translateX(4px);
+      }
+
+      .toc-link.toc-level-1 { font-weight: 600; font-size: 15px; }
+      .toc-link.toc-level-2 { color: #3A7A3A; padding-left: 8px; }
+      .toc-link.toc-level-3 { color: #4A9F4A; font-size: 13px; }
+      .toc-link.toc-level-4 { color: #5EB052; font-size: 12px; padding-left: 16px; }
+
+      /* Highlight animation */
+      .highlight-heading {
+        animation: highlight-pulse 2s ease-out;
+        background: linear-gradient(90deg, rgba(94, 176, 82, 0.2), rgba(94, 176, 82, 0.1));
+        border-left: 4px solid #5EB052;
+        padding-left: 10px !important;
+      }
+
+      @keyframes highlight-pulse {
+        0% { background: rgba(94, 176, 82, 0.4); }
+        100% { background: transparent; }
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .toc-trigger {
+          top: 15px;
+          left: 15px;
+          width: 45px;
+          height: 45px;
+          font-size: 18px;
+        }
+        .hover-toc {
+          left: 15px;
+          top: 70px;
+          width: 280px;
+        }
+        .toc-wrapper {
+          padding: 20px;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  /**
+   * Initialize everything
+   */
+  init() {
+    this.injectStyles();
+    this.collectHeadings();
+    
+    if (this.headings.length === 0) {
+      console.warn('No headings found');
+      return;
+    }
+
+    this.createTriggerElement();
+    this.tocElement = this.buildTocStructure();
+    
+    // Insert TOC after trigger
+    this.triggerElement.insertAdjacentElement('afterend', this.tocElement);
+  }
+}
+
+//Auto-initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  const toc = new HoverTableOfContents();
+  toc.init();
+
+  // Make it refreshable
+  window.refreshHoverTOC = () => {
+    toc.collectHeadings();
+    const newToc = toc.buildTocStructure();
+    if (toc.tocElement) toc.tocElement.replaceWith(newToc);
+    toc.tocElement = newToc;
+  };
+});

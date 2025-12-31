@@ -1,3 +1,21 @@
+#toc-trigger {
+    position: fixed;
+    top: 1%;
+    left: 0%;
+    transform: translateY(-50%);
+    background-color: #409543;
+    color: white;
+    padding: 10px 14px;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 1000;
+    font-family: 'Oxygen Mono', monospace;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
 img {
     max-width: 100%;
     height: auto;
