@@ -13,44 +13,45 @@
         </header>
         <main>
             <div class="content-wrapper">
+
                 <article>
                     <h2>Introduction</h2>
                         <p>What if we could translate into sounds the behavior of plants? What if we could make them talk, or even sing? That is the core idea behind any kind of Biodata Sonification project. 
-                            Biodata Sonification does not revolve around any true “voice” of a plant, but rather around mapping in terms of audible sounds or even in musical terms the signals that can be measured from a plant. 
-                            We decided to center our project for the Advanced Coding Tools and Methodologies Course around the creation of our own version of a Biodata Sonification project, through the implementation of Python 
-                            for audio coding and html-css-js for webpage coding. 
+                            Biodata Sonification does not revolve around any true "voice" of a plant, but rather around mapping in terms of audible sounds or even in musical terms the signals that can be measured from a plant. 
+                            We decided to center our project for the Advanced Coding Tools and Methodologies Course around the creation of our own version of a Biodata Sonification project, through the implementation of <b>Python</b> 
+                            for audio coding and <b>HTML-CSS-JavaScript</b> for webpage coding. 
                          </p>
 
-                        <p>We chose to map as sounds only the humidity level of the soil and the bioelectrical impulses in the leaves. To detect these signals we used a APKLVSR sensor for humidity and TENS electrode combined with 
-                            a Symbiotic Kit for the electric impulses. The Symbiotic Kit, produced by Spad Electronics, is a microcontroller that measures the tiny electrical fluctuations from plant leaves, through the electrodes, 
+                        <p>We chose to map as sounds only the humidity level of the soil and the bioelectrical impulses in the leaves. To detect these signals we used a <b>APKLVSR sensor</b> for humidity and <b>TENS electrode</b> combined with 
+                            a <b>Symbiotic Kit</b> for the electric impulses. The Symbiotic Kit, produced by Spad Electronics, is a microcontroller that measures the tiny electrical fluctuations from plant leaves, through the electrodes, 
                             and then converts those signals into MIDI/CV/gate/trigger data, which can be then sent to a synthesizer. We did not use the The Symbiotic Kit as combined with a true synthesizer: instead we linked both 
-                            the APKLVSR sensor and the Symbiotic Kit to an Arduino MEGA microcontroller board, which converts into numbers the outputs of the sensors and sends those numbers (as sequences of bits) to the computer. 
+                            the APKLVSR sensor and the Symbiotic Kit to an <b>Arduino MEGA</b> microcontroller board, which converts into numbers the outputs of the sensors and sends those numbers (as sequences of bits) to the computer. 
                             Inside the computer, a code in Python language is responsible, instead of a synthesizer, of the actual sound generation. 
                         </p>
                 </article>
 
                 <article>
                     <h2>Python</h2>
-                        <p>The python code, through another code running on an Arduino IDE, reads the numbers corresponding to the humidity and electrical voltage that Arduino MEGA constantly sends. The code is also responsible for 
+                        <p>The python code, through another code running on an <b>Arduino IDE</b>, reads the numbers corresponding to the humidity and electrical voltage that Arduino MEGA constantly sends. The code is also responsible for 
                             defining a digital synthesizer which in turn plays the mapped signals. The mapping of the different signals is meant to mimic the way in nature humidity defines the overall, long term condition of the plant, 
                             while bioelectrical impulses represent more instantaneous and quick occurrences. But how are the signals actually mapped? 
                          </p>
 
-                        <p>For bioelectrical impulses, we associated the range 0-1023 (in terms of Arduino values) to a range of five octaves. This musical range is expressed in terms of semitones from a pre-set base root frequency. 
+                        <p>For bioelectrical impulses, we associated the range <code>0-1023</code> (in terms of Arduino values) to a range of five octaves. This musical range is expressed in terms of semitones from a pre-set base root frequency. 
                             Every time an impulse number is received after a certain cooldown time, it is converted to the respective number of semitones above the base root, which is then rounded to the closest number of semitones in a major scale. 
                             This number is then used to define a note which is played by the synth. In other words, the higher the voltage detected, the higher the frequency of the respective note. The notes associated with the bioelectrical 
                             impulses have a shorter duration and limited attack and release. The code also offers the possibility to interact with the pulse notes, by allowing the user to record and loop up to five segments of bioelectrical-impulse 
-                            audio, and resetting those loops when desired. If you are an user, you are encouraged to touch the plant’s leaves and see how the pulse notes change, as long as you are delicate! 
+                            audio, and resetting those loops when desired. If you are an user, you are encouraged to touch the plant's leaves and see how the pulse notes change, as long as you are delicate! 
                         </p>
 
-                        <p>The humidity values are mapped in a similar way but used differently from the bioelectrical impulses. Since we observed that the humidity values typically recorded almost always sit in the range 200-400, we associated 
+                        <p>The humidity values are mapped in a similar way but used differently from the bioelectrical impulses. Since we observed that the humidity values typically recorded almost always sit in the range <code>200-400</code>, we associated 
                             to it another range of three octaves above another base root, in major scale. However, in contrast with the electric impulses, the code iterates by recording every received humidity value for the length of a timer. 
-                            Once that temporal length has been surpassed, all of these values are averaged and an “ambience note” is built accordingly from the average. A higher local humidity corresponds to a higher frequency. 
+                            Once that temporal length has been surpassed, all of these values are averaged and an "ambience note" is built accordingly from the average. A higher local humidity corresponds to a higher frequency. 
                             Ambience notes have slower attacks than pulse notes, a more pronounced vibrato and they are played continuously until user interruption. Therefore the user, by placing the very sensitive APKLVSR sensor in different 
-                            points of the plant’s soil over time, can build various layers of an ambience that lies underneath the pulse notes/loops, and can be reset when necessary. 
+                            points of the plant's soil over time, can build various layers of an ambience that lies underneath the pulse notes/loops, and can be reset when necessary. 
                          </p>
                 </article>
-                
+                   
                 <article>
                     <h2>Web Interface and Visual Design</h2>
                         <p>The user interface of our project was developed as a multi-page web application that combines real-time audio visualization with interactive animations inspired by 8-bit video games aesthetics. 
@@ -122,6 +123,7 @@
     </body>
     <script src="../js/nav.js" type="text/javascript"></script>
 </html>
+
 
 
 
