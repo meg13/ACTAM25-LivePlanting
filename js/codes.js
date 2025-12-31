@@ -1,6 +1,5 @@
 // Dynamic Table of Contents Generator - HOVER ONLY
 
-
 class HoverTableOfContents {
   /**
    * Constructor - Initialize the hover TOC generator
@@ -17,16 +16,15 @@ class HoverTableOfContents {
     this.triggerElement = null;
   }
 
-  //Collect all headings from the page
+  // Collect all headings from the page
   collectHeadings() {
     const selector = this.headingLevels.join(', ');
     const elements = document.querySelectorAll(selector);
-    
     this.headings = Array.from(elements).map((heading, index) => {
       if (!heading.id) {
         heading.id = `heading-${index}`;
       }
-      
+
       return {
         id: heading.id,
         text: heading.textContent.trim(),
@@ -35,168 +33,171 @@ class HoverTableOfContents {
     });
   }
 
-  //Build TOC HTML structure (same as before)
-  // Modifica della sezione buildTocStructure() per aggiungere la logica di show/hide delle h2
+  // Build TOC HTML structure con mouseover per h2 e h3
+  buildTocStructure() {
+    const container = document.createElement('div');
+    container.id = this.tocId;
+    container.className = 'toc-wrapper hover-toc';
 
-buildTocStructure() {
-  const container = document.createElement('div');
-  container.id = this.tocId;
-  container.className = 'toc-wrapper hover-toc';
-  
-  const header = document.createElement('h3');
-  header.className = 'toc-title';
-  header.textContent = 'Table of Contents';
-  container.appendChild(header);
-  
-  let currentList = null;
-  let lastLevel = null;
-  const listStack = [];
+    const header = document.createElement('h3');
+    header.className = 'toc-title';
+    header.textContent = 'Table of Contents';
+    container.appendChild(header);
 
-  this.headings.forEach((heading, index) => {
-    const level = heading.level;
-    const listItem = document.createElement('li');
-    const link = document.createElement('a');
-    
-    link.href = `#${heading.id}`;
-    link.textContent = heading.text;
-    link.className = `toc-link toc-level-${level}`;
-    
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      this.smoothScrollToHeading(heading.id);
+    let currentList = null;
+    let lastLevel = null;
+    const listStack = [];
+
+    this.headings.forEach((heading, index) => {
+      const level = heading.level;
+      const listItem = document.createElement('li');
+      const link = document.createElement('a');
+
+      link.href = `#${heading.id}`;
+      link.textContent = heading.text;
+      link.className = `toc-link toc-level-${level}`;
+
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.smoothScrollToHeading(heading.id);
+      });
+
+      listItem.appendChild(link);
+      listItem.className = `toc-item toc-level-${level}`;
+
+      // Nascondi h2 e h3 di default
+      if (level === 2 || level === 3) {
+        listItem.classList.add('toc-hidden');
+      }
+
+      // Aggiungi data-attribute per identificare gli elementi
+      listItem.setAttribute('data-toc-id', heading.id);
+
+      // LOGICA PER H1: mostra/nascondi h2 (e le h3 sotto)
+      if (level === 1) {
+        const nextItems = [];
+        let tempIndex = index + 1;
+
+        // Raccogli tutte le h2 fino alla prossima h1
+        while (tempIndex < this.headings.length && this.headings[tempIndex].level > 1) {
+          if (this.headings[tempIndex].level === 2) {
+            nextItems.push(`heading-${tempIndex}`);
+          }
+          tempIndex++;
+        }
+
+        link.addEventListener('mouseenter', () => {
+          nextItems.forEach(id => {
+            const el = document.querySelector(`[data-toc-id="${id}"]`);
+            if (el) el.classList.remove('toc-hidden');
+          });
+        });
+
+        link.addEventListener('mouseleave', () => {
+          // Aspetta 200ms prima di nascondere, per permettere il passaggio alle h2
+          setTimeout(() => {
+            if (!link.parentElement.matches(':hover')) {
+              nextItems.forEach(id => {
+                const el = document.querySelector(`[data-toc-id="${id}"]`);
+                if (el) el.classList.add('toc-hidden');
+              });
+            }
+          }, 200);
+        });
+      }
+
+      // LOGICA PER H2: mostra/nascondi h3
+      if (level === 2) {
+        const nextItems = [];
+        let tempIndex = index + 1;
+
+        // Raccogli tutte le h3 fino alla prossima h2 o h1
+        while (tempIndex < this.headings.length && this.headings[tempIndex].level > 2) {
+          if (this.headings[tempIndex].level === 3) {
+            nextItems.push(`heading-${tempIndex}`);
+          }
+          tempIndex++;
+        }
+
+        link.addEventListener('mouseenter', () => {
+          nextItems.forEach(id => {
+            const el = document.querySelector(`[data-toc-id="${id}"]`);
+            if (el) el.classList.remove('toc-hidden');
+          });
+        });
+
+        link.addEventListener('mouseleave', () => {
+          // Aspetta 200ms prima di nascondere
+          setTimeout(() => {
+            if (!link.parentElement.matches(':hover')) {
+              nextItems.forEach(id => {
+                const el = document.querySelector(`[data-toc-id="${id}"]`);
+                if (el) el.classList.add('toc-hidden');
+              });
+            }
+          }, 200);
+        });
+      }
+
+      // Nested list logic
+      if (lastLevel === null) {
+        currentList = document.createElement('ul');
+        currentList.className = 'toc-list';
+        listStack.push(currentList);
+        currentList.appendChild(listItem);
+        lastLevel = level;
+      } else if (level > lastLevel) {
+        for (let i = lastLevel; i < level; i++) {
+          const newList = document.createElement('ul');
+          newList.className = 'toc-list';
+          if (currentList.lastElementChild) {
+            currentList.lastElementChild.appendChild(newList);
+          } else {
+            currentList.appendChild(newList);
+          }
+          listStack.push(newList);
+          currentList = newList;
+        }
+        currentList.appendChild(listItem);
+        lastLevel = level;
+      } else if (level < lastLevel) {
+        for (let i = level; i < lastLevel; i++) {
+          listStack.pop();
+        }
+        currentList = listStack[listStack.length - 1];
+        currentList.appendChild(listItem);
+        lastLevel = level;
+      } else {
+        currentList.appendChild(listItem);
+      }
     });
 
-    listItem.appendChild(link);
-    listItem.className = `toc-item toc-level-${level}`;
-
-    // Nascondi h2 e h3 di default
-    if (level === 2 || level === 3) {
-      listItem.classList.add('toc-hidden');
+    if (listStack.length > 0) {
+      container.appendChild(listStack[0]);
     }
 
-    // Logica per h1: mostra/nascondi h2 (e le h3 sotto)
-    if (level === 1) {
-      const nextItems = [];
-      let tempIndex = index + 1;
-      
-      // Raccogli tutte le h2 fino alla prossima h1
-      while (tempIndex < this.headings.length && this.headings[tempIndex].level > 1) {
-        if (this.headings[tempIndex].level === 2) {
-          nextItems.push(`heading-${tempIndex}`);
-        }
-        tempIndex++;
-      }
-
-      link.addEventListener('mouseenter', () => {
-        nextItems.forEach(id => {
-          const el = document.querySelector(`[data-toc-id="${id}"]`);
-          if (el) el.classList.remove('toc-hidden');
-        });
-      });
-
-      link.addEventListener('mouseleave', () => {
-        nextItems.forEach(id => {
-          const el = document.querySelector(`[data-toc-id="${id}"]`);
-          if (el) el.classList.add('toc-hidden');
-        });
-      });
-    }
-
-    // Logica per h2: mostra/nascondi h3
-    if (level === 2) {
-      const nextItems = [];
-      let tempIndex = index + 1;
-      
-      // Raccogli tutte le h3 fino alla prossima h2 o h1
-      while (tempIndex < this.headings.length && this.headings[tempIndex].level > 2) {
-        if (this.headings[tempIndex].level === 3) {
-          nextItems.push(`heading-${tempIndex}`);
-        }
-        tempIndex++;
-      }
-
-      link.addEventListener('mouseenter', () => {
-        nextItems.forEach(id => {
-          const el = document.querySelector(`[data-toc-id="${id}"]`);
-          if (el) el.classList.remove('toc-hidden');
-        });
-      });
-
-      link.addEventListener('mouseleave', () => {
-        nextItems.forEach(id => {
-          const el = document.querySelector(`[data-toc-id="${id}"]`);
-          if (el) el.classList.add('toc-hidden');
-        });
-      });
-    }
-
-    // Aggiungi data-attribute per identificare gli elementi
-    listItem.setAttribute('data-toc-id', heading.id);
-
-    // Logica nested list (rimane uguale)
-    if (lastLevel === null) {
-      currentList = document.createElement('ul');
-      currentList.className = 'toc-list';
-      listStack.push(currentList);
-      currentList.appendChild(listItem);
-      lastLevel = level;
-    } else if (level > lastLevel) {
-      for (let i = lastLevel; i < level; i++) {
-        const newList = document.createElement('ul');
-        newList.className = 'toc-list';
-        if (currentList.lastElementChild) {
-          currentList.lastElementChild.appendChild(newList);
-        } else {
-          currentList.appendChild(newList);
-        }
-        listStack.push(newList);
-        currentList = newList;
-      }
-      currentList.appendChild(listItem);
-      lastLevel = level;
-    } else if (level < lastLevel) {
-      for (let i = level; i < lastLevel; i++) {
-        listStack.pop();
-      }
-      currentList = listStack[listStack.length - 1];
-      currentList.appendChild(listItem);
-      lastLevel = level;
-    } else {
-      currentList.appendChild(listItem);
-    }
-  });
-
-  if (listStack.length > 0) {
-    container.appendChild(listStack[0]);
+    return container;
   }
 
-  return container;
-}
-
-
-
-  //Smooth scroll with highlight
+  // Smooth scroll with highlight
   smoothScrollToHeading(headingId) {
     const element = document.getElementById(headingId);
     if (element) {
       const offsetTop = element.offsetTop - 80;
-      
       window.scrollTo({
         top: offsetTop,
         behavior: 'smooth'
       });
-
       element.classList.add('highlight-heading');
       setTimeout(() => element.classList.remove('highlight-heading'), 2000);
     }
   }
 
-  //Create or get trigger element
+  // Create or get trigger element
   createTriggerElement() {
     // Try to find existing trigger
     this.triggerElement = document.querySelector(this.triggerSelector);
-    
     if (!this.triggerElement) {
       // Create floating trigger button
       this.triggerElement = document.createElement('div');
@@ -204,46 +205,14 @@ buildTocStructure() {
       this.triggerElement.innerHTML = 'Summary';
       this.triggerElement.className = 'toc-trigger';
       this.triggerElement.title = 'Show Table of Contents';
-      
       document.body.appendChild(this.triggerElement);
     }
   }
 
-  //Inject enhanced CSS styles for hover effect
+  // Inject enhanced CSS styles for hover effect
   injectStyles() {
     const style = document.createElement('style');
     style.textContent = `
-      /* Nascondi h2 e h3 di default nel TOC */
-      .toc-hidden {
-        display: none;
-        opacity: 0;
-        margin: 0 !important;
-      }
-
-      /* Mostra h2 e h3 quando visibili */
-      .toc-item:not(.toc-hidden) {
-        display: list-item;
-        opacity: 1;
-        animation: slideDown 0.8s ease;
-        margin: 6px 0;
-      }
-
-      /* Animazione di apparizione */
-      @keyframes slideDown {
-        from {
-          opacity: 0;
-          transform: translateY(-10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      /* Piccolo padding per h3 per indentazione visiva */
-      .toc-item.toc-level-3:not(.toc-hidden) {
-        margin-left: 12px;
-      }
       /* TOC Trigger Button */
       .toc-trigger {
         position: fixed;
@@ -334,13 +303,42 @@ buildTocStructure() {
         margin: 6px 0;
       }
 
+      /* Nascondi h2 e h3 di default nel TOC */
+      .toc-hidden {
+        display: none;
+      }
+
+      /* Mostra h2 e h3 quando visibili */
+      .toc-item:not(.toc-hidden) {
+        display: list-item;
+        animation: slideDown 0.6s ease;
+        margin: 6px 0;
+      }
+
+      /* Animazione di apparizione */
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Piccolo padding per h3 per indentazione visiva */
+      .toc-item.toc-level-3:not(.toc-hidden) {
+        margin-left: 12px;
+      }
+
       .toc-link {
         color: #2D5A27;
         text-decoration: none;
         font-size: 14px;
         padding: 8px 12px;
         border-radius: 8px;
-        transition: all 0.8s ease;
+        transition: all 0.3s ease;
         display: block;
         line-height: 1.4;
       }
@@ -378,11 +376,13 @@ buildTocStructure() {
           height: 45px;
           font-size: 18px;
         }
+
         .hover-toc {
           left: 15px;
           top: 70px;
           width: 280px;
         }
+
         .toc-wrapper {
           padding: 20px;
         }
@@ -397,7 +397,6 @@ buildTocStructure() {
   init() {
     this.injectStyles();
     this.collectHeadings();
-    
     if (this.headings.length === 0) {
       console.warn('No headings found');
       return;
@@ -405,13 +404,13 @@ buildTocStructure() {
 
     this.createTriggerElement();
     this.tocElement = this.buildTocStructure();
-    
+
     // Insert TOC after trigger
     this.triggerElement.insertAdjacentElement('afterend', this.tocElement);
   }
 }
 
-//Auto-initialize when DOM is ready
+// Auto-initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
   const toc = new HoverTableOfContents();
   toc.init();
