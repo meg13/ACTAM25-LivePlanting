@@ -23,9 +23,9 @@
                          </p>
 
                         <p>We chose to map as sounds only the humidity level of the soil and the bioelectrical impulses in the leaves. To detect these signals we used a <b>APKLVSR sensor</b> for humidity and <b>TENS electrode</b> combined with 
-                            a <b>Symbiotic Kit</b> for the electric impulses. The Symbiotic Kit, produced by Spad Electronics, is a microcontroller that measures the tiny electrical fluctuations from plant leaves, through the electrodes, 
-                            and then converts those signals into MIDI/CV/gate/trigger data, which can be then sent to a synthesizer. We did not use the The Symbiotic Kit as combined with a true synthesizer: instead we linked both 
-                            the APKLVSR sensor and the Symbiotic Kit to an <b>Arduino MEGA</b> microcontroller board, which converts into numbers the outputs of the sensors and sends those numbers (as sequences of bits) to the computer. 
+                            a <b>Symbiotic Kit</b> for the electric impulses. The Symbiotic Kit, produced by Spad Electronics, is a microcontroller that measures the tiny electrical fluctuations from plant leaves through the electrodes, 
+                            and then converts those signals into numerical MIDI/CV/gate/trigger data. We did not use the The Symbiotic Kit as combined with a true synthesizer: instead we linked both 
+                            the APKLVSR sensor and the Symbiotic Kit to an <b>Arduino MEGA</b> microcontroller board, which reads and standardizes the numerical outputs of both sensors and sends those numbers (as sequences of bits) to the computer. 
                             Inside the computer, a code in Python language is responsible, instead of a synthesizer, of the actual sound generation. 
                         </p>
                 </article>
@@ -33,7 +33,7 @@
                 <article>
                     <h2>Python</h2>
                         <p>The python code, through another code running on an <b>Arduino IDE</b>, reads the numbers corresponding to the humidity and electrical voltage that Arduino MEGA constantly sends. The code is also responsible for 
-                            defining a digital synthesizer which in turn plays the mapped signals. The mapping of the different signals is meant to mimic the way in nature humidity defines the overall, long term condition of the plant, 
+                            defining a digital synthesizer—a software-based instrument that generates sound waves—which in turn plays the mapped signals. The mapping of the different signals is meant to mimic the way in nature humidity defines the overall, long term condition of the plant, 
                             while bioelectrical impulses represent more instantaneous and quick occurrences. But how are the signals actually mapped? 
                          </p>
 
@@ -88,19 +88,20 @@
 
                 <article>
                     <h2>Backend Architecture and Web Communication</h2>
-                        <p>The communication between the Python audio engine and the web interface is achieved through a dual-protocol architecture that ensures both reliable command execution and real-time data streaming.
+                        <p>The communication between the Python audio engine and the web interface is achieved through a dual-protocol architecture. The system uses two different communication protocols to separate control commands from data streaming, 
+                            ensuring both reliable command execution and real-time visualization.
                         </p>
                         <p>
-                            The Python backend implements an HTTP server running on localhost port 8080, which handles all user commands sent from the web interface. When a user clicks on buttons like <b><i>Start Listening</i></b>, 
-                            <b><i>Stop Listening</i></b>, <b><i>Record Loop</i></b>, or the clearing controls, the JavaScript frontend sends POST requests to specific endpoints (<code>/start</code>, <code>/stop</code>, 
+                            The Python backend implements an <b>HTTP server</b> running on localhost port 8080, which handles all user commands sent from the web interface. When a user clicks on buttons like <b><i>Start Listening</i></b>, 
+                            <b><i>Stop Listening</i></b>, <b><i>Record Loop</i></b>, or the clearing controls, the JavaScript frontend sends POST requests (HTTP commands that trigger actions) to specific endpoints (<code>/start</code>, <code>/stop</code>, 
                             <code>/start_rec</code>, <code>/stop_rec</code>, <code>/clear_loops</code>, <code>/clear_ambient</code>). This HTTP-based command system guarantees that user interactions are reliably processed 
                             regardless of network conditions, as each command receives an explicit JSON response confirming its execution.
                         </p>
                         <p>
-                            Parallel to the HTTP command channel, the Python backend establishes a WebSocket server on port 8765 dedicated exclusively to streaming audio visualization data. Once the audio generation starts, 
-                            the Python code continuously sends chunks of audio samples as binary data through the WebSocket connection. These samples, formatted as Float32Array buffers, are received by the JavaScript 
-                            <code>LiveAudioController</code> class in real-time and fed into the circular buffer that powers the canvas-based waveform visualization. This separation of concerns—HTTP for commands, 
-                            WebSocket for data streaming—allows the web interface to maintain responsive controls even during intensive audio processing.
+                            Parallel to the HTTP command channel, the Python backend establishes a <b>WebSocket server</b> on port 8765 dedicated exclusively to streaming audio visualization data. Once the audio generation starts, 
+                            the Python code continuously sends chunks of audio samples as binary data through the WebSocket connection. These samples, formatted as arrays of floating-point numbers (Float32Array), are received by the JavaScript 
+                            <code>LiveAudioController</code> class in real-time and fed into the circular buffer—a rotating memory storage that continuously updates with new data while discarding the oldest—that powers the canvas-based waveform visualization. 
+                            This separation of concerns—HTTP for commands, WebSocket for data streaming—allows the web interface to maintain responsive controls even during intensive audio processing.
                         </p>
                         <p>
                             The WebSocket connection is treated as optional in the frontend implementation: if the WebSocket server is unavailable, the audio playback continues through the system's speakers and only the 
@@ -123,7 +124,3 @@
     </body>
     <script src="../js/nav.js" type="text/javascript"></script>
 </html>
-
-
-
-
