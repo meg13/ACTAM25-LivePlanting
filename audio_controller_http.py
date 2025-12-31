@@ -436,13 +436,13 @@ class CombinedSynth:
 
             self.pulse_voices = new_pulse[-self.max_pulse:]
 
-        # Separate master gain control
+        # Separated master gain control
         ambL *= self.master_gain
         ambR *= self.master_gain
         pulL *= self.master_gain
         pulR *= self.master_gain
 
-        # Reverb only on pulse
+        # Reverb ONLY on pulses
         pulL, pulR = self.pulse_reverb.process(pulL, pulR)
 
         bufL = ambL + pulL

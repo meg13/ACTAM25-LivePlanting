@@ -28,42 +28,42 @@
                     </ol>
                     <h2>The synthesizer</h2>
                     <pre class="line-numbers"><code class="language-python">
-                    class CombinedSynth:
-                        """
-                        Synth di alta qualità con sounddevice.
-                        Audio esce sempre dalle casse del PC.
-                        Invia dati decimati per visualizzazione via queue.
-                        """
-                        def __init__(self, samplerate=48000, blocksize=2048, max_ambient_voices=24, max_pulse_voices=24):
-                            self.sr = samplerate
-                            self.blocksize = blocksize
+                        class CombinedSynth:
+                            """
+                            High-quality synth using sounddevice.  
+                            Audio always outputs through the PC speakers.  
+                            Sends decimated data for visualization via queue.
+                            """
+                            def __init__(self, samplerate=48000, blocksize=2048, max_ambient_voices=24, max_pulse_voices=24):
+                                self.sr = samplerate
+                                self.blocksize = blocksize
 
-                            self.max_ambient = max_ambient_voices
-                            self.max_pulse = max_pulse_voices
+                                self.max_ambient = max_ambient_voices
+                                self.max_pulse = max_pulse_voices
 
-                            self.ambient_voices = []
-                            self.pulse_voices = []
-                            self.lock = threading.Lock()
+                                self.ambient_voices = []
+                                self.pulse_voices = []
+                                self.lock = threading.Lock()
 
-                            self.master_gain = 0.30
+                                self.master_gain = 0.30
 
-                            # Reverb per le PULSE
-                            self.pulse_reverb = SchroederReverb(self.sr)
+                                # Reverb for PULSE
+                                self.pulse_reverb = SchroederReverb(self.sr)
 
-                            # Queue per visualizzazione (non-blocking)
-                            self.viz_queue = queue.Queue(maxsize=50)
+                                # Queue for visualization (non-blocking)
+                                self.viz_queue = queue.Queue(maxsize=50)
 
-                            # Decimazione per viz: invia 1 chunk ogni N
-                            self.viz_decimation = 4
-                            self.viz_counter = 0
+                                # Decimation for viz: send 1 chunk every N
+                                self.viz_decimation = 4
+                                self.viz_counter = 0
 
-                            # sounddevice stream
-                            self.stream = sd.OutputStream(
-                                samplerate=self.sr,
-                                channels=2,
-                                blocksize=self.blocksize,
-                                dtype="float32",
-                                callback=self._callback
+                                # sounddevice stream
+                                self.stream = sd.OutputStream(
+                                    samplerate=self.sr,
+                                    channels=2,
+                                    blocksize=self.blocksize,
+                                    dtype="float32",
+                                    callback=self._callback
                             )
                     </code></pre>
                     <p>
@@ -91,59 +91,63 @@
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         def add_ambient_voice(self, midi_note: int, volume=0.12, pan=0.5,
-                          vibrato_hz=5.0, vibrato_cents=10.0,
-                          tremolo_hz=0.20, tremolo_depth=0.10):
-                    v = {
-                        "freq_base": float(midi_to_freq(midi_note)),
-                        "phase": 0.0,
-                        "volume": float(volume),
-                        "pan": float(pan),
-                        "t": 0.0,
-                        "attack": 1.5,
-                        "h1": 1.0, "h2": 0.20, "h3": 0.06,
-                        "vib_rate_hz": float(vibrato_hz),
-                        "vib_depth_hz": 0.08,
-                        "vib_depth_min": 0.5,
-                        "vib_depth_max": float(vibrato_cents),
-                        "trem_hz": float(tremolo_hz),
-                        "trem_depth": float(tremolo_depth),
-                    }
-                    with self.lock:
-                        self.ambient_voices.append(v)
-                        if len(self.ambient_voices) > self.max_ambient:
-                            self.ambient_voices = self.ambient_voices[-self.max_ambient:]
-
-                    def add_ambient_voice_moving(self, midi_note: int, volume=0.12, pan=0.5):
-                        vib_rate = 4.8 + np.random.rand() * 0.8
-                        vib_max_cents = 8.0 + np.random.rand() * 6.0
-                        trem_hz = 0.10 + np.random.rand() * 0.20
-                        trem_depth = 0.06 + np.random.rand() * 0.10
-                        self.add_ambient_voice(
-                            midi_note,
-                            volume=volume,
-                            pan=pan,
-                            vibrato_hz=vib_rate,
-                            vibrato_cents=vib_max_cents,
-                            tremolo_hz=trem_hz,
-                            tremolo_depth=trem_depth
-                        )
-
-                        def add_pulse_voice(self, midi_note: int, volume=0.58, duration=0.35, pan=0.5):
-                            """Aggiunge una nota PULSE con inviluppo e reverb - VERSIONE ANTI-CLICK"""
+                                                vibrato_hz=5.0, vibrato_cents=10.0,
+                                                tremolo_hz=0.20, tremolo_depth=0.10):
                             v = {
                                 "freq_base": float(midi_to_freq(midi_note)),
                                 "phase": 0.0,
+                                "volume": float(volume),
+                                "pan": float(pan),
                                 "t": 0.0,
-                                "duration": float(duration),
-                                "h1": 1.0,
-                                "h2": 0.16,
-                                "h3": 0.045,
-                                "vib_rate_hz": 5.2,
-                                "vib_cents": 7.0,
-                                "trem_hz": 0.35,
-                                "trem_depth": 0.12,
-                                "volume": float(volume)
+                                "attack": 1.5,
+                                "h1": 1.0, "h2": 0.20, "h3": 0.06,
+                                "vib_rate_hz": float(vibrato_hz),
+                                "vib_depth_hz": 0.08,
+                                "vib_depth_min": 0.5,
+                                "vib_depth_max": float(vibrato_cents),
+                                "trem_hz": float(tremolo_hz),
+                                "trem_depth": float(tremolo_depth),
                             }
+                            with self.lock:
+                                self.ambient_voices.append(v)
+                                if len(self.ambient_voices) > self.max_ambient:
+                                    self.ambient_voices = self.ambient_voices[-self.max_ambient:]
+
+                            def add_ambient_voice_moving(self, midi_note: int, volume=0.12, pan=0.5):
+                                vib_rate = 4.8 + np.random.rand() * 0.8
+                                vib_max_cents = 8.0 + np.random.rand() * 6.0
+                                trem_hz = 0.10 + np.random.rand() * 0.20
+                                trem_depth = 0.06 + np.random.rand() * 0.10
+                                self.add_ambient_voice(
+                                    midi_note,
+                                    volume=volume,
+                                    pan=pan,
+                                    vibrato_hz=vib_rate,
+                                    vibrato_cents=vib_max_cents,
+                                    tremolo_hz=trem_hz,
+                                    tremolo_depth=trem_depth
+                                )
+
+                                def add_pulse_voice(self, midi_note: int, volume=0.58, duration=0.35, pan=0.5):
+                                    """Adds a PULSE note with envelope and reverb - ANTI-CLICK VERSION"""
+                                    v = {
+                                        "freq_base": float(midi_to_freq(midi_note)),
+                                        "phase": 0.0,
+                                        "t": 0.0,
+                                        "duration": float(duration),
+                                        "h1": 1.0,
+                                        "h2": 0.16,
+                                        "h3": 0.045,
+                                        "vib_rate_hz": 5.2,
+                                        "vib_cents": 7.0,
+                                        "trem_hz": 0.35,
+                                        "trem_depth": 0.12,
+                                        "volume": float(volume)
+                                    }
+                                    with self.lock:
+                                        if len(self.pulse_voices) >= self.max_pulse:
+                                            self.pulse_voices.pop(0)
+                                        self.pulse_voices.append(v)
                     </code></pre>
                     <p>
                         The functions for the pulse and ambient voices are different because so are the sounds that these voices are 
@@ -159,54 +163,54 @@
                         class, defined before the synth class.    
                     </p>
                     <pre class="line-numbers"><code class="language-python">
-                    class SchroederReverb:
-                    def __init__(self, sr: int):
-                        def ms(x):
-                            return max(1, int(sr * (x / 1000.0)))
+                        class SchroederReverb:
+                            def __init__(self, sr: int):
+                                def ms(x):
+                                    return max(1, int(sr * (x / 1000.0)))
 
-                        self.combL = [Comb(ms(m), feedback=0.78) for m in (29.7, 37.1, 41.1, 43.7)]
-                        self.combR = [Comb(ms(m), feedback=0.78) for m in (30.7, 38.1, 42.1, 44.7)]
-                        self.apL = [Allpass(ms(m), g=0.70) for m in (5.0, 1.7)]
-                        self.apR = [Allpass(ms(m), g=0.70) for m in (5.3, 1.9)]
+                                self.combL = [Comb(ms(m), feedback=0.78) for m in (29.7, 37.1, 41.1, 43.7)]
+                                self.combR = [Comb(ms(m), feedback=0.78) for m in (30.7, 38.1, 42.1, 44.7)]
+                                self.apL = [Allpass(ms(m), g=0.70) for m in (5.0, 1.7)]
+                                self.apR = [Allpass(ms(m), g=0.70) for m in (5.3, 1.9)]
 
-                        self.wet = 0.42
-                        self.dry = 0.82
-                        self.pre_lp = 0.60
-                        self.zL = 0.0
-                        self.zR = 0.0
+                                self.wet = 0.42
+                                self.dry = 0.82
+                                self.pre_lp = 0.60
+                                self.zL = 0.0
+                                self.zR = 0.0
 
-                        def _lp(self, x: np.ndarray, z: float):
-                            a = float(self.pre_lp)
-                            y = np.empty_like(x, dtype=np.float32)
-                            y0 = float(z)
-                            b = 1.0 - a
-                            for i in range(x.shape[0]):
-                                y0 = a * y0 + b * float(x[i])
-                                y[i] = y0
-                            return y, y0
+                            def _lp(self, x: np.ndarray, z: float):
+                                a = float(self.pre_lp)
+                                y = np.empty_like(x, dtype=np.float32)
+                                y0 = float(z)
+                                b = 1.0 - a
+                                for i in range(x.shape[0]):
+                                    y0 = a * y0 + b * float(x[i])
+                                    y[i] = y0
+                                return y, y0
 
-                        def process(self, xL: np.ndarray, xR: np.ndarray):
-                            inL, self.zL = self._lp(xL, self.zL)
-                            inR, self.zR = self._lp(xR, self.zR)
+                            def process(self, xL: np.ndarray, xR: np.ndarray):
+                                inL, self.zL = self._lp(xL, self.zL)
+                                inR, self.zR = self._lp(xR, self.zR)
 
-                            yL = np.zeros_like(inL, dtype=np.float32)
-                            yR = np.zeros_like(inR, dtype=np.float32)
-                            for c in self.combL:
-                                yL += c.process(inL)
-                            for c in self.combR:
-                                yR += c.process(inR)
+                                yL = np.zeros_like(inL, dtype=np.float32)
+                                yR = np.zeros_like(inR, dtype=np.float32)
+                                for c in self.combL:
+                                    yL += c.process(inL)
+                                for c in self.combR:
+                                    yR += c.process(inR)
 
-                            yL *= (1.0 / len(self.combL))
-                            yR *= (1.0 / len(self.combR))
+                                yL *= (1.0 / len(self.combL))
+                                yR *= (1.0 / len(self.combR))
 
-                            for ap in self.apL:
-                                yL = ap.process(yL)
-                            for ap in self.apR:
-                                yR = ap.process(yR)
+                                for ap in self.apL:
+                                    yL = ap.process(yL)
+                                for ap in self.apR:
+                                    yR = ap.process(yR)
 
-                            outL = self.dry * xL + self.wet * yL
-                            outR = self.dry * xR + self.wet * yR
-                            return outL.astype(np.float32), outR.astype(np.float32)
+                                outL = self.dry * xL + self.wet * yL
+                                outR = self.dry * xR + self.wet * yR
+                                return outL.astype(np.float32), outR.astype(np.float32)
                     </code></pre>
                     <p>
                         The SchroedererReverb class in turn implements objects like the Comb Class and the Allpass Class: the first one is 
@@ -260,17 +264,17 @@
                     </p>
                     <h3>Callback</h3>
                     <pre class="line-numbers"><code class="language-python">
-                    def _callback(self, outdata, frames, time_info, status):
-                    """Callback sounddevice - genera audio di alta qualità"""
-                    if status:
-                        print(f"[AUDIO] Status: {status}")
+                        def _callback(self, outdata, frames, time_info, status):
+                            """Callback sounddevice - generates high quality audio"""
+                            if status:
+                                print(f"[AUDIO] Status: {status}")
 
-                    # Se audio non è attivo, genera silenzio
-                    with audio_state_lock:
-                        if not is_audio_playing:
-                            outdata[:, 0] = np.zeros(frames, dtype=np.float32)
-                            outdata[:, 1] = np.zeros(frames, dtype=np.float32)
-                            return
+                            # If audio is not active, generate silence.
+                            with audio_state_lock:
+                                if not is_audio_playing:
+                                    outdata[:, 0] = np.zeros(frames, dtype=np.float32)
+                                    outdata[:, 1] = np.zeros(frames, dtype=np.float32)
+                                    return
                     </code></pre>
                     <p>
                         Let’s now focus on how the callback function actually works: first of all, 
@@ -410,60 +414,60 @@
                         audio chunks which won’t be too heavy to process.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
-                        # master gain separato
-                        ambL *= self.master_gain
-                        ambR *= self.master_gain
-                        pulL *= self.master_gain
-                        pulR *= self.master_gain
+                                # Separated master gain control
+                                ambL *= self.master_gain
+                                ambR *= self.master_gain
+                                pulL *= self.master_gain
+                                pulR *= self.master_gain
 
-                        # riverbero SOLO sulle pulse
-                        pulL, pulR = self.pulse_reverb.process(pulL, pulR)
+                                # Reverb ONLY on pulses
+                                pulL, pulR = self.pulse_reverb.process(pulL, pulR)
 
-                        bufL = ambL + pulL
-                        bufR = ambR + pulR
+                                bufL = ambL + pulL
+                                bufR = ambR + pulR
 
-                        # limiter
-                        peak = max(float(np.max(np.abs(bufL))), float(np.max(np.abs(bufR))))
-                        if peak > 1.0:
-                            bufL /= peak
-                            bufR /= peak
+                                # limiter
+                                peak = max(float(np.max(np.abs(bufL))), float(np.max(np.abs(bufR))))
+                                if peak > 1.0:
+                                    bufL /= peak
+                                    bufR /= peak
 
-                        outdata[:, 0] = np.clip(bufL, -1.0, 1.0)
-                        outdata[:, 1] = np.clip(bufR, -1.0, 1.0)
+                                outdata[:, 0] = np.clip(bufL, -1.0, 1.0)
+                                outdata[:, 1] = np.clip(bufR, -1.0, 1.0)
 
-                        # ✅ Invia dati DECIMATI per visualizzazione (solo canale L, 1 ogni 8 campioni)
-                        self.viz_counter += 1
-                        if self.viz_counter >= self.viz_decimation:
-                            self.viz_counter = 0
-                            viz_data = bufL[::8].astype(np.float32)  # Decimazione 8x (~256 campioni da 2048)
-                            try:
-                                self.viz_queue.put_nowait(viz_data.tobytes())
-                            except queue.Full:
-                                pass  # Skip se la queue è piena
+                                # Send decimated data for visualization (only channel L, 1 every 8 samples)
+                                self.viz_counter += 1
+                                if self.viz_counter >= self.viz_decimation:
+                                    self.viz_counter = 0
+                                    viz_data = bufL[::8].astype(np.float32)  # Decimation 8x (~256 samples from 2048)
+                                    try:
+                                        self.viz_queue.put_nowait(viz_data.tobytes())
+                                    except queue.Full:
+                                        pass  # Skip if queue is full
                     </code></pre>
                     <h2>Pulse tools</h2>
                     <pre class="line-numbers"><code class="language-python">
                         def hann_env(t, dur, fade_in_ratio=0.15, fade_out_ratio=0.25):
-                        """Inviluppo super morbido con fade-in/out separati per eliminare click."""
-                        env = np.zeros_like(t, dtype=np.float32)
-                        m = (t >= 0.0) & (t <= dur)
+                            """Super smooth envelope with separate fade-in/out to eliminate clicks."""
+                            env = np.zeros_like(t, dtype=np.float32)
+                            m = (t >= 0.0) & (t <= dur)
 
-                        fade_in_dur = dur * fade_in_ratio
-                        m_in = (t >= 0.0) & (t <= fade_in_dur)
-                        if fade_in_dur > 0:
-                            x_in = (t[m_in] / fade_in_dur).astype(np.float32)
-                            env[m_in] = (x_in * x_in).astype(np.float32)
+                            fade_in_dur = dur * fade_in_ratio
+                            m_in = (t >= 0.0) & (t <= fade_in_dur)
+                            if fade_in_dur > 0:
+                                x_in = (t[m_in] / fade_in_dur).astype(np.float32)
+                                env[m_in] = (x_in * x_in).astype(np.float32)
 
-                        fade_out_start = dur * (1.0 - fade_out_ratio)
-                        m_sustain = (t > fade_in_dur) & (t < fade_out_start)
-                        env[m_sustain] = 1.0
+                            fade_out_start = dur * (1.0 - fade_out_ratio)
+                            m_sustain = (t > fade_in_dur) & (t < fade_out_start)
+                            env[m_sustain] = 1.0
 
-                        m_out = (t >= fade_out_start) & (t <= dur)
-                        if fade_out_ratio > 0:
-                            x_out = ((t[m_out] - fade_out_start) / (dur - fade_out_start)).astype(np.float32)
-                            env[m_out] = (0.5 + 0.5 * np.cos(np.pi * x_out)).astype(np.float32)
+                            m_out = (t >= fade_out_start) & (t <= dur)
+                            if fade_out_ratio > 0:
+                                x_out = ((t[m_out] - fade_out_start) / (dur - fade_out_start)).astype(np.float32)
+                                env[m_out] = (0.5 + 0.5 * np.cos(np.pi * x_out)).astype(np.float32)
 
-                        return env
+                            return env
                     </code></pre>
                     <p>
                         The function hann_env, used during the rendering of the pulse notes, 
@@ -475,13 +479,13 @@
                     <h2>The loop player</h2>
                     <pre class="line-numbers"><code class="language-python">
                         def loop_player_thread(synth):
-                        """Thread che riproduce i loop registrati"""
-                        runtime = []
+                            """Thread that plays recorded loops"""
+                            runtime = []
 
-                        while True:
-                            now = time.time()
-                            with loops_lock:
-                                current_loops = list(loops)
+                            while True:
+                                now = time.time()
+                                with loops_lock:
+                                    current_loops = list(loops)
 
                             if len(runtime) != len(current_loops) or any(runtime[k]["loop_ref"] is not current_loops[k] for k in range(min(len(runtime), len(current_loops)))):
                                 runtime = []
@@ -512,13 +516,13 @@
 
                                     st["t_next"] = st["t0"] + lp["events"][st["i"]][0]
 
-                            if soonest is None or st["t_next"] < soonest:
-                                soonest = st["t_next"]
+                                if soonest is None or st["t_next"] < soonest:
+                                    soonest = st["t_next"]
 
-                        if soonest is None:
-                            time.sleep(0.01)
-                        else:
-                            time.sleep(max(0.001, min(0.02, soonest - time.time())))
+                            if soonest is None:
+                                time.sleep(0.01)
+                            else:
+                                time.sleep(max(0.001, min(0.02, soonest - time.time())))
                     </code></pre>
                     <p>
                         When considering how the synth is used within the code, 
@@ -551,14 +555,14 @@
                         ws_clients_lock = threading.Lock()
 
                         async def websocket_handler(websocket):
-                            """Gestisce connessioni WebSocket per visualizzazione"""
+                            """Handles WebSocket connections for visualization"""
                             with ws_clients_lock:
                                 websocket_clients.add(websocket)
 
-                            print(f"[WS] Client connesso. Totale: {len(websocket_clients)}")
+                            print(f"[WS] Client connected. Total: {len(websocket_clients)}")
 
                             try:
-                                # Rimani in ascolto (anche se non ci aspettiamo messaggi)
+                                # Keep listening (even if no messages are expected)
                                 async for message in websocket:
                                     pass
                             except websockets.exceptions.ConnectionClosed:
@@ -566,7 +570,7 @@
                             finally:
                                 with ws_clients_lock:
                                     websocket_clients.discard(websocket)
-                                print(f"[WS] Client disconnesso. Totale: {len(websocket_clients)}")
+                                print(f"[WS] Client disconnected. Total: {len(websocket_clients)}")
                     </code></pre>
                     <p>
                         The visualization server mainly relies on two asynchronous functions. 
@@ -575,36 +579,36 @@
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         async def viz_broadcaster(synth):
-                        """Invia dati di visualizzazione ai client WebSocket"""
-                        chunks_sent = 0
+                            """Sends visualization data to WebSocket clients"""
+                            chunks_sent = 0
 
-                        while True:
-                            try:
-                                # Leggi dalla queue (con timeout)
-                                chunk = await asyncio.get_event_loop().run_in_executor(
-                                    None, synth.viz_queue.get, True, 0.5
-                                )
-                            except queue.Empty:
-                                await asyncio.sleep(0.001)
-                                continue
+                            while True:
+                                try:
+                                    # Read from queue (with timeout)
+                                    chunk = await asyncio.get_event_loop().run_in_executor(
+                                        None, synth.viz_queue.get, True, 0.5
+                                    )
+                                except queue.Empty:
+                                    await asyncio.sleep(0.001)
+                                    continue
 
-                            # Invia a tutti i client connessi
-                            with ws_clients_lock:
-                                clients = list(websocket_clients)
+                                # Send to all connected clients
+                                with ws_clients_lock:
+                                    clients = list(websocket_clients)
 
-                            if clients:
-                                for client in clients:
-                                    try:
-                                        await asyncio.wait_for(client.send(chunk), timeout=0.2)
-                                    except (asyncio.TimeoutError, Exception):
-                                        pass  # Ignora errori di invio
+                                if clients:
+                                    for client in clients:
+                                        try:
+                                            await asyncio.wait_for(client.send(chunk), timeout=0.2)
+                                        except (asyncio.TimeoutError, Exception):
+                                            pass  # Ignore send errors
 
-                            chunks_sent += 1
+                                chunks_sent += 1
 
-                            # Report ogni 500 chunk
-                            if chunks_sent % 500 == 0:
-                                queue_size = synth.viz_queue.qsize()
-                                print(f"[VIZ] Sent {chunks_sent} chunks | Queue: {queue_size}/50")
+                                # Report every 500 chunk
+                                if chunks_sent % 500 == 0:
+                                    queue_size = synth.viz_queue.qsize()
+                                    print(f"[VIZ] Sent {chunks_sent} chunks | Queue: {queue_size}/50")
                     </code></pre>
                     <p>
                         The second one, viz_broadcaster, which takes as an input the synthesizer object,  
@@ -619,26 +623,26 @@
                     </p>
                     <pre class="line-numbers"><code class="language-python">  
                         async def handle_start(request):
-                        """POST /start - Avvia l'audio e invia 3 note di test"""
-                        global is_audio_playing
+                            """POST /start - Start audio and send 3 test notes"""
+                            global is_audio_playing
 
-                        with audio_state_lock:
-                            is_audio_playing = True
+                            with audio_state_lock:
+                                is_audio_playing = True
 
-                        # Invia 3 note di test per confermare che funziona
-                        synth = request.app['synth']
-                        synth.add_pulse_voice(60)  # C4
-                        await asyncio.sleep(0.3)
-                        synth.add_pulse_voice(64)  # E4
-                        await asyncio.sleep(0.3)
-                        synth.add_pulse_voice(67)  # G4
+                            # Send 3 test notes to check audio
+                            synth = request.app['synth']
+                            synth.add_pulse_voice(60)  # C4
+                            await asyncio.sleep(0.3)
+                            synth.add_pulse_voice(64)  # E4
+                            await asyncio.sleep(0.3)
+                            synth.add_pulse_voice(67)  # G4
 
-                        print("[HTTP] ▶️  Audio START + note di test inviate")
+                            print("[HTTP] ▶️  Audio START + test notes sent")
 
-                        return web.json_response({
-                            'status': 'started',
-                            'message': 'Audio avviato sul PC (dovresti sentire 3 note di test!)'
-                        }, headers={'Access-Control-Allow-Origin': '*'})                        
+                            return web.json_response({
+                                'status': 'started',
+                                'message': 'Audio started on PC (you should hear 3 test notes!)'
+                            }, headers={'Access-Control-Allow-Origin': '*'})                       
                     </code></pre>
                     <p>
                         The handle_start function is responsible for changing, after receiving a generic external request, 
@@ -649,23 +653,23 @@
                     </p>
                     <pre class="line-numbers"><code class="language-python">  
                         async def handle_stop(request):
-                        """POST /stop - Ferma l'audio"""
-                        global is_audio_playing
+                            """POST /stop - Stop audio"""
+                            global is_audio_playing
 
-                        with audio_state_lock:
-                            is_audio_playing = False
+                            with audio_state_lock:
+                                is_audio_playing = False
 
-                        # Pulisci anche le voci attive
-                        synth = request.app['synth']
-                        synth.clear_ambient()
-                        synth.clear_pulse()
+                            # Clean up also active voices
+                            synth = request.app['synth']
+                            synth.clear_ambient()
+                            synth.clear_pulse()
 
-                        print("[HTTP] ⏸️  Audio STOP")
+                            print("[HTTP] ⏸️  Audio STOP")
 
-                        return web.json_response({
-                            'status': 'stopped',
-                            'message': 'Audio fermato'
-                        }, headers={'Access-Control-Allow-Origin': '*'})                        
+                            return web.json_response({
+                                'status': 'stopped',
+                                'message': 'Audio stopped'
+                            }, headers={'Access-Control-Allow-Origin': '*'})                        
                     </code></pre>
                     <p>
                         The handle_stop function, after a generic request, changes the is_audio_playing flag to False. 
@@ -674,24 +678,24 @@
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         async def handle_start_rec(request):
-                        """POST /start_rec - Inizia registrazione loop"""
-                        global is_recording, rec_start_t, rec_events
+                            """POST /start_rec - Start loop recording"""
+                            global is_recording, rec_start_t, rec_events
 
-                        with recording_lock:
-                            if not is_recording:
-                                is_recording = True
-                                rec_start_t = time.time()
-                                rec_events = []
-                                print("[HTTP] 🔴 Recording START")
+                            with recording_lock:
+                                if not is_recording:
+                                    is_recording = True
+                                    rec_start_t = time.time()
+                                    rec_events = []
+                                    print("[HTTP] 🔴 Recording START")
 
-                        return web.json_response({
-                            'status': 'recording',
-                            'recording': True
-                        }, headers={'Access-Control-Allow-Origin': '*'})
+                            return web.json_response({
+                                'status': 'recording',
+                                'recording': True
+                            }, headers={'Access-Control-Allow-Origin': '*'})
 
 
                         async def handle_stop_rec(request):
-                            """POST /stop_rec - Ferma registrazione loop"""
+                            """POST /stop_rec - Stop loop recording"""
                             global is_recording, rec_start_t, rec_events
 
                             with recording_lock:
@@ -707,39 +711,39 @@
                                         if len(loops) > MAX_LOOPS:
                                             loops.pop(0)
 
-                            print(f"[HTTP] ⏹️  Recording STOP → Loop salvato (dur={dur:.2f}s, eventi={len(rec_events_sorted)})")
+                                    print(f"[HTTP] ⏹️  Recording STOP → Loop saved (dur={dur:.2f}s, events={len(rec_events_sorted)})")
 
-                        return web.json_response({
-                            'status': 'stopped',
-                            'recording': False
-                        }, headers={'Access-Control-Allow-Origin': '*'})                          
+                            return web.json_response({
+                                'status': 'stopped',
+                                'recording': False
+                            }, headers={'Access-Control-Allow-Origin': '*'})                         
                     </code></pre>
                     <p>
                         On one side, the handle_start_rec changes the is_recording flag to True and defines and empty list for the recorded events. On the other side, the handle_stop_rec changes the flag to False, creates a loop from the recorded events and the duration of the recording and appends it to the loops list. However, none of these two functions is responsible for the recording itself.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         async def handle_clear_loops(request):
-                        """POST /clear_loops - Cancella tutti i loop"""
-                        with loops_lock:
-                            loops.clear()
+                            """POST /clear_loops - Clears all loops"""
+                            with loops_lock:
+                                loops.clear()
 
-                        print("[HTTP] 🗑️  Loops cleared")
+                            print("[HTTP] 🗑️  Loops cleared")
 
-                        return web.json_response({
-                            'status': 'loops_cleared'
-                        }, headers={'Access-Control-Allow-Origin': '*'})
+                            return web.json_response({
+                                'status': 'loops_cleared'
+                            }, headers={'Access-Control-Allow-Origin': '*'})
 
 
-                    async def handle_clear_ambient(request):
-                        """POST /clear_ambient - Cancella voci ambient"""
-                        synth = request.app['synth']
-                        synth.clear_ambient()
+                        async def handle_clear_ambient(request):
+                            """POST /clear_ambient - Clears ambient voices"""
+                            synth = request.app['synth']
+                            synth.clear_ambient()
 
-                        print("[HTTP] 🗑️  Ambient cleared")
+                            print("[HTTP] 🗑️  Ambient cleared")
 
-                        return web.json_response({
-                            'status': 'ambient_cleared'
-                        }, headers={'Access-Control-Allow-Origin': '*'})                          
+                            return web.json_response({
+                                'status': 'ambient_cleared'
+                            }, headers={'Access-Control-Allow-Origin': '*'})                         
                     </code></pre>
                     <p>
                         The handle_clear_loops and handle_clear_ambient functions are respectively responsible for clearing the 
@@ -756,10 +760,10 @@
                         # SERIAL READER (Arduino)
                         # -----------------------------
                         async def serial_reader(synth):
-                            """Legge dati da Arduino e genera audio"""
+                            """Reads data from Arduino and generates audio"""
                             global is_recording, rec_start_t, rec_events
 
-                            PORTA = "COM5"
+                            PORT = "COM5"
                             BAUD = 9600
 
                             AMB_BASE_ROOT = 36  # C2
@@ -773,13 +777,13 @@
                             PULSE_COOLDOWN = 0.2
 
                             try:
-                                ser = serial.Serial(PORTA, BAUD, timeout=1)
-                                print(f"✅ Connesso ad Arduino su {PORTA}")
+                                ser = serial.Serial(PORT, BAUD, timeout=1)
+                                print(f"Connected to Arduino on {PORT}")
                             except Exception as e:
-                                print(f"⚠️  ERRORE: impossibile connettersi ad Arduino su {PORTA}")
+                                print(f"⚠️  ERROR: unable to connect to Arduino on {PORT}")
                                 print(f"   {e}")
-                                print("   Il programma continuerà senza Arduino (solo per test WebSocket)")
-                                ser = None                        
+                                print("   The program will continue without Arduino (WebSocket testing only)")
+                                ser = None                    
                     </code></pre>
                     <p>
                         The serial_reader function takes as an input a synth object, and initially it defines a set of parameters. Among these parameters, the BAUD and PORTA parameters are relevant to the first operation that the code executes through a try operator, which is to create a digital serial door. This door consists in a digital equivalent of the link between the computer and the Arduino module, through which the code can import and read the Arduino outputs.
@@ -868,7 +872,7 @@
                     </p>
                     <h2>Mapping of biodata</h2>
                     <pre class="line-numbers"><code class="language-python"> 
-                        # ---- AMBIENCE (solo se audio è attivo) ----
+                        # ---- AMBIENCE (only if audio is playing) ----
                         with audio_state_lock:
                             if is_audio_playing:
                                 _, hum_semis_now = humidity_to_note(hum_raw, base_root=AMB_BASE_ROOT, h_min=H_MIN, h_max=H_MAX)
@@ -893,13 +897,13 @@
                                         amb_midi, _ = humidity_to_note(avg_h, base_root=AMB_BASE_ROOT, h_min=H_MIN, h_max=H_MAX)
                                         synth.add_ambient_voice_moving(amb_midi, volume=0.12, pan=0.5)
                                         hum_samples.clear()
-                                        amb_window_start = now                         
+                                        amb_window_start = now                        
                     </code></pre>
                     <p>
                         Going back to the serial reader and the mapping of the impulses, the while cycle at every iteration applies the humidity_to_note function to the hum_raw variable, therefore assigning the biodata humidity value a correspondent note in major scale (expressed as a number of semitones above the base root). If the number of semitones is equal to zero (invalid value that happens when the humidity sensor is disconnected from Arduino) twice in a row, the synthesizer’s ambient voices are cleared, and a specific flag is changed to “true”. This flag will return to “false” when the number of semitones will return to being valid. The valid hum_raw values are appended to a list and, when the iteration’s time has surpassed a time limit determined by  AMB_WINDOW_SEC , these values in the list are averaged. Then, the serial reader once again uses humidity_to_note to turn the average humidity to a number of semitones. Finally, through add_ambient_voice_moving, it adds to the synth an ambient voice with a frequency associated to the average number of semitones. This completes the humidity mapping
                     </p>
                     <pre class="line-numbers"><code class="language-python">
-                        # ---- PULSE (solo se audio è attivo) ----
+                        # ---- PULSE (only if audio is playing) ----
                         _, pulse_semis_raw = midi_from_adc_semitones(bio_raw, base_root=PULSE_BASE_ROOT, semis_max=PULSE_SEMIS_MAX)
                         pulse_semis = quantize_to_major(pulse_semis_raw, PULSE_SEMIS_MAX)
                         pulse_midi = PULSE_BASE_ROOT + pulse_semis
@@ -925,24 +929,23 @@
                         async def main():
                             global synth
 
-                            # Crea synth
+                            # Create synth
                             synth = CombinedSynth(max_ambient_voices=24, max_pulse_voices=24)
                             synth.start()
-                            print("✅ Audio engine avviato (sounddevice)")
+                            print("✅ Audio engine activated (sounddevice)")
 
-                            # Avvia loop player
+                            # Start loop player
                             threading.Thread(target=loop_player_thread, args=(synth,), daemon=True).start()
-                            print("✅ Loop player avviato")
+                            print("✅ Loop player activated")
 
-                            # Avvia WebSocket server
+                            # Start WebSocket server
                             ws_server = await websockets.serve(websocket_handler, "localhost", 8765)
-                            print("✅ WebSocket server avviato su ws://localhost:8765")
+                            print("✅ WebSocket server activated on ws://localhost:8765")
 
-                            # Avvia viz broadcaster
+                            # Start viz broadcaster
                             asyncio.create_task(viz_broadcaster(synth))
-                            print("✅ Visualizzazione broadcaster avviato")
-
-                            # Configura HTTP server
+                            print("✅ Visualization broadcaster activated")
+                            # Configure HTTP server
                             app = web.Application()
                             app['synth'] = synth
 
@@ -962,18 +965,18 @@
                             app.router.add_options('/clear_loops', handle_options)
                             app.router.add_options('/clear_ambient', handle_options)
 
-                            # Avvia HTTP server
+                            # Start HTTP server
                             runner = web.AppRunner(app)
                             await runner.setup()
                             site = web.TCPSite(runner, 'localhost', 8080)
                             await site.start()
-                            print("✅ HTTP server avviato su http://localhost:8080")                       
+                            print("✅ HTTP server activated on http://localhost:8080")                       
                     </code></pre>
                     <p>
                         In fact, this function initially creates a synth object using the Synth class. It  then creates the websocket and HTTP servers, which will use their respective asynchronous functions. In the case of the HTTP server, specific user requests are associated to the various functions used by the control server, making it fully functioning. 
                     </p>
                     <pre class="line-numbers"><code class="language-python">   
-                        # Avvia serial reader
+                        # Start serial reader
                         await serial_reader(synth)                       
                     </code></pre>
                     <p>
@@ -985,8 +988,8 @@
                         try:
                             asyncio.run(main())
                         except KeyboardInterrupt:
-                            print("\n🛑 Chiusura...")
-                            print("✅ Tutto chiuso. Arrivederci!")                      
+                            print("\n🛑 Shutting down...")
+                            print("✅ All closed. Goodbye!")                      
                     </code></pre>
                     <p>
                         In its final lines, the code runs the main function, the synth and servers are created,  and the output stream produces silence, even though the Arduino values are being mapped and saved by the serial reader. This will of course change when the user, through the control server, will ask the callback to start reproducing the mapped biodata.
