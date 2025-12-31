@@ -117,7 +117,7 @@ class HoverTableOfContents {
                 if (el) el.classList.add('toc-hidden');
               });
             }
-          }, 200);
+          }, 500);
         });
       }
 
