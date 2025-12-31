@@ -959,6 +959,7 @@
 
                     <h2>Interactive Animations - Cows, Ducks, and the Environment</h2>
 
+                    <br><br>
                     <h3>Cow Animation <img src="../images/cow.svg"></h3>
                     <p>
                         The <span class="tag-verde">SimpleCow</span> class has a <b>simulated physical movement system</b> that responds to collisions.
@@ -1041,6 +1042,7 @@
                         this.direction = this.vx > 0 ? 1 : -1; //change of direction
                     }
                     </code></pre>
+                    <br><br>
                     <h3>Duck Animation <img src="../images/duck_for_code_report.svg"></h3>
                     <p>
                         Ducks move similarly to cows, but with a <b>higher speed</b>. Also, a logic for <b>random jumps</b> is implemented.
@@ -1063,7 +1065,8 @@
                         }
                     }
                     </code></pre>
-                    <h3>Decorative Grass <img src="../images/grass.svg" height="30px"></h3>
+                    <br><br>
+                    <h3>Decorative Grass <img src="../images/grass.svg"></h3>
                     <p>
                         The grass items are added dinamically to the pages using the function <span class="tag-verde">addGrassItem()</span> in javascript. Each grass item has <b>random dimensions, position and color</b>. Also, a <span class="tag-verde">z-index</span> of 1 is assigned to the grass items to ensure they stay in the background.
                     </p>
@@ -1088,6 +1091,7 @@
                         document.body.appendChild(e);
                     }
                     </code></pre>
+                    <br><br>
                     <h3>Background flowers <img src="../images/bg_flower.svg"></h3>
                     <p>
                         Some flowers are added dinamically to the pages using the function <span class="tag-verde">addFlowerItem()</span> in javascript. Their position is random, but some <b>constraints</b> are added to <b>avoid overlapping</b> with the navigation menu, other flowers or audio settings in the live listening page. A number of attempts is set to try to find a valid position for each flower, if none is found, the flower is not added.
