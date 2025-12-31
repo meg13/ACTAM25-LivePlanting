@@ -1,23 +1,23 @@
 """
-🌱 Live Planting - Audio Controller con HTTP + WebSocket
+🌱 Live Planting - Audio Controller using HTTP + WebSocket
 =========================================================
 
-Architettura:
-- Audio: sounddevice (qualità perfetta, esce dalle casse del PC)
-- Comandi: HTTP REST API (bottoni web → flag booleane)
-- Visualizzazione: WebSocket (solo dati decimati per canvas)
+Architecture:
+- Audio: sounddevice (perfect quality, outputs through PC speakers)
+- Commands: HTTP REST API (web buttons → boolean flags)
+- Visualization: WebSocket (only decimated data for canvas)
 
-Endpoints HTTP:
-- POST /start        → Avvia audio + invia note di test
-- POST /stop         → Ferma audio
-- POST /start_rec    → Inizia registrazione loop
-- POST /stop_rec     → Ferma registrazione loop
-- POST /clear_loops  → Cancella tutti i loop
-- POST /clear_ambient → Cancella voci ambient
+HTTP Endpoints:
+- POST /start         → Start audio + send test notes
+- POST /stop          → Stop audio
+- POST /start_rec     → Start loop recording
+- POST /stop_rec      → Stop loop recording
+- POST /clear_loops   → Clear all loops
+- POST /clear_ambient → Clear ambient voices
 
 WebSocket (ws://localhost:8765):
-- Invia: Float32Array decimato (256 campioni) per visualizzazione
-- Riceve: niente (comandi vanno via HTTP)
+- Sends: Decimated Float32Array (256 samples) for visualization
+- Receives: Nothing (commands go via HTTP)
 """
 
 import time, math, threading, asyncio, queue
@@ -30,7 +30,7 @@ import websockets
 import json
 
 # -----------------------------
-# VARIABILI GLOBALI
+# GLOBAL VARIABLES
 # -----------------------------
 MAX_LOOPS = 10
 
@@ -44,12 +44,12 @@ recording_lock = threading.Lock()
 loops = []
 loops_lock = threading.Lock()
 
-# Audio playing state (controllato da HTTP)
+# Audio playing state (controlled by HTTP)
 is_audio_playing = False
 audio_state_lock = threading.Lock()
 
 # -----------------------------
-# UTIL / MUSICA
+# UTIL / MUSIC
 # -----------------------------
 def midi_to_freq(m):
     return 440.0 * (2.0 ** ((m - 69) / 12.0))
@@ -95,7 +95,7 @@ def humidity_to_note(h: float, base_root: int, h_min=200.0, h_max=400.0):
 # PULSE tools
 # -----------------------------
 def hann_env(t, dur, fade_in_ratio=0.15, fade_out_ratio=0.25):
-    """Inviluppo super morbido con fade-in/out separati per eliminare click."""
+    """Super smooth envelope with separate fade-in/out to eliminate clicks."""
     env = np.zeros_like(t, dtype=np.float32)
     m = (t >= 0.0) & (t <= dur)
 
@@ -117,7 +117,7 @@ def hann_env(t, dur, fade_in_ratio=0.15, fade_out_ratio=0.25):
     return env
 
 def softclip(x, drive=1.08):
-    """Dolcezza: riduce harshness senza distorcere."""
+    """Smoothness: reduces harshness without distorting."""
     return np.tanh(drive * x).astype(np.float32)
 
 # -----------------------------
@@ -220,13 +220,13 @@ class SchroederReverb:
 
 
 # -----------------------------
-# SYNTH CON VISUALIZZAZIONE
+# SYNTH WITH VISUAL DISPLAY
 # -----------------------------
 class CombinedSynth:
     """
-    Synth di alta qualità con sounddevice.
-    Audio esce sempre dalle casse del PC.
-    Invia dati decimati per visualizzazione via queue.
+    High-quality synth using sounddevice.  
+    Audio always outputs through the PC speakers.  
+    Sends decimated data for visualization via queue.
     """
     def __init__(self, samplerate=48000, blocksize=2048, max_ambient_voices=24, max_pulse_voices=24):
         self.sr = samplerate
@@ -241,13 +241,13 @@ class CombinedSynth:
 
         self.master_gain = 0.30
 
-        # Reverb per le PULSE
+        # Reverb for PULSE
         self.pulse_reverb = SchroederReverb(self.sr)
 
-        # Queue per visualizzazione (non-blocking)
+        # Queue for visualization (non-blocking)
         self.viz_queue = queue.Queue(maxsize=50)
 
-        # Decimazione per viz: invia 1 chunk ogni N
+        # Decimation for viz: send 1 chunk every N
         self.viz_decimation = 4
         self.viz_counter = 0
 
@@ -314,7 +314,7 @@ class CombinedSynth:
         )
 
     def add_pulse_voice(self, midi_note: int, volume=0.58, duration=0.35, pan=0.5):
-        """Aggiunge una nota PULSE con inviluppo e reverb - VERSIONE ANTI-CLICK"""
+        """Adds a PULSE note with envelope and reverb - ANTI-CLICK VERSION"""
         v = {
             "freq_base": float(midi_to_freq(midi_note)),
             "phase": 0.0,
@@ -335,11 +335,11 @@ class CombinedSynth:
             self.pulse_voices.append(v)
 
     def _callback(self, outdata, frames, time_info, status):
-        """Callback sounddevice - genera audio di alta qualità"""
+        """Callback sounddevice - generates high quality audio"""
         if status:
             print(f"[AUDIO] Status: {status}")
 
-        # Se audio non è attivo, genera silenzio
+        # If audio is not active, generate silence.
         with audio_state_lock:
             if not is_audio_playing:
                 outdata[:, 0] = np.zeros(frames, dtype=np.float32)
@@ -413,7 +413,7 @@ class CombinedSynth:
 
                 wave = s * env * amp * v["volume"]
 
-                # Anti-click: micro-fade sui primi 5ms
+                # Anti-click: micro-fade on first 5ms
                 micro_fade_samples = min(int(0.005 * self.sr), len(wave))
                 if v["t"] < 0.005 and micro_fade_samples > 0:
                     for i in range(micro_fade_samples):
@@ -436,13 +436,13 @@ class CombinedSynth:
 
             self.pulse_voices = new_pulse[-self.max_pulse:]
 
-        # master gain separato
+        # Separate master gain control
         ambL *= self.master_gain
         ambR *= self.master_gain
         pulL *= self.master_gain
         pulR *= self.master_gain
 
-        # riverbero SOLO sulle pulse
+        # Reverb only on pulse
         pulL, pulR = self.pulse_reverb.process(pulL, pulR)
 
         bufL = ambL + pulL
@@ -457,22 +457,22 @@ class CombinedSynth:
         outdata[:, 0] = np.clip(bufL, -1.0, 1.0)
         outdata[:, 1] = np.clip(bufR, -1.0, 1.0)
 
-        # ✅ Invia dati DECIMATI per visualizzazione (solo canale L, 1 ogni 8 campioni)
+        # Send decimated data for visualization (only channel L, 1 every 8 samples)
         self.viz_counter += 1
         if self.viz_counter >= self.viz_decimation:
             self.viz_counter = 0
-            viz_data = bufL[::8].astype(np.float32)  # Decimazione 8x (~256 campioni da 2048)
+            viz_data = bufL[::8].astype(np.float32)  # Decimation 8x (~256 samples from 2048)
             try:
                 self.viz_queue.put_nowait(viz_data.tobytes())
             except queue.Full:
-                pass  # Skip se la queue è piena
+                pass  # Skip if queue is full
 
 
 # -----------------------------
 # LOOP PLAYER
 # -----------------------------
 def loop_player_thread(synth):
-    """Thread che riproduce i loop registrati"""
+    """Thread that plays recorded loops"""
     runtime = []
 
     while True:
@@ -525,14 +525,14 @@ websocket_clients = set()
 ws_clients_lock = threading.Lock()
 
 async def websocket_handler(websocket):
-    """Gestisce connessioni WebSocket per visualizzazione"""
+    """Handles WebSocket connections for visualization"""
     with ws_clients_lock:
         websocket_clients.add(websocket)
 
-    print(f"[WS] Client connesso. Totale: {len(websocket_clients)}")
+    print(f"[WS] Client connected. Total: {len(websocket_clients)}")
 
     try:
-        # Rimani in ascolto (anche se non ci aspettiamo messaggi)
+        # Keep listening (even if no messages are expected)
         async for message in websocket:
             pass
     except websockets.exceptions.ConnectionClosed:
@@ -540,16 +540,16 @@ async def websocket_handler(websocket):
     finally:
         with ws_clients_lock:
             websocket_clients.discard(websocket)
-        print(f"[WS] Client disconnesso. Totale: {len(websocket_clients)}")
+        print(f"[WS] Client disconnected. Total: {len(websocket_clients)}")
 
 
 async def viz_broadcaster(synth):
-    """Invia dati di visualizzazione ai client WebSocket"""
+    """Sends visualization data to WebSocket clients"""
     chunks_sent = 0
 
     while True:
         try:
-            # Leggi dalla queue (con timeout)
+            # Read from queue (with timeout)
             chunk = await asyncio.get_event_loop().run_in_executor(
                 None, synth.viz_queue.get, True, 0.5
             )
@@ -557,7 +557,7 @@ async def viz_broadcaster(synth):
             await asyncio.sleep(0.001)
             continue
 
-        # Invia a tutti i client connessi
+        # Send to all connected clients
         with ws_clients_lock:
             clients = list(websocket_clients)
 
@@ -566,11 +566,11 @@ async def viz_broadcaster(synth):
                 try:
                     await asyncio.wait_for(client.send(chunk), timeout=0.2)
                 except (asyncio.TimeoutError, Exception):
-                    pass  # Ignora errori di invio
+                    pass  # Ignore send errors
 
         chunks_sent += 1
 
-        # Report ogni 500 chunk
+        # Report every 500 chunk
         if chunks_sent % 500 == 0:
             queue_size = synth.viz_queue.qsize()
             print(f"[VIZ] Sent {chunks_sent} chunks | Queue: {queue_size}/50")
@@ -580,13 +580,13 @@ async def viz_broadcaster(synth):
 # HTTP SERVER (aiohttp)
 # -----------------------------
 async def handle_start(request):
-    """POST /start - Avvia l'audio e invia 3 note di test"""
+    """POST /start - Start audio and send 3 test notes"""
     global is_audio_playing
 
     with audio_state_lock:
         is_audio_playing = True
 
-    # Invia 3 note di test per confermare che funziona
+    # Send 3 test notes to check audio
     synth = request.app['synth']
     synth.add_pulse_voice(60)  # C4
     await asyncio.sleep(0.3)
@@ -594,22 +594,22 @@ async def handle_start(request):
     await asyncio.sleep(0.3)
     synth.add_pulse_voice(67)  # G4
 
-    print("[HTTP] ▶️  Audio START + note di test inviate")
+    print("[HTTP] ▶️  Audio START + test notes sent")
 
     return web.json_response({
         'status': 'started',
-        'message': 'Audio avviato sul PC (dovresti sentire 3 note di test!)'
+        'message': 'Audio started on PC (you should hear 3 test notes!)'
     }, headers={'Access-Control-Allow-Origin': '*'})
 
 
 async def handle_stop(request):
-    """POST /stop - Ferma l'audio"""
+    """POST /stop - Stop audio"""
     global is_audio_playing
 
     with audio_state_lock:
         is_audio_playing = False
 
-    # Pulisci anche le voci attive
+    # Clean up also active voices
     synth = request.app['synth']
     synth.clear_ambient()
     synth.clear_pulse()
@@ -618,12 +618,12 @@ async def handle_stop(request):
 
     return web.json_response({
         'status': 'stopped',
-        'message': 'Audio fermato'
+        'message': 'Audio stopped'
     }, headers={'Access-Control-Allow-Origin': '*'})
 
 
 async def handle_start_rec(request):
-    """POST /start_rec - Inizia registrazione loop"""
+    """POST /start_rec - Start loop recording"""
     global is_recording, rec_start_t, rec_events
 
     with recording_lock:
@@ -640,7 +640,7 @@ async def handle_start_rec(request):
 
 
 async def handle_stop_rec(request):
-    """POST /stop_rec - Ferma registrazione loop"""
+    """POST /stop_rec - Stop loop recording"""
     global is_recording, rec_start_t, rec_events
 
     with recording_lock:
@@ -656,7 +656,7 @@ async def handle_stop_rec(request):
                 if len(loops) > MAX_LOOPS:
                     loops.pop(0)
 
-            print(f"[HTTP] ⏹️  Recording STOP → Loop salvato (dur={dur:.2f}s, eventi={len(rec_events_sorted)})")
+            print(f"[HTTP] ⏹️  Recording STOP → Loop saved (dur={dur:.2f}s, events={len(rec_events_sorted)})")
 
     return web.json_response({
         'status': 'stopped',
@@ -665,7 +665,7 @@ async def handle_stop_rec(request):
 
 
 async def handle_clear_loops(request):
-    """POST /clear_loops - Cancella tutti i loop"""
+    """POST /clear_loops - Clears all loops"""
     with loops_lock:
         loops.clear()
 
@@ -677,7 +677,7 @@ async def handle_clear_loops(request):
 
 
 async def handle_clear_ambient(request):
-    """POST /clear_ambient - Cancella voci ambient"""
+    """POST /clear_ambient - Clears ambient voices"""
     synth = request.app['synth']
     synth.clear_ambient()
 
@@ -703,10 +703,10 @@ async def handle_options(request):
 # SERIAL READER (Arduino)
 # -----------------------------
 async def serial_reader(synth):
-    """Legge dati da Arduino e genera audio"""
+    """Reads data from Arduino and generates audio"""
     global is_recording, rec_start_t, rec_events
 
-    PORTA = "COM5"
+    PORT = "COM5"
     BAUD = 9600
 
     AMB_BASE_ROOT = 36  # C2
@@ -720,12 +720,12 @@ async def serial_reader(synth):
     PULSE_COOLDOWN = 0.2
 
     try:
-        ser = serial.Serial(PORTA, BAUD, timeout=1)
-        print(f"✅ Connesso ad Arduino su {PORTA}")
+        ser = serial.Serial(PORT, BAUD, timeout=1)
+        print(f"Connected to Arduino on {PORT}")
     except Exception as e:
-        print(f"⚠️  ERRORE: impossibile connettersi ad Arduino su {PORTA}")
+        print(f"⚠️  ERROR: unable to connect to Arduino on {PORT}")
         print(f"   {e}")
-        print("   Il programma continuerà senza Arduino (solo per test WebSocket)")
+        print("   The program will continue without Arduino (WebSocket testing only)")
         ser = None
 
     hum_samples = []
@@ -756,7 +756,7 @@ async def serial_reader(synth):
 
                 now = time.time()
 
-                # ---- AMBIENCE (solo se audio è attivo) ----
+                # ---- AMBIENCE (only if audio is playing) ----
                 with audio_state_lock:
                     if is_audio_playing:
                         _, hum_semis_now = humidity_to_note(hum_raw, base_root=AMB_BASE_ROOT, h_min=H_MIN, h_max=H_MAX)
@@ -783,7 +783,7 @@ async def serial_reader(synth):
                                 hum_samples.clear()
                                 amb_window_start = now
 
-                        # ---- PULSE (solo se audio è attivo) ----
+                        # ---- PULSE (only if audio is playing) ----
                         _, pulse_semis_raw = midi_from_adc_semitones(bio_raw, base_root=PULSE_BASE_ROOT, semis_max=PULSE_SEMIS_MAX)
                         pulse_semis = quantize_to_major(pulse_semis_raw, PULSE_SEMIS_MAX)
                         pulse_midi = PULSE_BASE_ROOT + pulse_semis
@@ -811,24 +811,23 @@ async def serial_reader(synth):
 async def main():
     global synth
 
-    # Crea synth
+    # Create synth
     synth = CombinedSynth(max_ambient_voices=24, max_pulse_voices=24)
     synth.start()
-    print("✅ Audio engine avviato (sounddevice)")
+    print("✅ Audio engine activated (sounddevice)")
 
-    # Avvia loop player
+    # Start loop player
     threading.Thread(target=loop_player_thread, args=(synth,), daemon=True).start()
-    print("✅ Loop player avviato")
+    print("✅ Loop player activated")
 
-    # Avvia WebSocket server
+    # Start WebSocket server
     ws_server = await websockets.serve(websocket_handler, "localhost", 8765)
-    print("✅ WebSocket server avviato su ws://localhost:8765")
+    print("✅ WebSocket server activated on ws://localhost:8765")
 
-    # Avvia viz broadcaster
+    # Start viz broadcaster
     asyncio.create_task(viz_broadcaster(synth))
-    print("✅ Visualizzazione broadcaster avviato")
-
-    # Configura HTTP server
+    print("✅ Visualization broadcaster activated")
+    # Configure HTTP server
     app = web.Application()
     app['synth'] = synth
 
@@ -848,30 +847,30 @@ async def main():
     app.router.add_options('/clear_loops', handle_options)
     app.router.add_options('/clear_ambient', handle_options)
 
-    # Avvia HTTP server
+    # Start HTTP server
     runner = web.AppRunner(app)
     await runner.setup()
     site = web.TCPSite(runner, 'localhost', 8080)
     await site.start()
-    print("✅ HTTP server avviato su http://localhost:8080")
+    print("✅ HTTP server activated on http://localhost:8080")
 
     print("\n🌱 LIVE PLANTING - Audio Controller")
     print("=" * 50)
-    print("🔊 Audio: Casse del PC (sounddevice - HQ)")
-    print("📡 Comandi: HTTP POST su localhost:8080")
-    print("📊 Visualizzazione: WebSocket su localhost:8765")
+    print("🔊 Audio: PC speakers (sounddevice - HQ)")
+    print("📡 Commands: HTTP POST on localhost:8080")
+    print("📊 Visualization: WebSocket on localhost:8765")
     print(f"🎵 Max loops: {MAX_LOOPS}")
     print(f"🌿 Max ambient voices: 24")
-    print("\n📋 Endpoints HTTP:")
-    print("   POST /start        → Avvia audio + test")
-    print("   POST /stop         → Ferma audio")
-    print("   POST /start_rec    → Inizia recording")
-    print("   POST /stop_rec     → Ferma recording")
-    print("   POST /clear_loops  → Cancella loop")
-    print("   POST /clear_ambient → Cancella ambient")
-    print("\n⚠️  Premi Ctrl+C per uscire\n")
+    print("\n📋HTTP endpoints:")
+    print("   POST /start        → Start audio + test")
+    print("   POST /stop         → Stop audio")
+    print("   POST /start_rec    → Start recording")
+    print("   POST /stop_rec     → Stop recording")
+    print("   POST /clear_loops  → Clear loops")
+    print("   POST /clear_ambient → Clear ambient")
+    print("\n⚠️  Press Ctrl+C to exit\n")
 
-    # Avvia serial reader
+    # Start serial reader
     await serial_reader(synth)
 
 
@@ -879,5 +878,5 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        print("\n🛑 Chiusura...")
-        print("✅ Tutto chiuso. Arrivederci!")
+        print("\n🛑 Shutting down...")
+        print("✅ All closed. Goodbye!")
