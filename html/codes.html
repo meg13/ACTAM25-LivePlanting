@@ -31,15 +31,18 @@
                     </ol>
                     <h2>The synthesizer</h2>
                     <p>
-                        These three servers all <b>revolve around interactions with</b> a digital object, a <b>synthesizer</b>, which is <b>implemented</b> in the code through a <b>Python class</b>. 
+                        These three servers all <b>revolve around interactions with</b> a digital object: a <b>synthesizer</b>, which is <b>implemented</b> in the code through a <b>Python class</b>. 
                         <br>A Python class is a blueprint that defines the structure and behavior of objects by grouping data (attributes) and functions (methods) together. 
                         <br>Within the synth class, the most important attributes are:
                     </p>                   
                     <ul>
-                        <li>Two lists, <span class="tag-verde">self.ambient_voices</span> and <span class="tag-verde">self.pulse_voices</span> respectively responsible for <b>containing the ambient voices and the pulse voices</b> which are generated.</li>
-                        <li>An object, <span class="tag-verde">self.pulse_reverb</span>, responsible for applying a <b>reverb effect</b> on the pulse notes.</li>
-                        <li>An object, <span class="tag-verde">self.viz_queue</span>, responsible for <b>containing the processed information</b> for the clients of the visualization server.</li>
-                        <li>An Output stream, <span class="tag-verde">self.stream</span>, responsible for actually <b>obtaining the final audio signals</b> communicating them to the hardware.</li>
+                        <li>Two lists: 
+                            <span class="tag-verde">self.ambient_voices</span> and 
+                            <span class="tag-verde">self.pulse_voices</span>,
+                            respectively responsible for <b>containing the ambient voices</b> and <b>the pulse voices</b> which are generated.</li>
+                        <li>An object: <span class="tag-verde">self.pulse_reverb</span>, responsible for applying a <b>reverb effect</b> on the pulse notes.</li>
+                        <li>An object: <span class="tag-verde">self.viz_queue</span>, responsible for <b>containing the processed information</b> for the clients of the visualization server.</li>
+                        <li>An Output stream: <span class="tag-verde">self.stream</span>, responsible for actually <b>obtaining the final audio signals</b> communicating them to the hardware.</li>
                     </ul>
                     <pre class="line-numbers"><code class="language-python">
                         class CombinedSynth:
@@ -85,13 +88,8 @@
                     </p>
                     <h3>Voices</h3>
                     <p>
-                        When considering the two voices lists, it is important to ask ourselves what a voice actually is and how it is defined. 
-                        A voice is not an audio signal, but a parameter structure in which all the information of a to-be-generated audio signal
-                        are contained. In other words, it is a list of instructions for the future creation of a sound. 
-                        <br>The functions for the creation of pulse and ambient voices are defined <b>within the synth class</b>. 
-                        These functions mainly revolve around taking 
-                        as inputs the parameters of a voice and grouping them within one single element, while adding some missing ones as well, 
-                        therefore creating the voice itself
+                        When considering the two voices lists, it is important to ask ourselves what a voice actually is and how it is defined: a voice is not an audio signal, but a parameter structure in which all the information of a to-be-generated audio signal are contained. In other words, it is a list of instructions for the future creation of a sound. 
+                        <br>The <b>functions for the creation of pulse and ambient voices</b> are <b>defined within the synth class</b>. These functions mainly revolve around taking as inputs the parameters of a voice and grouping them within one single element, while adding some missing ones as well, therefore creating the voice itself.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         def add_ambient_voice(self, midi_note: int, volume=0.12, pan=0.5,
@@ -154,17 +152,11 @@
                                         self.pulse_voices.append(v)
                     </code></pre>
                     <p>
-                        The functions for the pulse and ambient voices are different because so are the sounds that these voices are 
-                        associated with. In fact, on one side the  <span class="tag-verde">add_pulse_voice</span> function establishes 
-                        a duration and fixed vibrato and tremolo parameters for the pulse voice. On the other,  
-                        <span class="tag-verde">add_ambient_voice_moving</span> does not define a duration 
-                        (the pulse voices are infinite until user interruption), chooses random values for the vibrato and tremolo and 
-                        then calls the  <span class="tag-verde">add_ambient_voice</span> functions, which actually creates the pulse voice.
+                        The functions for the pulse and ambient voices are different because so are the sounds that these voices are associated with. In fact, while  <span class="tag-verde">add_pulse_voice</span> function establishes fixed duration, vibrato and tremolo parameters for the pulse voice, <span class="tag-verde">add_ambient_voice_moving</span> does not define a duration (the pulse voices are infinite until user interruption), chooses random values for the vibrato and tremolo and then calls the  <span class="tag-verde">add_ambient_voice</span> functions, which actually creates the pulse voice.
                     </p>
                     <h3>Reverb</h3>
                     <p>
-                        self.pulse_reverb is the name assigned within the synthesizer to an attribute which is created using the SchroedererReverb 
-                        class, defined before the synth class.    
+                        <span class="tag-verde">self.pulse_reverb</span> is the name assigned within the synthesizer to an attribute which is created using the SchroedererReverb class, defined before the synth class.    
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         class SchroederReverb:
@@ -217,23 +209,17 @@
                                 return outL.astype(np.float32), outR.astype(np.float32)
                     </code></pre>
                     <p>
-                        The SchroedererReverb class in turn implements objects like the <span class="tag-verde">Comb</span> Class and the <span class="tag-verde">Allpass</span> Class: the first one is 
-                        responsible for <b>creating from an input signal x</b>, using the inner process function, an <b>infinite series of delayed echoes</b> 
-                        from the original signal, with decreasing intensity.  The second one, instead, consists in an <b>all-pass filter</b>, 
-                        which through its process function can <b>change and darken the timbre of a sound</b>. 
+                        The <span class="tag-verde">SchroedererReverb</span> class in turn implements objects like the <span class="tag-verde">Comb</span> Class and the <span class="tag-verde">Allpass</span> Class. 
+                        <br><span class="tag-verde">Comb</span> is responsible for <b>creating from an input signal x</b>, using the inner process function, an <b>infinite series of delayed echoes</b> from the original signal, with <b>decreasing intensity</b>.  
+                        <br><span class="tag-verde">Allpass</span>, instead, consists in an <b>all-pass filter</b>, which through its process function can <b>change and darken the timbre of a sound</b>. 
                     </p>
                     <p>
                         But how does the Schroederer reverb actually implement these objects?
-                        <br>The reverb class contains within itself, two Comb objects and two Allpass objects 
-                        (each pair associated to the right and left sides of the audio hardware). 
-                        Within SchroedererReverb, a function for applying a low pass filter to a signal is also defined, 
-                        as well as a final process function. This process function, given two input singal xL and xR, 
-                        applies to each one of the two the process functions of its respective Comb object and Allpass filter, 
-                        therefore obtaining versions of xL and xR with reverb applied to them.
+                        <br>The reverb class contains within itself, two <span class="tag-verde">Comb</span> objects and two <span class="tag-verde">Allpass</span> objects (each pair associated to the right and left sides of the audio hardware). Within <span class="tag-verde">SchroedererReverb</span>, a function for applying a low pass filter to a signal is also defined, as well as a final process function. This process function, given two input singal xL and xR, applies to each one of the two the process functions of its respective <span class="tag-verde">Comb</span> object and <span class="tag-verde">Allpass</span> filter, therefore obtaining versions of xL and xR with reverb applied to them.
                     </p>    
                     <h3>Queue</h3>
                     <pre class="line-numbers"><code class="language-python">
-                    #Queve for visualization (non-blocking)
+                    #Queue for visualization (non-blocking)
                     self.viz_queue = queue.Queue(maxsize=50)
                     </code></pre>
                     <p>
@@ -259,14 +245,7 @@
                         self.stream.close
                     </code></pre>
                     <p>
-                        The output stream is created by using the <span class="tag-verde">OutputStream</span> class from the sounddevice library. 
-                        Its creation is associated to the definition of two specific functions to start and stop it. 
-                        What's most important about it is its usage of the <span class="tag-verde">callback</span> function, which is defined within the synth.
-                        The <span class="tag-verde">callback</span> function is the functional core of the synth. 
-                        Once the output stream’s process starts running (through another specific function), 
-                        the <span class="tag-verde">callback</span> function is called constantly: it is responsible for reading the ambient and pulse voices within 
-                        the respective lists and for converting the instructions inside them into the corresponding audio signals. 
-                        The stream then carries the signals to the hardware and allows it to actually reproduce them. 
+                        The output stream is created by using the <span class="tag-verde">OutputStream</span> class from the sounddevice library. Its creation is associated to the definition of <b>two specific functions</b> to <b>start</b> and <b>stop</b> it. What's most important about it is its usage of the <span class="tag-verde">callback</span> function, which is defined within the synth.The <span class="tag-verde">callback</span> function is the <b>functional core of the synth</b>. Once the output stream’s <b>process starts running</b> (through another specific function), the <span class="tag-verde">callback</span> function is <b>called constantly</b>: it is responsible for reading the ambient and pulse voices within the respective lists and for converting the instructions inside them into the corresponding audio signals. The stream then carries the signals to the hardware and allows it to actually reproduce them. 
                     </p>
                     <h3>Callback</h3>
                     <pre class="line-numbers"><code class="language-python">
@@ -283,12 +262,7 @@
                                     return
                     </code></pre>
                     <p>
-                        Let’s now focus on how the <span class="tag-verde">callback</span> function actually works: first of all, 
-                        it is built in order to read a flag called <span class="tag-verde">is_audio_playing</span>. If the <b>flag is false</b>, 
-                        when the callback is called it <b>sends to the stream only zeros</b> (which translate to silence) 
-                        even though ambient or pulse voices are present in the respective lists. However, if the <b>flag is true</b>, 
-                        when the function is called it <b>builds four separate empty buffers for the pulse and ambient sounds</b> 
-                        that will be sent to the right and left hardware. Then, it proceeds with the rendering of the voices.
+                        Let’s now focus on how the <span class="tag-verde">callback</span> function actually works: first of all, it is built in order to read a flag called <span class="tag-verde">is_audio_playing</span>. If the <b>flag is false</b>, when the callback is called it <b>sends to the stream only zeros</b> (which translate to silence) even though ambient or pulse voices are present in the respective lists. However, if the <b>flag is true</b>, when the function is called it <b>builds four separate empty buffers for the pulse and ambient sounds</b> that will be sent to the right and left hardware. Then, it proceeds with the rendering of the voices.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                     ambL = np.zeros(frames, dtype=np.float32)
@@ -297,28 +271,14 @@
                     pulR = np.zeros(frames, dtype=np.float32)
                     </code></pre>
                     <p>
-                    The rendering of the voices depends on the fact that the <span class="tag-verde">callback</span> and <span class="tag-verde">OutputStream</span> 
-                    both process and reproduce the audio by treating it as segmented into blocks. 
-                    Therefore, not only it is <b>important</b> to <b>define</b> which <b>time instant</b>, 
-                    and the corresponding frames are <b>associated to the various blocks</b>, but also to <b>avoid rough transitions from one block 
-                    to another</b> for the sounds that are reproduced across multiple blocks. This is done by defining and updating, 
-                    at the end of each block for each active voice, the last time instant (<span class="tag-verde">v["t"]</span>) 
-                    and the last value of the phase (<span class="tag-verde">v["phase"]</span>). In this way, when the same voice is rendered at the beginning 
-                    of the following block, the time and the phase will be coherent.    
+                    The rendering of the voices depends on the fact that the <span class="tag-verde">callback</span> and <span class="tag-verde">OutputStream</span> both process and reproduce the audio by treating it as segmented into blocks. Therefore, not only it is <b>important</b> to <b>define</b> which <b>time instant</b>, and the corresponding frames are <b>associated to the various blocks</b>, but also to <b>avoid rough transitions from one block to another</b> for the sounds that are reproduced across multiple blocks. This is done by defining and updating, at the end of each block for each active voice, the last time instant (<span class="tag-verde">v["t"]</span>) and the last value of the phase (<span class="tag-verde">v["phase"]</span>). In this way, when the same voice is rendered at the beginning of the following block, the time and the phase will be coherent.    
                     </p>
                     <p>
                         When the callback renders the voices:
                     </p>
                     <ul>
                         <li>
-                            <b>For each ambient voice</b>: a set of coefficients associated with the time frames across the block is created.
-                            These coefficients are responsible for a vibrato effect. 
-                            A sine wave is then defined for the voice across the block, 
-                            considering its initial phase at the beginning of the block, 
-                            the base frequency and the vibrato coefficients. 
-                            A set of three harmonics is created from the initial sine and then, 
-                            through other coefficients, a tremolo effect on the volume is added. 
-                            The wave is then splitted into two r(ight and left) waves, while adding them to the respective buffers.
+                            <b>For each ambient voice</b>: a set of coefficients associated with the time frames across the block is created. These coefficients are responsible for a vibrato effect. A sine wave is then defined for the voice across the block, considering its initial phase at the beginning of the block, the base frequency and the vibrato coefficients. A set of three harmonics is created from the initial sine and then, through other coefficients, a tremolo effect on the volume is added. The wave is then splitted into two r(ight and left) waves, while adding them to the respective buffers.
                                 <pre class="line-numbers"><code class="language-python">
                                     # ---- AMBIENCE render (infinite) ----
                                     for v in self.ambient_voices:
@@ -356,9 +316,7 @@
                         </li>
                         <br>
                         <li>
-                            <b>For each pulse voice</b> the rendering process is similar to the ambient voices, 
-                            with the only difference being the use of a Hann envelope (function defined before the synth class) 
-                            on the voices, along with a micro-fade effect on the first samples of each voice to avoid clicking sounds.
+                            <b>For each pulse voice</b> the rendering process is similar to the ambient voices, with the only difference being the use of a Hann envelope (function defined before the synth class) on the voices, along with a micro-fade effect on the first samples of each voice to avoid clicking sounds.
                             <pre class="line-numbers"><code class="language-python">
                                 # ---- PULSE render ----
                                 new_pulse = []
@@ -411,17 +369,7 @@
                         </li>
                     </ul>
                     <p>
-                        The rendering is completed by applying the reverb’s process function only on the pulse sines, 
-                        as well as a final gain factor, <span class="tag-verde">self.master_gain</span>. The right and left pulse buffers are summed 
-                        to the respective ambient buffers to obtain two final buffers. Then, the callback applies a simple 
-                        limiter to the buffers to prevent clipping and writes the safely bounded audio samples to the output stream. 
-                        Finally, the callback uses as a block counter <span class="tag-verde">self.viz_counter</span> so that, 
-                        every time a number of audio blocks equal to <span class="tag-verde">self.viz_decimation</span> have been processed, 
-                        only the processed left buffer of the current block is decimated (8x decimation) 
-                        and added to the visualization queue object. Therefore, the visualization server will 
-                        receive only a snapshot of the decimated left channel every <span class="tag-verde">self.viz_decimation</span> blocks: 
-                        this makes sure that the server will send the clients, who are responsible for the visualization, 
-                        audio chunks which won’t be too heavy to process.
+                        The rendering is completed by applying the reverb’s process function on the pulse sines, as well as a final gain factor, <span class="tag-verde">self.master_gain</span>. The right and left pulse buffers are summed to the respective ambient buffers to obtain two final buffers. Then, the <span class="tag-verde">callback</span> applies a simple limiter to the buffers to prevent clipping and writes the safely bounded audio samples to the output stream. Finally, the <span class="tag-verde">callback</span> uses as a block counter <span class="tag-verde">self.viz_counter</span> so that, every time a number of audio blocks equal to <span class="tag-verde">self.viz_decimation</span> have been processed, <b>only the processed left buffer of the current block is decimated</b> (8x decimation) <b>and added to the visualization queue object</b>. Therefore, the <b>visualization server will receive only a snapshot of the decimated left channel</b> every <span class="tag-verde">self.viz_decimation</span> blocks: this makes sure that the <b>server will send the clients</b>, who are responsible for the visualization, <b>audio chunks which won’t be too heavy to process.</b>
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                                 # Separated master gain control
@@ -457,11 +405,7 @@
                     </code></pre>
                     <h2>Pulse tools</h2>
                     <p>
-                        The function <span class="tag-verde">hann_env</span>, used during the rendering of the pulse notes, 
-                        is defined in the “pulse tools” section at the beginning of the code, 
-                        before the synth class. This function takes as an input the duration of the signal 
-                        for which the envelope is needed, a fade in ratio and a fade out ratio, 
-                        and from these inputs it creates and returns a set of coefficients which constitute the envelope itself.
+                        The function <span class="tag-verde">hann_env</span>, used during the rendering of the pulse notes, is defined in the “pulse tools” section at the beginning of the code, before the synth class. This function takes as an input the duration of the signal for which the envelope is needed, a fade in ratio and a fade out ratio, and from these inputs it creates and returns a set of coefficients which constitute the envelope itself.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         def hann_env(t, dur, fade_in_ratio=0.15, fade_out_ratio=0.25):
@@ -488,20 +432,10 @@
                     </code></pre>
                     <h2>The loop player</h2>
                     <p>
-                        When considering how the synth is used within the code, 
-                        it is crucial to consider the loop player as well. 
-                        The <b>loop player</b> is a <b>function</b> that <b>takes the synth object as an input</b> and <b>uses it to play the 
-                        pulse-notes loops that have been recorded and stored</b> (for why there are pulse note loops, see the concept page). 
-                        The function initially defines an empty runtime list and then establishes an infinite while cycle. 
-                        <br>The cycle consists of constantly updating the loops list with the current stored loops and if the number 
-                        of loops has changed or one of the loops has been substituted, the runtime list gets updated. It is updated 
-                        by considering all the stored loops and, only for the ones which actually contain at least one event (one pulse note), 
-                        adding an element to the runtime list containing the corresponding loop, an index, and two-time parameters. 
-                        Out of these two parameters, the first one, t0, is indicative of the current iteration of the loop, 
-                        while the second one, t_next, is indicative of when to play the next event of the loop within the current iteration. 
-                        Once the runtime has been updated, the single iteration of the while cycle continues with an inner for cycle: 
-                        the for cycle checks if the current time has surpassed the t_next for the current events of any of the active loops, 
-                        and adds in such case the corresponding voices to the synth (t0 and the  event indexes are updated).
+                        When considering how the synth is used within the code, it is crucial to consider the loop player as well. The <b>loop player</b> is a <b>function</b> that <b>takes the synth object as an input</b> and <b>uses it to play the pulse-notes loops that have been recorded and stored</b> (for why there are pulse note loops, see the concept page). The function initially defines an empty runtime list and then establishes an infinite while cycle. 
+                        <br>The cycle consists of constantly updating the loops list with the current stored loops. <b>If the number of loops has changed or one of the loops has been substituted</b>, the <b>runtime list gets updated.</b> 
+                        <br>It is updated by <b>considering all the stored loops</b> and, <b>only for the ones which actually contain at least one event</b> (one pulse note), it <b>adds an element to the runtime list containing the corresponding loop, an index, and two-time parameters.</b> 
+                        <br>Out of these two parameters, the first one, <span class="tag-verde">t0</span>, is indicative of the <b>current iteration of the loop</b>, while the second one, <span class="tag-verde">t_next</span>, is indicative of <b>when to play the next event of the loop within the current iteration.</b> Once the runtime has been updated, the single iteration of the while cycle continues with an inner for cycle: the for cycle checks if the current time has surpassed the <span class="tag-verde">t_next</span> for the current events of any of the active loops, and adds in such case the corresponding voices to the synth (<span class="tag-verde">t0</span> and the  event indexes are updated).
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         def loop_player_thread(synth):
@@ -552,13 +486,10 @@
                     </code></pre>
                     <h2>Visualisation server</h2>
                     <p>
-                        After having studied how the synth works, as well as some other important functions associated with it, 
-                        it’s crucial to focus on how the main servers are actually built and how they work. The servers’ 
-                        creation mainly starts with the definition of functions through the command “async def”. 
-                        Such command is used for functions which are meant to work as server handlers, 
-                        which actually allow a server to interact with the real world. 
-                        Plus, declaring them as asynchronous ensures they are non-blocking and can coexist with other concurrent 
-                        requests within the same event loop.
+                        After having studied how the synth works, as well as some other important functions associated with it, it’s crucial to focus on how the main servers are actually built and how they work. The servers’ creation mainly starts with the definition of functions through the command <span class="tag-verde">“async def”</span>. Such command is <b>used for functions which are meant to work as server handlers</b>, which actually allow a server to interact with the real world. Plus, declaring them as asynchronous ensures they are non-blocking and can coexist with other concurrent requests within the same event loop.
+                    </p>
+                    <p>
+                        The visualization server mainly relies on two asynchronous functions. The first one, <span class="tag-verde">websocket_handler</span>, serves the purpose of <b>adding a possible new client of the server to a shared set</b> and/or <b>removing from the same set a client that is disconnecting</b> from the server.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         websocket_clients = set()
@@ -583,9 +514,7 @@
                                 print(f"[WS] Client disconnected. Total: {len(websocket_clients)}")
                     </code></pre>
                     <p>
-                        The visualization server mainly relies on two asynchronous functions. 
-                        The first one, websocket_handler, serves the purpose of adding a possible new client of the server 
-                        to a shared set and/or removing from the same set a client that is disconnecting from the server.
+                        The second one, <span class="tag-verde">viz_broadcaster</span>, which takes as an input the synthesizer object, establishes an <b>infinite while cycle</b>. The cycle <b>reads at every iteration</b>, from the queue attribute of the synthesizer, the <b>first-in-line audio chunk</b> of the queue (processed and decimated left channel audio block). It then <b>sends the chunk to the list of all the currently connected clients</b>, which will in turn visualize it. It also reports every time 500 chunks have been sent to the clients.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         async def viz_broadcaster(synth):
@@ -620,16 +549,12 @@
                                     queue_size = synth.viz_queue.qsize()
                                     print(f"[VIZ] Sent {chunks_sent} chunks | Queue: {queue_size}/50")
                     </code></pre>
-                    <p>
-                        The second one, viz_broadcaster, which takes as an input the synthesizer object,  
-                        establishes an infinite while cycle. The cycle reads at every iteration, 
-                        from the queue attribute of the synthesizer, the first-in-line audio chunk of the queue 
-                        (processed and decimated left channel audio block). It then sends the chunk to the list of all the currently 
-                        connected clients, which will in turn visualize it. It also reports every time 500 chunks have been sent to the clients.
-                    </p>
                     <h2>Control server</h2>
                     <p>
                         The HTTP or control server relies on many asynchronous functions. Each one of them has the task of allowing the server to act on how the real time engine is reproducing the audio, based on a specific user request from the web page. However, these following functions are defined as being dependent on a generic external request and still need to be associated to their specific respective user request, in order for the control server to actually use them.
+                    </p>
+                    <p>
+                        The <span class="tag-verde">handle_start</span> function is responsible for <b>changing</b>, after receiving a generic external request, the <span class="tag-verde">is_audio_playing</span> flag <b>to True</b>. It will be used by the server to ask the callback, whenever the user requests it from the webpage, to stop sending to the Output stream only zeros and to start rendering the voices in the lists. This functions also adds three notes to the synthesizer to test its correct functioning.
                     </p>
                     <pre class="line-numbers"><code class="language-python">  
                         async def handle_start(request):
@@ -655,11 +580,7 @@
                             }, headers={'Access-Control-Allow-Origin': '*'})                       
                     </code></pre>
                     <p>
-                        The handle_start function is responsible for changing, after receiving a generic external request, 
-                        the is_audio_playing flag to True. It will be used by the server to ask the callback, 
-                        whenever the user requests it from the webpage, to stop sending to the Output stream only zeros and 
-                        to start rendering the voices in the lists. This functions also adds three notes to the synthesizer to 
-                        test its correct functioning.
+                        The <span class="tag-verde">handle_stop</span> function, after a generic request, <b>changes</b> the <span class="tag-verde">is_audio_playing</span> flag <b>to False</b>. Additionally, it also empties the voices’ lists, so that when the user stops the synthesizer the stored voices are also reset.
                     </p>
                     <pre class="line-numbers"><code class="language-python">  
                         async def handle_stop(request):
@@ -682,9 +603,8 @@
                             }, headers={'Access-Control-Allow-Origin': '*'})                        
                     </code></pre>
                     <p>
-                        The handle_stop function, after a generic request, changes the is_audio_playing flag to False. 
-                        Additionally, it also empties the voices’ lists, so that when the user stops the synthesizer the 
-                        stored voices are also reset.
+                        The <span class="tag-verde">handle_start_rec</span> changes the <span class="tag-verde">is_recording</span> flag to <b>True</b> and <b>defines and empty list</b> for <b>the recorded events.</b> 
+                        <br>The <span class="tag-verde">handle_stop_rec</span> changes the flag to <b>False</b>, <b>creates a loop from the recorded events and the duration of the recording</b> and <b>appends it to the loops list.</b> However, none of these two functions is responsible for the recording itself.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         async def handle_start_rec(request):
@@ -729,7 +649,7 @@
                             }, headers={'Access-Control-Allow-Origin': '*'})                         
                     </code></pre>
                     <p>
-                        On one side, the handle_start_rec changes the is_recording flag to True and defines and empty list for the recorded events. On the other side, the handle_stop_rec changes the flag to False, creates a loop from the recorded events and the duration of the recording and appends it to the loops list. However, none of these two functions is responsible for the recording itself.
+                        The <span class="tag-verde">handle_clear_loops</span> and <span class="tag-verde">handle_clear_ambient</span> functions are respectively responsible for <b>clearing the recorded loops/the synth voices</b> that the synth is playing from its list and therefore resetting them, without stopping the callback from continuing to process the audio. Both functions exploit other “clear” functions defined in within the synth class.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         async def handle_clear_loops(request):
@@ -755,15 +675,9 @@
                                 'status': 'ambient_cleared'
                             }, headers={'Access-Control-Allow-Origin': '*'})                         
                     </code></pre>
-                    <p>
-                        The handle_clear_loops and handle_clear_ambient functions are respectively responsible for clearing the 
-                        recorded loops/the synth voices that the synth is playing from its list and therefore resetting them, 
-                        without stopping the callback from continuing to process the audio. Both functions exploit other “clear” 
-                        functions defined in within the synth class.
-                    </p>
                     <h2>Real time audio engine server</h2>
                     <p>
-                        The definition of the real time audio server is dependent on another asynchronous function, serial_reader.
+                        The definition of the real time audio server is dependent on another asynchronous function, <span class="tag-verde">serial_reader</span>.
                     </p>
                     <pre class="line-numbers"><code class="language-python">  
                         # -----------------------------
@@ -796,7 +710,7 @@
                                 ser = None                    
                     </code></pre>
                     <p>
-                        The serial_reader function takes as an input a synth object, and initially it defines a set of parameters. Among these parameters, the BAUD and PORTA parameters are relevant to the first operation that the code executes through a try operator, which is to create a digital serial door. This door consists in a digital equivalent of the link between the computer and the Arduino module, through which the code can import and read the Arduino outputs.
+                        The <span class="tag-verde">serial_reader</span> function takes as an input a synth object, and initially it defines a set of parameters. Among these parameters, the <span class="tag-verde">BAUD</span> and <span class="tag-verde">PORT</span> parameters are relevant to the first operation that the code executes through a try operator, which is to create a digital serial door. This door consists in a digital equivalent of the link between the computer and the Arduino module, through which the code can import and read the Arduino outputs.
                     </p>
                     <pre class="line-numbers"><code class="language-python">  
                         try:
@@ -822,10 +736,14 @@
                                 now = time.time()                        
                     </code></pre>
                     <p>
-                        Then, the code sets up an infinite while(true) cycle. For each iteration of this cycle, the code tries to read the correspondent current output of Arduino. A valid output should consist in a line containing two numbers, separated by a comma. If the output is valid, the code takes the two numbers and assigns the first one to a hum_raw variable and the second one to a bio_raw variable. This step therefore consists in saving the rough biodata of the plant, coming through Arduino. The next one will be the mapping of this current biodata.
-                        But, before considering this next step, it is useful to study some other tools and functions which are defined at the very beginning of the code and that will be now used.
+                        Then, the code sets up an infinite while(true) cycle. For each iteration of this cycle, the code tries to read the correspondent current output of Arduino. A valid output should consist in a line containing two numbers, separated by a comma. 
+                        <br>If the <b>output</b> is <b>valid</b>, the <b>code takes the two numbers</b> and <b>assigns the first one to</b> a <span class="tag-verde">hum_raw</span> variable and the <b>second one to</b> a <span class="tag-verde">bio_raw</span> variable. This step therefore consists in <b>saving the rough biodata of the plant</b>, coming through Arduino. The next one will be the mapping of this current biodata. But, before considering this next step, it is useful to study some other tools and functions which are defined at the very beginning of the code and that will be now used.
                     </p>
                     <h3>Musical utils</h3>
+                    <p>
+                        The function <span class="tag-verde">midi_to_freq</span> takes as an input a midi frequency value and translates it into a Hertz frequency value. 
+                        The <span class="tag-verde">midi_from_adc_semitones</span> function takes as an input a base frequency, called <span class="tag-verde">base_root</span> (default value 24 midi), and an adc parameter that goes from 0 to 1023. It turns the adc into a number of semitones (from a minimum of 0 to a maximum of 60) and it returns the number of semitones summed to the base root and the number itself.
+                    </p>
                     <pre class="line-numbers"><code class="language-python">      
                         def midi_to_freq(m):
                             return 440.0 * (2.0 ** ((m - 69) / 12.0))
@@ -836,8 +754,8 @@
                             return base_root + semis, semis                    
                     </code></pre>
                     <p>
-                        The function midi_to_freq takes as an input a midi frequency value and translates it into a Hertz frequency value. 
-                        The midi_from_adc_semitones function takes as an input a base frequency, called base_root (default value 24 midi), and an adc parameter that goes from 0 to 1023. It turns the adc into a number of semitones (from a minimum of 0 to a maximum of 60) and it returns the number of semitones summed to the base root and the number itself.
+                        The <span class="tag-verde">build_major_offsets_3_octaves</span> function uses a list of degrees (defined before it as a list of the number of semitones above the tonic note of all the notes in a major scale). This list is used to build another list containing the numbers of semitones above a generic base root of all the notes that are contained in three octaves of major scale (all starting from the base root).
+                        <br>The <span class="tag-verde">quantize_to_major</span> function is related to <span class="tag-verde">build_major_offsets_3_octaves</span>, in the sense that it takes as an input a generic number of semitones above a base root and rounds it to the nearest major offset in the correspondent octave (in this case five octaves are considered).  It will be used in the pulse mapping.
                     </p>
                     <pre class="line-numbers"><code class="language-python">   
                         MAJOR_DEGREES = [0, 2, 4, 5, 7, 9, 11]
@@ -862,8 +780,7 @@
                         MAJOR_OFFSETS = build_major_offsets_3_octaves(36)                       
                     </code></pre>
                     <p>
-                        The build_major_offsets_3_octaves function uses a list of degrees (defined before it as a list of the number of semitones above the tonic note of all the notes in a major scale). This list is used to build another list containing the numbers of semitones above a generic base root of all the notes that are contained in three octaves of major scale (all starting from the base root).
-                        The quantize_to_major function is related to build_major_offsets_3_octaves, in the sense that it takes as an input a generic number of semitones above a base root and rounds it to the nearest major offset in the correspondent octave (in this case five octaves are considered).  It will be used in the pulse mapping.
+                        Also, <span class="tag-verde">build_major_offsets_3_octaves</span> is used in the <span class="tag-verde">humidity_to_note</span> function which takes as an input an h value ( presumably a raw humidity biodata value). The h value is turned into a percentage by considering within a range of biodata values that goes from 200 to 400. Then, this percentage is used to obtain a value from 0 to 36, which is in turn rounded and finally swapped with the nearest major offset, all to obtain a mapped equivalent of h, in terms of semitones above the base root.
                     </p>
                     <pre class="line-numbers"><code class="language-python"> 
                         def humidity_to_note(h: float, base_root: int, h_min=200.0, h_max=400.0):
@@ -877,10 +794,12 @@
                         nearest = min(MAJOR_OFFSETS, key=lambda o: abs(o - semis))
                         return base_root + nearest, nearest                         
                     </code></pre>
-                    <p>
-                        Also, build_major_offsets_3_octaves is used in the humidity_to_note function which takes as an input an h value ( presumably a raw humidity biodata value). The h value is turned into a percentage by considering within a range of biodata values that goes from 200 to 400. Then, this percentage is used to obtain a value from 0 to 36, which is in turn rounded and finally swapped with the nearest major offset, all to obtain a mapped equivalent of h, in terms of semitones above the base root.
-                    </p>
                     <h2>Mapping of biodata</h2>
+                    <p>
+                        Going back to the serial reader and the mapping of the impulses, the while cycle at every iteration applies the <span class="tag-verde">humidity_to_note</span> function to the <span class="tag-verde">hum_raw</span> variable, therefore assigning the biodata humidity value a correspondent note in major scale (expressed as a number of semitones above the base root). 
+                        <br><b>If the number of semitones is equal to zero</b> (invalid value that happens when the humidity sensor is disconnected from Arduino) <b>twice in a row</b>, the <b>synthesizer's ambient voices are cleared</b>, and a specific <b>flag</b> is <b>changed to "true"</b>. This flag will return to "false" when the number of semitones will return to being valid. The valid <span class="tag-verde">hum_raw</span> values are appended to a list and, when the iteration's time has surpassed a time limit determined by <span class="tag-verde">AMB_WINDOW_SEC</span> , these values in the list are averaged. Then, the serial reader once again uses <span class="tag-verde">humidity_to_note</span> to turn the average humidity to a number of semitones. 
+                        <br>Finally, through <span class="tag-verde">add_ambient_voice_moving</span>, it adds to the synth an ambient voice with a frequency associated to the average number of semitones. This completes the humidity mapping.
+                    </p>
                     <pre class="line-numbers"><code class="language-python"> 
                         # ---- AMBIENCE (only if audio is playing) ----
                         with audio_state_lock:
@@ -910,7 +829,9 @@
                                         amb_window_start = now                        
                     </code></pre>
                     <p>
-                        Going back to the serial reader and the mapping of the impulses, the while cycle at every iteration applies the humidity_to_note function to the hum_raw variable, therefore assigning the biodata humidity value a correspondent note in major scale (expressed as a number of semitones above the base root). If the number of semitones is equal to zero (invalid value that happens when the humidity sensor is disconnected from Arduino) twice in a row, the synthesizer’s ambient voices are cleared, and a specific flag is changed to “true”. This flag will return to “false” when the number of semitones will return to being valid. The valid hum_raw values are appended to a list and, when the iteration’s time has surpassed a time limit determined by  AMB_WINDOW_SEC , these values in the list are averaged. Then, the serial reader once again uses humidity_to_note to turn the average humidity to a number of semitones. Finally, through add_ambient_voice_moving, it adds to the synth an ambient voice with a frequency associated to the average number of semitones. This completes the humidity mapping
+                        Next is the bioelectrical impulse mapping: at every iteration the current <span class="tag-verde">bio_raw</span> value is turned into a number of semitones using <span class="tag-verde">midi_from_adc_semitones</span>, this number of semitones is rounded to the closest one in major scale using <span class="tag-verde">quantize_to_major</span>. This number of semitones is added to the base root, obtaining a total note midi value. 
+                        <br>If the value is above a minimum threshold and the time exceeds a cooldown time, the pulse note is added to the synth. If a loop recording is happening, the note is also saved as an event for the loop that is being recorded.
+                        <br>If the output stream has started and the <span class="tag-verde">is_audio_playing</span> flag is true, these mapped voices, once added to the synth, will be translated into audio signals by the callback and sent by the stream to the hardware! In any instances in which the <span class="tag-verde">serial_reader</span> is running but the <span class="tag-verde">is_audio_playing</span> flag is false, the pulse and ambient voices corresponding to the Arduino outputs will be added to the synth, but the active callback will not read the voices' lists and will keep sending to the output stream only zeros.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         # ---- PULSE (only if audio is playing) ----
@@ -926,14 +847,12 @@
                                 if is_recording:
                                     rec_events.append((now - rec_start_t, pulse_midi))                          
                     </code></pre>
-                    <p>
-                        Next is the bioelectrical impulse mapping: at every iteration the current bio_raw value is turned into a number of semitones using midi_from_adc_semitones, this number of semitones is rounded to the closest one in major scale using quantize_to_major. This number of semitones is added to the base root, obtaining a total note midi value. If the value is above a minimum threshold and the time exceeds a cooldown time, the pulse note is added to the synth. If a loop recording is happening, the note is also saved as an event for the loop that is being recorded.
-                        If the output stream has started and the is_audio_playing flag is true, these mapped voices, once added to the synth, will be translated into audio signals by the callback and sent by the stream to the hardware!
-                        In any instances in which the serial_reader is running but the is_audio_playing flag is false, the pulse and ambient voices corresponding to the Arduino outputs will be added to the synth, but the active callback will not read the voices’ lists and will keep sending to the output stream only zeros.
-                    </p>
                     <h2>Main</h2>
                     <p>
-                        The final key asynchronous function is the main function. If the code runs the main, it is responsible for using all the asynchronous and non-asynchronous functions, as well as all the classes, defined above to actually create the synthesizer and the functioning servers. 
+                        The final key asynchronous function is the <span class="tag-verde">main</span> function. If the code runs the main, it is responsible for using all the asynchronous and non-asynchronous functions, as well as all the classes, defined above to actually create the synthesizer and the functioning servers. 
+                    </p>
+                                        <p>
+                        In fact, this function initially creates a synth object using the <span class="tag-verde">Synth</span> class. It  then creates the websocket and HTTP servers, which will use their respective asynchronous functions. In the case of the HTTP server, specific user requests are associated to the various functions used by the control server, making it fully functioning. 
                     </p>
                     <pre class="line-numbers"><code class="language-python">   
                         async def main():
@@ -983,16 +902,16 @@
                             print("✅ HTTP server activated on http://localhost:8080")                       
                     </code></pre>
                     <p>
-                        In fact, this function initially creates a synth object using the Synth class. It  then creates the websocket and HTTP servers, which will use their respective asynchronous functions. In the case of the HTTP server, specific user requests are associated to the various functions used by the control server, making it fully functioning. 
+                        Finally, the function runs the serial reader and therefore the real time audio engine is operational as well.
                     </p>
                     <pre class="line-numbers"><code class="language-python">   
                         # Start serial reader
                         await serial_reader(synth)                       
                     </code></pre>
-                    <p>
-                        Finally, the function runs the serial reader and therefore the real time audio engine is operational as well.
-                    </p>
                     <h3>In conclusion</h3>
+                    <p>
+                        In its final lines, the code runs the <span class="tag-verde">main</span> function, the synth and servers are created,  and the output stream produces silence, even though the Arduino values are being mapped and saved by the serial reader. This will of course change when the user, through the control server, will ask the callback to start reproducing the mapped biodata.
+                    </p>
                     <pre class="line-numbers"><code class="language-python">    
                         if __name__ == "__main__":
                         try:
@@ -1001,9 +920,6 @@
                             print("\n🛑 Shutting down...")
                             print("✅ All closed. Goodbye!")                      
                     </code></pre>
-                    <p>
-                        In its final lines, the code runs the main function, the synth and servers are created,  and the output stream produces silence, even though the Arduino values are being mapped and saved by the serial reader. This will of course change when the user, through the control server, will ask the callback to start reproducing the mapped biodata.
-                    </p>
 
                     <br><br>
                     <h1>Frontend</h1>
