@@ -943,16 +943,15 @@
                     </ol>
                     <p>
                         Every page is handled by a <b>specific stylesheet</b> that ensures consistency with the overall design of the system. 
-                        <br>The backend part is handled by an <b>asynchronous Python server</b> that communicates with the frontend using 
-                        <b>WebSocket</b> technology.
+                        <br>The backend part is handled by an <b>asynchronous Python server</b> that communicates with the frontend using <b>WebSocket</b> technology.
                     </p>
                     <h2>Navigation system <img src="../images/pxlFlowe.svg"></h2>
                     <p>
-                        The code for the navigation system is in `nav.js` and follows a <b>DOM-based dynamic approach</b>. 
+                        The code for the navigation system is in <span class="tag-verde">nav.js</span> and follows a <b>DOM-based dynamic approach</b>. 
                         <br>It consists of:
                     </p>                    
                     <ul>
-                        <li>Personalized flower (menu-flower) with colored petals</li>
+                        <li>Personalized flower (<span class="tag-verde">menu-flower</span>) with colored petals</li>
                         <li>Text button with the label of the section</li>
                         <li>CSS Animations on hover (center rotation, scale up)</li>
                     </ul>                  
@@ -962,7 +961,7 @@
 
                     <h3>Cow Animation <img src="../images/cow.svg"></h3>
                     <p>
-                        The `SimpleCow` class has a <b>simulated physical movement system</b> that responds to collisions.
+                        The <span class="tag-verde">SimpleCow</span> class has a <b>simulated physical movement system</b> that responds to collisions.
                         <br>Each cow:
                     </p>                    
                     <ul>
@@ -972,15 +971,12 @@
                         <li>Nicely <b>bounces</b> on the edges of the screen and of the START button</li>
                     </ul>
                     <p>
-                        In the <b>constructor</b> of the SimpleCow class, the <b>valid area</b> is calculated, where the cows can move, avoiding the navigation menu and the START button. 
-                        For this task the property offsetWidth of nav and the method getBoundingClientRect for the START button are used.
+                        In the <b>constructor</b> of the <span class="tag-verde">SimpleCow</span> class, the <b>valid area</b> is calculated, where the cows can move, avoiding the navigation menu and the START button. For this task the property <span class="tag-verde">offsetWidth</span> of nav and the method <span class="tag-verde">getBoundingClientRect</span> for the START button are used.
                     </p>
                     <p>
-                        In the <b>update</b> method, the <b>movement</b> of the Cows is handled.
-                        <br><b>Random pauses</b> are implemented in the movement simply using boolean property 'paused' of the class SimpleCow. Cows have a 1% probability of being paused at each frame. 
-                        When paused, the cow does not move for a random time between 500ms and 2000ms, after which it resumes its movement.
-                        <br><br>The <b>bouncing mechanism</b> is implemented by checking if the cow's position exceeds the valid area boundaries. 
-                        If it does, the corresponding velocity component (vx or vy) is inverted and the cow bounces back into the valid area:
+                        In the <span class="tag-verde">update</span> method, the <b>movement</b> of the Cows is handled.
+                        <br><b>Random pauses</b> are implemented in the movement simply using boolean property <span class="tag-verde">paused</span> of the class <span class="tag-verde">SimpleCow</span>. Cows have a 1% probability of being paused at each frame. When paused, the cow does not move for a random time between 500ms and 2000ms, after which it resumes its movement.
+                        <br><br>The <b>bouncing mechanism</b> is implemented by checking if the cow's position exceeds the valid area boundaries. If it does, the corresponding velocity component (vx or vy) is inverted and the cow bounces back into the valid area:
                     </p>                  
                     <pre class="line-numbers"><code class="language-javascript">
                     // Gentle bounce on the horizontal edges
@@ -993,8 +989,7 @@
                     }
                     </code></pre>
                     <p>
-                        For the START button, the same logic is used, but the cow's direction is reversed by 
-                        inverting vx or vy depending on which side it approaches from.
+                        For the START button, the same logic is used, but the cow's direction is reversed by inverting vx or vy depending on which side it approaches from.
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                     // Checks collision with button
@@ -1029,9 +1024,7 @@
                     }
                     </code></pre>
                     <p>
-                        <b>Random changes of direction and speed</b> are also implemented: every update, 
-                        the velocity components might change with a probability of 2%, simulating a small, 
-                        spontaneous change in direction and speed.
+                        <b>Random changes of direction and speed</b> are also implemented: every update, the velocity components might change with a probability of 2%, simulating a small, spontaneous change in direction and speed.
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                     // Random direction change
@@ -1050,11 +1043,8 @@
                     </code></pre>
                     <h3>Duck Animation <img src="../images/duck_for_code_report.svg"></h3>
                     <p>
-                        Ducks move similarly to cows, but with a <b>higher speed</b>. 
-                        Also, a logic for <b>random jumps</b> is implemented.
-                        <br>Each duck has a 0.5% probability of jumping at each frame. 
-                        When jumping, the duck's y position is temporarily decreased by a fixed jumpHeight value for a short duration 
-                        (jumpTimer), then it returns to its original y position.
+                        Ducks move similarly to cows, but with a <b>higher speed</b>. Also, a logic for <b>random jumps</b> is implemented.
+                        <br>Each duck has a 0.5% probability of jumping at each frame. When jumping, the duck's y position is temporarily decreased by a fixed jumpHeight value for a short duration (<span class="tag-verde">jumpTimer</span>), then it returns to its original y position.
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                     // Salto casuale
@@ -1075,9 +1065,7 @@
                     </code></pre>
                     <h3>Decorative Grass <img src="../images/grass.svg" height="30px"></h3>
                     <p>
-                        The grass items are added dinamically to the pages using the function addGrassItem() in javascript. 
-                        Each grass item has <b>random dimensions, position and color</b>. 
-                        Also, a z-index of 1 is assigned to the grass items to ensure they stay in the background.
+                        The grass items are added dinamically to the pages using the function <span class="tag-verde">addGrassItem()</span> in javascript. Each grass item has <b>random dimensions, position and color</b>. Also, a <span class="tag-verde">z-index</span> of 1 is assigned to the grass items to ensure they stay in the background.
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                     function addGrassItem() {
@@ -1102,11 +1090,8 @@
                     </code></pre>
                     <h3>Background flowers <img src="../images/bg_flower.svg"></h3>
                     <p>
-                        Some flowers are added dinamically to the pages using the function addFlowerItem() in javascript. 
-                        Their position is random, but some <b>constraints</b> are added to <b>avoid overlapping</b> with the navigation menu, 
-                        other flowers or audio settings in the live listening page.
-                        A number of attempts is set to try to find a valid position for each flower, if none is found, the flower is not added.
-                        <br>Their z-index is put to 2, to stay over the grass, but under everything else.
+                        Some flowers are added dinamically to the pages using the function <span class="tag-verde">addFlowerItem()</span> in javascript. Their position is random, but some <b>constraints</b> are added to <b>avoid overlapping</b> with the navigation menu, other flowers or audio settings in the live listening page. A number of attempts is set to try to find a valid position for each flower, if none is found, the flower is not added.
+                        <br>Their <span class="tag-verde">z-index</span> is put to 2, to stay over the grass, but under everything else.
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                     function getRandomPosition(flowerSize, maxAttempts = 50) {
