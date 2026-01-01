@@ -107,16 +107,20 @@ class HoverTableOfContents {
           tempIndex++;
         }
 
-        // Show children on hover
+        // Show children on hover with 800ms delay
+        let h1HoverTimeout;
         link.addEventListener("mouseenter", () => {
-          nextItems.forEach((id) => {
-            const el = document.querySelector(`[data-toc-id="${id}"]`);
-            if (el) el.classList.remove("toc-hidden");
-          });
+          h1HoverTimeout = setTimeout(() => {
+            nextItems.forEach((id) => {
+              const el = document.querySelector(`[data-toc-id="${id}"]`);
+              if (el) el.classList.remove("toc-hidden");
+            });
+          }, 800);
         });
 
-        // Hide children on mouseleave with 500ms delay (allows moving to h2)
+        // Hide children on mouseleave with 700ms delay (allows moving to h2)
         link.addEventListener("mouseleave", () => {
+          clearTimeout(h1HoverTimeout);
           setTimeout(() => {
             if (!link.parentElement.matches(":hover")) {
               nextItems.forEach((id) => {
@@ -124,7 +128,7 @@ class HoverTableOfContents {
                 if (el) el.classList.add("toc-hidden");
               });
             }
-          }, 500);
+          }, 700);
         });
       }
 
@@ -147,16 +151,20 @@ class HoverTableOfContents {
           tempIndex++;
         }
 
-        // Show h3 children on h2 hover
+        // Show h3 children on h2 hover with 600ms delay
+        let h2HoverTimeout;
         link.addEventListener("mouseenter", () => {
-          nextItems.forEach((id) => {
-            const el = document.querySelector(`[data-toc-id="${id}"]`);
-            if (el) el.classList.remove("toc-hidden");
-          });
+          h2HoverTimeout = setTimeout(() => {
+            nextItems.forEach((id) => {
+              const el = document.querySelector(`[data-toc-id="${id}"]`);
+              if (el) el.classList.remove("toc-hidden");
+            });
+          }, 600);
         });
 
         // Hide h3 on mouseleave with delay
         link.addEventListener("mouseleave", () => {
+          clearTimeout(h2HoverTimeout);
           setTimeout(() => {
             if (!link.parentElement.matches(":hover")) {
               nextItems.forEach((id) => {
@@ -164,7 +172,7 @@ class HoverTableOfContents {
                 if (el) el.classList.add("toc-hidden");
               });
             }
-          }, 200);
+          }, 500);
         });
       }
 
@@ -236,6 +244,16 @@ class HoverTableOfContents {
   }
 
   /**
+   * Reset all submenus to hidden state (h2 and h3)
+   */
+  resetSubmenus() {
+    const allSubItems = document.querySelectorAll('.toc-level-2, .toc-level-3');
+    allSubItems.forEach(item => {
+      item.classList.add('toc-hidden');
+    });
+  }
+
+  /**
    * Create or retrieve the trigger button element
    * Creates floating button if no existing trigger found
    */
@@ -270,6 +288,26 @@ class HoverTableOfContents {
 
     // Position TOC after trigger element
     this.triggerElement.insertAdjacentElement("afterend", this.tocElement);
+
+    // Reset submenus when TOC is hidden (when mouse leaves both trigger and TOC)
+    let resetTimeout;
+    const handleMouseLeave = () => {
+      resetTimeout = setTimeout(() => {
+        // Check if mouse is not over trigger or TOC
+        if (!this.triggerElement.matches(':hover') && !this.tocElement.matches(':hover')) {
+          this.resetSubmenus();
+        }
+      }, 1000);
+    };
+
+    const handleMouseEnter = () => {
+      clearTimeout(resetTimeout);
+    };
+
+    this.triggerElement.addEventListener('mouseleave', handleMouseLeave);
+    this.tocElement.addEventListener('mouseleave', handleMouseLeave);
+    this.triggerElement.addEventListener('mouseenter', handleMouseEnter);
+    this.tocElement.addEventListener('mouseenter', handleMouseEnter);
   }
 }
 
