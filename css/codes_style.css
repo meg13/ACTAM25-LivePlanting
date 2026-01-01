@@ -1,48 +1,82 @@
+/* Fixed trigger - side rectangle style */
+#toc-trigger {
+  position: fixed;
+  top: 110px;
+  left: 0;
+  background: #409543;
+  color: white;
+  padding: 20px 8px;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  z-index: 1000;
+  font-family: "Oxygen Mono", monospace;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1.8px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform-origin: left center;
+  transition: all 0.3s ease;
+  border-right: 3px solid #2d5a27;
+}
+
+#toc-trigger:hover {
+  background: #4fb052;
+  box-shadow: 3px 0 12px rgba(64, 149, 67, 0.4);
+  transform: translateX(2px);
+  border-right-color: #1a3d14;
+}
+
+/* Image and content style*/
 img {
-    max-width: 100%;
-    height: auto;
-    margin: -10px 0;
+  max-width: 100%;
+  height: auto;
+  margin: -10px 0;
 }
 
 article > h3 {
-    font-size: 18px;
-    margin-bottom: 9px;
+  font-size: 14px;
+  margin-bottom: 9px;
 }
 
 .tag-verde {
-  color: #409543;           
-  font-style: italic;      
-  font-weight: 500;         
+  color: #409543;
+  font-style: italic;
+  font-weight: 500;
   background-color: rgba(76, 175, 80, 0.1);
-  padding: 2px 6px;         
-  border-radius: 6px;       
-  font-size: 0.95em;        
+  padding: 1px 1px;
+  border-radius: 6px;
+  font-size: 0.95em;
 }
 
 article ol,
 article ul {
-  font-family: 'Oxygen Mono', monospace;
+  font-family: "Oxygen Mono", monospace;
   font-size: 18px;
   font-weight: 400;
-  line-height: 120%;           
+  line-height: 120%;
   letter-spacing: 0.3px;
   text-align: justify;
   margin-top: 8px;
   margin-bottom: 24px;
-  padding-left: 2em;           
+  padding-left: 2em;
 }
 
 article ol li,
 article ul li {
-  margin-bottom: 4px;          
-  font-weight: 400;            
+  margin-bottom: 4px;
+  font-weight: 400;
 }
 
 article ol li::marker,
 article ul li::marker {
-  color: inherit;               
-  font-weight: 300;            
-  font-size: 0.95em;           
+  color: inherit;
+  font-weight: 300;
+  font-size: 0.95em;
 }
 
 article ol li img,
@@ -51,9 +85,203 @@ article ul li img {
   margin-left: 4px;
 }
 
+/* TOC Trigger Button - Fixed floating button (class usata dal JS) */
+.toc-trigger {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #5eb052, #4a9f4a);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(94, 176, 82, 0.4);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+}
 
+.toc-trigger:hover {
+  transform: scale(1.1) rotate(10deg);
+  box-shadow: 0 8px 25px rgba(94, 176, 82, 0.6);
+  background: linear-gradient(135deg, #6ec35c, #5eb052);
+}
 
+/* Hover TOC Container - Shows on trigger hover */
+.hover-toc {
+  position: fixed;
+  top: 80px;
+  left: 20px;
+  width: 320px;
+  max-height: 70vh;
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-100%);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 9999;
+  scroll-behavior: smooth;
+}
 
+.toc-trigger:hover + .hover-toc,
+.hover-toc:hover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
 
+/* TOC Content Styling */
+.toc-wrapper {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 253, 208, 0.95) 0%,
+    rgba(200, 220, 200, 0.95) 100%
+  );
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(94, 176, 82, 0.3);
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
 
+.toc-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2d5a27;
+  margin: 0 0 20px 0;
+  padding-bottom: 12px;
+  border-bottom: 2px solid rgba(94, 176, 82, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
+.toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.toc-list ul {
+  list-style: none;
+  padding-left: 20px;
+  margin: 8px 0;
+  border-left: 2px solid rgba(94, 176, 82, 0.3);
+}
+
+.toc-item {
+  margin: 6px 0;
+}
+
+/* Hide h2/h3 items by default */
+.toc-hidden {
+  display: none;
+}
+
+/* Show animation for revealed items */
+.toc-item:not(.toc-hidden) {
+  display: list-item;
+  animation: slideDown 1.5s ease;
+  margin: 6px 0;
+}
+
+/* Slide down appearance animation */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Extra indentation for h3 level */
+.toc-item.toc-level-3:not(.toc-hidden) {
+  margin-left: 12px;
+}
+
+.toc-link {
+  color: #2d5a27;
+  text-decoration: none;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  display: block;
+  line-height: 1.4;
+}
+
+.toc-link:hover {
+  background: rgba(94, 176, 82, 0.2);
+  color: #1a3d14;
+  transform: translateX(4px);
+}
+
+/* Level-specific styling */
+.toc-link.toc-level-1 {
+  font-weight: 600;
+  font-size: 15px;
+}
+.toc-link.toc-level-2 {
+  color: #3a7a3a;
+  padding-left: 8px;
+}
+.toc-link.toc-level-3 {
+  color: #4a9f4a;
+  font-size: 13px;
+}
+.toc-link.toc-level-4 {
+  color: #5eb052;
+  font-size: 12px;
+  padding-left: 16px;
+}
+
+/* Target heading highlight effect */
+.highlight-heading {
+  animation: highlight-pulse 2s ease-out;
+  background: linear-gradient(
+    90deg,
+    rgba(94, 176, 82, 0.2),
+    rgba(94, 176, 82, 0.1)
+  );
+  border-left: 4px solid #5eb052;
+  padding-left: 10px !important;
+}
+
+@keyframes highlight-pulse {
+  0% {
+    background: rgba(94, 176, 82, 0.4);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .toc-trigger {
+    top: 15px;
+    left: 15px;
+    width: 45px;
+    height: 45px;
+    font-size: 18px;
+  }
+
+  .hover-toc {
+    left: 15px;
+    top: 70px;
+    width: 280px;
+  }
+
+  .toc-wrapper {
+    padding: 20px;
+  }
+}

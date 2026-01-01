@@ -9,11 +9,13 @@ article {
 
 article > h1 {
     font-size: 30px;
+    margin-top: 60px;
     margin-bottom: 18px;
 }
 
 article > h2 {
     font-size: 20px;
+    margin-top: 40px;
     margin-bottom: 9px;
 }
 
