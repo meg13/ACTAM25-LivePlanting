@@ -937,17 +937,18 @@
                     <h2>Methods for audio drawing</h2>
                     <pre class="line-numbers"><code class="language-javascript">
                         drawEmptyWaveform() {
-                        const ctx = this.canvasContext;
-                        const width = this.canvas.width;
-                        const height = this.canvas.height;
-                        ctx.fillStyle = '#F5F5DC';
-                        ctx.fillRect(0, 0, width, height);
-                        ctx.strokeStyle = '#8BC34A';
-                        ctx.lineWidth = 2;
-                        ctx.beginPath();
-                        ctx.moveTo(0, height / 2);
-                        ctx.lineTo(width, height / 2);
-                        ctx.stroke();
+                            const ctx = this.canvasContext;
+                            const width = this.canvas.width;
+                            const height = this.canvas.height;
+                    
+                            ctx.fillStyle = '#F5F5DC';
+                            ctx.fillRect(0, 0, width, height);
+                            ctx.strokeStyle = '#8BC34A';
+                            ctx.lineWidth = 2;
+                            ctx.beginPath();
+                            ctx.moveTo(0, height / 2);
+                            ctx.lineTo(width, height / 2);
+                            ctx.stroke();
                         }
                     </code></pre>
                     <p>
@@ -1030,7 +1031,7 @@
                             };
                     
                             draw();
-                                             
+                        }                        
                     </code></pre>
                     <p>
                        startVisualization initially retreives the information of the canvas and prepares the canvas for the current frame: it fills the background, sets the style of the line and initializes a new drawing path. The frame is the current drawing on the canvas, which can change over time. Then, startvisualization transforms the audio samples into a line drawn on the canvas. It takes the number of samples in the circular buffer and computes how much horizontal space each sample occupies. For each sample, it reads the audio value, normalizes it from the range [-1,+1]  to [0,1], and converts it into a vertical coordinate, mapping the audio buffer onto a continuous line from left to right within the same frame. For the first sample, the drawing cursor is moved to the initial point without drawing, while for all subsequent samples a line is drawn from the previous point to the new one. After each sample, the horizontal position is advanced so the waveform progresses across the canvas.
@@ -1258,7 +1259,8 @@
                     </code></pre>
                     <p>
                         ClearLoop and ClearAmbience are the JS functions (asynchronous methods) that execute on the control server, once the respective buttons are clicked, the matching requests.
-                    </p> 
+                    </p>
+                    <h2>Main methods</h2>
                     <pre class="line-numbers"><code class="language-javascript">
                         init() {
                             this.createCanvas();
@@ -1557,4 +1559,5 @@
     <script src="../js/nav.js" type="text/javascript"></script>
     <script src="../js/prism.js" type="text/javascript"></script>
 </html>
+
 
