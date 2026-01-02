@@ -128,7 +128,7 @@ function addFlowerItem() {
   document.body.appendChild(flower);
 }
 
-// Aspetta che DOM sia caricato e nav sia creata
+// Wait for DOM to be loaded and nav to be created
 document.addEventListener('DOMContentLoaded', () => {
   for (let i = 0; i < 10; i++) {
     addFlowerItem();
