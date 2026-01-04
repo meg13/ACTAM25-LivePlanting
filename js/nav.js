@@ -44,7 +44,7 @@ function createFlower(id) {
   center.className = 'flower-center';
   flowerDiv.appendChild(center);
   return flowerDiv;
-} // ← CHIUSURA FUNZIONE
+} 
 
 function createNavButton(label, id) {
   const buttonDiv = document.createElement('div');
@@ -52,7 +52,7 @@ function createNavButton(label, id) {
   buttonDiv.id = `${id}-button`;
   buttonDiv.textContent = label;
   return buttonDiv;
-} // ← CHIUSURA FUNZIONE
+} 
 
 function createNavElement(item) {
   const link = document.createElement('a');
@@ -62,7 +62,7 @@ function createNavElement(item) {
   link.appendChild(createFlower(item.id));
   link.appendChild(createNavButton(item.label, item.id));
   return link;
-} // ← CHIUSURA FUNZIONE
+} 
 
 function initializeNav() {
   let navContainer = document.getElementById('nav-container');

@@ -1,19 +1,19 @@
 class SimpleDuck {
     constructor() {
         this.element = null;
-        // Calcola l'area valida evitando il nav
+        // Calculate the valid area avoiding the nav
         const nav = document.querySelector('nav');
         const navWidth = nav ? nav.offsetWidth + 20 : 150;
         const maxX = window.innerWidth - navWidth - 80;
 
-        // Rileva il pulsante START
+        // Detect the START button to avoid it
         const startButton = document.querySelector('.startButton');
         let buttonRect = null;
         if (startButton) {
             buttonRect = startButton.getBoundingClientRect();
         }
 
-        // Posiziona le papere solo nell'area del prato, evitando anche il pulsante START
+        // Positioning the ducks in the grass area avoiding the START button
         let x, y;
         do {
             x = Math.random() * maxX;
@@ -33,11 +33,11 @@ class SimpleDuck {
         this.direction = this.vx > 0 ? 1 : -1;
         this.paused = false;
         this.pauseTimer = 0;
-        // Inizializza variabili di salto
+        // Initialize jump variables
         this.jumping = false;
         this.jumpTimer = 0;
         this.jumpHeight = 20;
-        this.startY = this.y; // Memorizza la posizione di partenza
+        this.startY = this.y; // Save the starting Y position
         this.create();
     }
 
@@ -53,7 +53,7 @@ class SimpleDuck {
     }
     
     update() {
-    // Pausa casuale
+    // Random pause
     if (this.paused) {
         this.pauseTimer--;
         if (this.pauseTimer <= 0) {
@@ -65,7 +65,7 @@ class SimpleDuck {
         }
     }
 
-    // Salto casuale
+    // Random jump
     if (!this.jumping && Math.random() < 0.005) {
         this.jumping = true;
         this.jumpTimer = 10;
@@ -81,15 +81,15 @@ class SimpleDuck {
         }
     }
 
-    // Muove la papera
+    // Move the duck
     this.x += this.vx;
     this.y += this.vy;
 
-    // Calcola il margine destro in base al nav
+    // Calculate the right margin based on the nav
     const nav = document.querySelector('nav');
     const navWidth = nav ? nav.offsetWidth + 20 : 150;
 
-    // Rimbalzo sui bordi orizzontali
+    // Bounce off horizontal borders
     if (this.x < 0) {
         this.x = 0;
         this.vx *= -1;
@@ -98,7 +98,7 @@ class SimpleDuck {
         this.vx *= -1;
     }
 
-    // Rimbalzo sui bordi verticali
+    // Bounce off vertical borders
     if (this.y < 100) {
         this.y = 100;
         this.vy *= -1;
@@ -149,7 +149,7 @@ class SimpleDuck {
         }
     }
 
-    // Cambio direzione casuale
+    // Random direction change
     if (Math.random() < 0.02) {
         this.vx += (Math.random() - 0.5) * 0.4;
         this.vy += (Math.random() - 0.5) * 0.2;
@@ -162,7 +162,7 @@ class SimpleDuck {
         this.direction = this.vx > 0 ? 1 : -1;
     }
 
-    // Aggiorna posizione
+    // Update duck position
     this.element.style.left = this.x + 'px';
     this.element.style.top = this.y + 'px';
     this.element.style.transform = `scaleX(${this.direction})`;
@@ -184,7 +184,7 @@ function animateDucks() {
 }
 
 window.addEventListener('load', () => {
-    initDucks(5); // Cambia il numero qui per più o meno papere
+    initDucks(5); // Change the number here for more or fewer ducks
     animateDucks();
 });
 

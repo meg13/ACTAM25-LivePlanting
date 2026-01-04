@@ -1,9 +1,9 @@
 class LiveAudioController {
     constructor() {
-        // HTTP per comandi (sempre funziona!)
+        // HTTP server URL
         this.httpUrl = 'http://localhost:8080';
         
-        // WebSocket per visualizzazione (opzionale)
+        // WebSocket for visualization
         this.websocket = null;
         this.isWsConnected = false;
 
@@ -44,10 +44,10 @@ class LiveAudioController {
         this.clearAmbienceButton.disabled = true;
         
         
-        console.log('🎮 Controller pronto!');
-        console.log('🔊 Audio: casse del PC');
-        console.log('📡 Comandi: HTTP (sempre funzionano)');
-        console.log('📊 Visualizzazione: WebSocket (opzionale)');
+        console.log('Controller pronto!');
+        console.log('Audio: casse del PC');
+        console.log('Comandi: HTTP (sempre funzionano)');
+        console.log('Visualizzazione: WebSocket (opzionale)');
     }
 
     createCanvas() {
@@ -100,31 +100,31 @@ class LiveAudioController {
 
     async start() {
         try {
-            console.log('▶️  Invio comando START...');
-            console.log('📡 URL:', `${this.httpUrl}/start`);
+            console.log('Invio comando START...');
+            console.log('URL:', `${this.httpUrl}/start`);
             
-            // ✅ COMANDO HTTP (sempre funziona!)
+            // Sending HTTP POST request to start audio
             const response = await fetch(`${this.httpUrl}/start`, {
                 method: 'POST',
                 mode: 'cors'
             });
             
-            console.log('📥 Risposta ricevuta:', response.status, response.statusText);
+            console.log('Risposta ricevuta:', response.status, response.statusText);
             
             if (!response.ok) {
                 throw new Error(`Errore HTTP: ${response.status} ${response.statusText}`);
             }
             
             const data = await response.json();
-            console.log('✅ START confermato:', data);
-            console.log('🎵 Dovresti sentire 3 note dal PC!');
+            console.log('START confermato:', data);
+            console.log('Dovresti sentire 3 note dal PC!');
             
             this.isPlaying = true;
             
-            // Prova a connettere WebSocket per visualizzazione (opzionale)
+            // Try to connect WebSocket for visualization 
             this.tryConnectWebSocket();
             
-            // Start visualizzazione
+            // Start visualizzation
             this.startVisualization();
 
             // Update UI
@@ -133,24 +133,24 @@ class LiveAudioController {
             this.clearLoopButton.disabled = false;
             this.clearAmbienceButton.disabled = false;
             
-            console.log('🎵 Dovresti sentire le note di test dal PC!');
+            console.log('Dovresti sentire le note di test dal PC!');
 
         } catch (error) {
-            console.error('❌ Errore:', error);
+            console.error('Errore:', error);
             alert('Errore avvio audio!\n\nVerifica che Python sia in esecuzione.');
         }
     }
 
     tryConnectWebSocket() {
-        // WebSocket opzionale per visualizzazione
+        // Attempt to connect to WebSocket for visualization
         try {
-            console.log('📊 Connessione WebSocket per visualizzazione...');
+            console.log('Connessione WebSocket per visualizzazione...');
             
             this.websocket = new WebSocket('ws://localhost:8765');
             this.websocket.binaryType = 'arraybuffer';
 
             this.websocket.onopen = () => {
-                console.log('✅ WebSocket connesso! (visualizzazione attiva)');
+                console.log('WebSocket connesso! (visualizzazione attiva)');
                 this.isWsConnected = true;
             };
 
@@ -161,14 +161,14 @@ class LiveAudioController {
             };
 
             this.websocket.onerror = () => {
-                console.log('⚠️  WebSocket non disponibile (non è un problema!)');
+                console.log('WebSocket non disponibile (non è un problema!)');
             };
 
             this.websocket.onclose = () => {
                 this.isWsConnected = false;
             };
         } catch (e) {
-            console.log('⚠️  WebSocket non disponibile (non è un problema!)');
+            console.log('WebSocket non disponibile (non è un problema!)');
         }
     }
 
@@ -220,19 +220,19 @@ class LiveAudioController {
 
     async stop() {
         try {
-            console.log('⏸️  Invio comando STOP...');
+            console.log('Invio comando STOP...');
             
             const response = await fetch(`${this.httpUrl}/stop`, {
                 method: 'POST'
             });
             
             const data = await response.json();
-            console.log('✅ STOP confermato:', data.message);
+            console.log('STOP confermato:', data.message);
             
             this.isPlaying = false;
 
         } catch (error) {
-            console.error('❌ Errore stop:', error);
+            console.error('Errore stop:', error);
         }
 
         // Close WebSocket
@@ -273,19 +273,19 @@ class LiveAudioController {
                     method: 'POST'
                 });
                 const data = await response.json();
-                console.log('⏹️  Recording stop:', data);
+                console.log('Recording stop:', data);
                 this.isRecording = false;
             } else {
                 const response = await fetch(`${this.httpUrl}/start_rec`, {
                     method: 'POST'
                 });
                 const data = await response.json();
-                console.log('🔴 Recording start:', data);
+                console.log('Recording start:', data);
                 this.isRecording = true;
             }
             this.updateRecordingUI();
         } catch (error) {
-            console.error('❌ Errore recording:', error);
+            console.error('Errore recording:', error);
         }
     }
     
@@ -306,9 +306,9 @@ class LiveAudioController {
             await fetch(`${this.httpUrl}/clear_loops`, {
                 method: 'POST'
             });
-            console.log('🗑️  Loops cleared');
+            console.log('Loops cleared');
         } catch (error) {
-            console.error('❌ Errore:', error);
+            console.error('Errore:', error);
         }
     }
     
@@ -317,9 +317,9 @@ class LiveAudioController {
             await fetch(`${this.httpUrl}/clear_ambient`, {
                 method: 'POST'
             });
-            console.log('🗑️  Ambience cleared');
+            console.log('Ambience cleared');
         } catch (error) {
-            console.error('❌ Errore:', error);
+            console.error('Errore:', error);
         }
     }
 }
