@@ -32,7 +32,6 @@
                     <h2>The synthesizer</h2>
                     <p>
                         These three servers all <b>revolve around interactions with</b> a digital object: a <b>synthesizer</b>, which is <b>implemented</b> in the code through a <b>Python class</b>. 
-                        <br>A Python class is a blueprint that defines the structure and behavior of objects by grouping data and functions together. A variable stored in a class is also called an attribute, while a function stored in a class is also called a method.
                         <br>Within the synth class, the most important attributes are:
                     </p>                   
                     <ul>
@@ -89,7 +88,7 @@
                     <h3>Voices</h3>
                     <p>
                         When considering the two voices lists, it is important to ask ourselves what a voice actually is and how it is defined: a voice is not an audio signal, but a <b>parameter structure</b> in which all the information of a to-be-generated audio signal are contained. In other words, it is a <b>list of instructions</b> for the future creation of a sound. 
-                        <br>The <b>methods for the creation of pulse and ambient voices</b> are <b>defined within the synth class</b>. These functions mainly revolve around taking as inputs the parameters of a voice and grouping them within one single element, while adding some missing ones as well, therefore creating the voice itself.
+                        <br>The <b>methods for the creation of pulse and ambient voices</b> are <b>defined within the synth class</b>. These methods mainly revolve around taking as inputs the parameters of a voice and grouping them within one single element, while adding some missing ones as well, therefore creating the voice itself.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         def add_ambient_voice(self, midi_note: int, volume=0.12, pan=0.5,
@@ -152,7 +151,7 @@
                                         self.pulse_voices.append(v)
                     </code></pre>
                     <p>
-                        The mehtods for the pulse and ambient voices are different because so are the sounds that these voices are associated with. In fact, while  <span class="tag-verde">add_pulse_voice</span> function establishes fixed duration, vibrato and tremolo parameters for the pulse voice, <span class="tag-verde">add_ambient_voice_moving</span> does not define a duration (the pulse voices are infinite until user interruption), chooses random values for the vibrato and tremolo and then calls the  <span class="tag-verde">add_ambient_voice</span> functions, which actually creates the pulse voice.
+                        The mehtods for the pulse and ambient voices are different because so are the sounds that these voices are associated with. In fact, while the <span class="tag-verde">add_pulse_voice</span> method establishes fixed duration, vibrato and tremolo parameters for the pulse voice, <span class="tag-verde">add_ambient_voice_moving</span> does not define a duration (the pulse voices are infinite until user interruption), chooses random values for the vibrato and tremolo and then calls the  <span class="tag-verde">add_ambient_voice</span> method, which actually creates the pulse voice.
                     </p>
                     <h3>Reverb</h3>
                     <p>
@@ -210,13 +209,13 @@
                     </code></pre>
                     <p>
                         The <span class="tag-verde">SchroedererReverb</span> class in turn implements objects like the <span class="tag-verde">Comb</span> Class and the <span class="tag-verde">Allpass</span> Class. 
-                        <br><span class="tag-verde">Comb</span> is responsible for <b>creating from an input signal x</b>, using the inner process function, an <b>infinite series of delayed echoes</b> from the original signal, with <b>decreasing intensity</b>.  
-                        <br><span class="tag-verde">Allpass</span>, instead, consists in an <b>all-pass filter</b>, which through its process function can <b>change and darken the timbre of a sound</b>. 
+                        <br><span class="tag-verde">Comb</span> is responsible for <b>creating from an input signal x</b>, using the inner process method, an <b>infinite series of delayed echoes</b> from the original signal, with <b>decreasing intensity</b>.  
+                        <br><span class="tag-verde">Allpass</span>, instead, consists in an <b>all-pass filter</b>, which through its process method can <b>change and darken the timbre of a sound</b>. 
                     </p>
                     <p>
                         But how does the Schroederer reverb actually implement these objects?
                         <br>The reverb class contains within itself, two <b>sets</b> of <span class="tag-verde">Comb</span> objects and two <b>sets</b> of <span class="tag-verde">Allpass</span> objects (each pair of sets associated to the right and left sides of the audio hardware). Within <span class="tag-verde">SchroedererReverb</span>, a method for applying a low pass filter to a signal is also defined, as well as a final process method.
-                        This process function, given two input singals xL and xR, initially passes them both through the low-pass filter. It then applies to each one of the two the process functions of <b>all</b> its respective (based on the right-left side) <span class="tag-verde">Comb</span> objects and <b>all</b> its respective <span class="tag-verde">Allpass</span> filters. Through this process, we obtain versions of xL and xR with reverb applied to them.
+                        This process method, given two input singals xL and xR, initially passes them both through the low-pass filter. It then applies to each one of the two the process methods of <b>all</b> its respective (based on the right-left side) <span class="tag-verde">Comb</span> objects and <b>all</b> its respective <span class="tag-verde">Allpass</span> filters. Through this process, we obtain versions of xL and xR with reverb applied to them.
                     </p>    
                     <h3>Queue</h3>
                     <pre class="line-numbers"><code class="language-python">
@@ -246,7 +245,7 @@
                         self.stream.close
                     </code></pre>
                     <p>
-                        The output stream is created by using the <span class="tag-verde">OutputStream</span> class from the sounddevice library. Its creation is associated to the definition of <b>two specific functions</b> to <b>start</b> and <b>stop</b> it. What's most important about it is its usage of the <span class="tag-verde">callback</span> function, which is defined within the synth.The <span class="tag-verde">callback</span> function is the <b>functional core of the synth</b>. Once the output stream’s <b>process starts running</b> (through another specific function), the <span class="tag-verde">callback</span> function is <b>called constantly</b>: it is responsible for reading the ambient and pulse voices within the respective lists and for converting the instructions inside them into the corresponding audio signals. The stream then carries the signals to the hardware and allows it to actually reproduce them. 
+                        The output stream is created by using the <span class="tag-verde">OutputStream</span> class from the sounddevice library. Its creation is associated to the definition of <b>two specific methods</b> to <b>start</b> and <b>stop</b> it. What's most important about it is its usage of the <span class="tag-verde">callback</span> method, which is defined <b>within</b> the synth.The <span class="tag-verde">callback</span> method is the <b>functional core of the synth</b>. Once the output stream’s <b>process starts running</b> (through another specific function), the <span class="tag-verde">callback</span> method is <b>called constantly</b>: it is responsible for reading the ambient and pulse voices within the respective lists and for converting the instructions inside them into the corresponding audio signals. The stream then carries the signals to the hardware and allows it to actually reproduce them. 
                     </p>
                     <h3>Callback</h3>
                     <pre class="line-numbers"><code class="language-python">
@@ -263,7 +262,7 @@
                                     return
                     </code></pre>
                     <p>
-                        Let’s now focus on how the <span class="tag-verde">callback</span> function actually works: first of all, it is built in order to read a flag called <span class="tag-verde">is_audio_playing</span>. If the <b>flag is false</b>, when the callback is called it <b>sends to the stream only zeros</b> (which translate to silence) even though ambient or pulse voices are present in the respective lists. However, if the <b>flag is true</b>, when the function is called it <b>builds four separate empty buffers for the pulse and ambient sounds</b> that will be sent to the right and left hardware. Then, it proceeds with the rendering of the voices.
+                        Let’s now focus on how the <span class="tag-verde">callback</span> method actually works: first of all, it is built in order to read a flag called <span class="tag-verde">is_audio_playing</span>. If the <b>flag is false</b>, when the callback is called it <b>sends to the stream only zeros</b> (which translate to silence) even though ambient or pulse voices are present in the respective lists. However, if the <b>flag is true</b>, when the method is called it <b>builds four separate empty buffers for the pulse and ambient sounds</b> that will be sent to the right and left hardware. Then, it proceeds with the rendering of the voices.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                     ambL = np.zeros(frames, dtype=np.float32)
@@ -272,14 +271,14 @@
                     pulR = np.zeros(frames, dtype=np.float32)
                     </code></pre>
                     <p>
-                    The rendering of the voices depends on the fact that the <span class="tag-verde">callback</span> and <span class="tag-verde">OutputStream</span> both process and reproduce the audio by treating it as segmented into blocks. Therefore, not only it is <b>important</b> to <b>define</b> which <b>time instant</b>, and the corresponding frames are <b>associated to the various blocks</b>, but also to <b>avoid rough transitions from one block to another</b> for the sounds that are reproduced across multiple blocks. This is done by defining and updating, at the end of each block for each active voice, the last time instant (<span class="tag-verde">v["t"]</span>) and the last value of the phase (<span class="tag-verde">v["phase"]</span>). In this way, when the same voice is rendered at the beginning of the following block, the time and the phase will be coherent.    
+                    The rendering of the voices depends on the fact that the <span class="tag-verde">callback</span> and <span class="tag-verde">OutputStream</span> both process and reproduce the audio by treating it as <b>segmented into blocks</b>. In fact, everytime the callback is called, it receives a new block of frames to fill with rendered audio signals. Therefore, not only it is <b>important</b> to <b>define</b> which <b>time instant</b>, and the corresponding frames are <b>associated to the various blocks</b>, but also to <b>avoid rough transitions from one block to another</b> for the sounds that are reproduced across multiple blocks. This is done by defining and updating, at the end of each block for each active voice, the last time instant (<span class="tag-verde">v["t"]</span>) and the last value of the phase (<span class="tag-verde">v["phase"]</span>). In this way, when the same voice is rendered at the beginning of the following block, the time and the phase will be coherent.    
                     </p>
                     <p>
                         When the callback renders the voices:
                     </p>
                     <ul>
                         <li>
-                            <b>For each ambient voice</b>: a set of coefficients associated with the time frames across the block is created. These coefficients are responsible for a vibrato effect. A sine wave is then defined for the voice across the block, considering its initial phase at the beginning of the block, the base frequency and the vibrato coefficients. A set of three harmonics is created from the initial sine and then, through other coefficients, a tremolo effect on the volume is added. The wave is then splitted into two r(ight and left) waves, while adding them to the respective buffers.
+                            <b>For each ambient voice</b>: a set of coefficients associated with the time frames across the block is created. These coefficients are responsible for a <b>vibrato effect</b>. A sine wave is then defined for the voice across the block, considering its initial phase at the beginning of the block, the base frequency and the vibrato coefficients. A set of <b>three</b> harmonics is created from the initial sine and then, through other coefficients, a tremolo effect on the volume is added. The wave is then <b>splitted</b> into two r(ight and left) waves, while adding them to the respective buffers.
                                 <pre class="line-numbers"><code class="language-python">
                                     # ---- AMBIENCE render (infinite) ----
                                     for v in self.ambient_voices:
@@ -317,7 +316,7 @@
                         </li>
                         <br>
                         <li>
-                            <b>For each pulse voice</b> the rendering process is similar to the ambient voices, with the only difference being the use of a Hann envelope (function defined before the synth class) on the voices, along with a micro-fade effect on the first samples of each voice to avoid clicking sounds.
+                            <b>For each pulse voice</b> the rendering process is similar to the ambient voices, with the only difference being the use of a <b>Hann envelope</b> (function defined <b>before</b> the synth class) on the voices, along with a micro-fade effect on the first samples of each voice to avoid clicking sounds.
                             <pre class="line-numbers"><code class="language-python">
                                 # ---- PULSE render ----
                                 new_pulse = []
@@ -407,7 +406,7 @@
                     <h2>Pulse tools</h2>
                     <p>
                         The function <span class="tag-verde">hann_env</span>, used during the rendering of the pulse notes, is defined in the “pulse tools” section at the beginning of the code, before the synth class. This function takes as an input the duration of the signal for which the envelope is needed, a fade in ratio and a fade out ratio, and from these inputs it creates and returns a set of coefficients which constitute the envelope itself.
-                        The envelope has a quadratically-shaped attack and a cosine-shaped release, both very smooth.
+                        The envelope has a <b>quadratically-shaped attack and a cosine-shaped release</b>, both very smooth.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         def hann_env(t, dur, fade_in_ratio=0.15, fade_out_ratio=0.25):
@@ -488,10 +487,7 @@
                     </code></pre>
                     <h2>Visualisation server</h2>
                     <p>
-                        After having studied how the synth works, as well as some other important functions associated with it, it’s crucial to focus on how the main servers are actually built and how they work. The servers’ creation mainly starts with the definition of functions through the command <span class="tag-verde">“async def”</span>. Such command is <b>used for functions which are meant to work as server handlers</b>, which actually allow a server to interact with the real world. Plus, declaring them as asynchronous ensures they are non-blocking and can coexist with other concurrent requests within the same event loop.
-                    </p>
-                    <p>
-                        The visualization server mainly relies on two asynchronous functions. The first one, <span class="tag-verde">websocket_handler</span>, serves the purpose of <b>adding a possible new client of the server to a shared set</b> and/or <b>removing from the same set a client that is disconnecting</b> from the server.
+                        The visualization server mainly relies on two asynchronous methods. The first one, <span class="tag-verde">websocket_handler</span>, serves the purpose of <b>adding a possible new client of the server to a shared set</b> and/or <b>removing from the same set a client that is disconnecting</b> from the server.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         websocket_clients = set()
@@ -553,10 +549,10 @@
                     </code></pre>
                     <h2>Control server</h2>
                     <p>
-                        The HTTP or control server relies on many asynchronous functions. Each one of them has the task of allowing the server to act on how the real time engine is reproducing the audio, based on a specific user request from the web page. However, these following functions are defined as being dependent on a generic external request and still need to be associated to their specific respective user request, in order for the control server to actually use them.
+                        The HTTP or control server relies on many asynchronous methods. Each one of them has the task of allowing the server to act on how the real time engine is reproducing the audio, based on a specific user request from the web page. However, these following methods are defined as being dependent on a generic external request and still need to be associated to their specific respective user request, in order for the control server to actually use them.
                     </p>
                     <p>
-                        The <span class="tag-verde">handle_start</span> function is responsible for <b>changing</b>, after receiving a generic external request, the <span class="tag-verde">is_audio_playing</span> flag <b>to True</b>. It will be used by the server to ask the callback, whenever the user requests it from the webpage, to stop sending to the Output stream only zeros and to start rendering the voices in the lists. This functions also adds three notes to the synthesizer to test its correct functioning.
+                        The <span class="tag-verde">handle_start</span> method is responsible for <b>changing</b>, after receiving a generic external request, the <span class="tag-verde">is_audio_playing</span> flag <b>to True</b>. It will be used by the server to ask the callback, whenever the user requests it from the webpage, to stop sending to the Output stream only zeros and to <b></b>start rendering the voices in the lists</b>. This functions also adds three notes to the synthesizer to test its correct functioning.
                     </p>
                     <pre class="line-numbers"><code class="language-python">  
                         async def handle_start(request):
@@ -582,7 +578,7 @@
                             }, headers={'Access-Control-Allow-Origin': '*'})                       
                     </code></pre>
                     <p>
-                        The <span class="tag-verde">handle_stop</span> function, after a generic request, <b>changes</b> the <span class="tag-verde">is_audio_playing</span> flag <b>to False</b>. Additionally, it also empties the voices’ lists, so that when the user stops the synthesizer the stored voices are also reset.
+                        The <span class="tag-verde">handle_stop</span> method, after a generic request, <b>changes</b> the <span class="tag-verde">is_audio_playing</span> flag <b>to False</b>. Additionally, it also empties the voices’ lists, so that when the user stops the synthesizer the stored voices are also reset.
                     </p>
                     <pre class="line-numbers"><code class="language-python">  
                         async def handle_stop(request):
@@ -605,8 +601,8 @@
                             }, headers={'Access-Control-Allow-Origin': '*'})                        
                     </code></pre>
                     <p>
-                        The <span class="tag-verde">handle_start_rec</span> changes the <span class="tag-verde">is_recording</span> flag to <b>True</b> and <b>defines and empty list</b> for <b>the recorded events.</b> 
-                        <br>The <span class="tag-verde">handle_stop_rec</span> changes the flag to <b>False</b>, <b>creates a loop from the recorded events and the duration of the recording</b> and <b>appends it to the loops list.</b> However, none of these two functions is responsible for the recording itself.
+                        The <span class="tag-verde">handle_start_rec</span> method changes the <span class="tag-verde">is_recording</span> flag to <b>True</b> and <b>defines and empty list</b> for <b>the recorded events.</b> 
+                        <br>The <span class="tag-verde">handle_stop_rec</span> method changes the flag to <b>False</b>, <b>creates a loop from the recorded events and the duration of the recording</b> and <b>appends it to the loops list.</b> However, none of these two functions is responsible for the recording itself.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         async def handle_start_rec(request):
@@ -651,7 +647,7 @@
                             }, headers={'Access-Control-Allow-Origin': '*'})                         
                     </code></pre>
                     <p>
-                        The <span class="tag-verde">handle_clear_loops</span> and <span class="tag-verde">handle_clear_ambient</span> functions are respectively responsible for <b>clearing the recorded loops/the synth voices</b> that the synth is playing from its list and therefore resetting them, without stopping the callback from continuing to process the audio. Both functions exploit other “clear” functions defined in within the synth class.
+                        The <span class="tag-verde">handle_clear_loops</span> and <span class="tag-verde">handle_clear_ambient</span> methodss are respectively responsible for <b>clearing the recorded loops/the synth voices</b> that the synth is playing from its list and therefore resetting them, <b>without</b> stopping the callback from continuing to process the audio. Both functions exploit other “clear” functions defined in within the synth class.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         async def handle_clear_loops(request):
@@ -1559,6 +1555,7 @@
     <script src="../js/nav.js" type="text/javascript"></script>
     <script src="../js/prism.js" type="text/javascript"></script>
 </html>
+
 
 
 
