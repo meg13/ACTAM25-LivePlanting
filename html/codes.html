@@ -1035,7 +1035,7 @@
                     <p>
                        startVisualization initially retreives the information of the canvas and prepares the canvas for the current frame: it fills the background, sets the style of the line and initializes a new drawing path. The frame is the current drawing on the canvas, which can change over time. Then, startvisualization transforms the audio samples into a line drawn on the canvas. It takes the number of samples in the circular buffer and computes how much horizontal space each sample occupies. For each sample, it reads the audio value, normalizes it from the range [-1,+1]  to [0,1], and converts it into a vertical coordinate, mapping the audio buffer onto a continuous line from left to right within the same frame. For the first sample, the drawing cursor is moved to the initial point without drawing, while for all subsequent samples a line is drawn from the previous point to the new one. After each sample, the horizontal position is advanced so the waveform progresses across the canvas.
                     </p>
-                    <h2>Connection with Visualization and Control servers</h2>
+                    <h2>Visualization and Control server connection</h2>
                     <pre class="line-numbers"><code class="language-javascript">
                         tryConnectWebSocket() {
                             // WebSocket opzionale per visualizzazione
@@ -1557,6 +1557,7 @@
     <script src="../js/nav.js" type="text/javascript"></script>
     <script src="../js/prism.js" type="text/javascript"></script>
 </html>
+
 
 
 
