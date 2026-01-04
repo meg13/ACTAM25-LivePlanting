@@ -487,7 +487,7 @@
                     </code></pre>
                     <h2>Visualisation server</h2>
                     <p>
-                        The visualization server mainly relies on two asynchronous methods. The first one, <span class="tag-verde">websocket_handler</span>, serves the purpose of <b>adding a possible new client of the server to a shared set</b> and/or <b>removing from the same set a client that is disconnecting</b> from the server.
+                        The visualization server mainly relies on two asynchronous functions. The first one, <span class="tag-verde">websocket_handler</span>, serves the purpose of <b>adding a possible new client of the server to a shared set</b> and/or <b>removing from the same set a client that is disconnecting</b> from the server.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         websocket_clients = set()
@@ -549,10 +549,10 @@
                     </code></pre>
                     <h2>Control server</h2>
                     <p>
-                        The HTTP or control server relies on many asynchronous methods. Each one of them has the task of allowing the server to act on how the real time engine is reproducing the audio, based on a specific user request from the web page. However, these following methods are defined as being dependent on a generic external request and still need to be associated to their specific respective user request, in order for the control server to actually use them.
+                        The HTTP or control server relies on many asynchronous functions. Each one of them has the task of allowing the server to act on how the real time engine is reproducing the audio, based on a specific user request from the web page. However, these following functions are defined as being dependent on a generic external request and still need to be associated to their specific respective user request, in order for the control server to actually use them.
                     </p>
                     <p>
-                        The <span class="tag-verde">handle_start</span> method is responsible for <b>changing</b>, after receiving a generic external request, the <span class="tag-verde">is_audio_playing</span> flag <b>to True</b>. It will be used by the server to ask the callback, whenever the user requests it from the webpage, to stop sending to the Output stream only zeros and to <b></b>start rendering the voices in the lists</b>. This functions also adds three notes to the synthesizer to test its correct functioning.
+                        The <span class="tag-verde">handle_start</span> function is responsible for <b>changing</b>, after receiving a generic external request, the <span class="tag-verde">is_audio_playing</span> flag <b>to True</b>. It will be used by the server to ask the callback, whenever the user requests it from the webpage, to stop sending to the Output stream only zeros and to <b></b>start rendering the voices in the lists</b>. This function also adds three notes to the synthesizer to test its correct functioning.
                     </p>
                     <pre class="line-numbers"><code class="language-python">  
                         async def handle_start(request):
@@ -578,7 +578,7 @@
                             }, headers={'Access-Control-Allow-Origin': '*'})                       
                     </code></pre>
                     <p>
-                        The <span class="tag-verde">handle_stop</span> method, after a generic request, <b>changes</b> the <span class="tag-verde">is_audio_playing</span> flag <b>to False</b>. Additionally, it also empties the voices’ lists, so that when the user stops the synthesizer the stored voices are also reset.
+                        The <span class="tag-verde">handle_stop</span> function, after a generic request, <b>changes</b> the <span class="tag-verde">is_audio_playing</span> flag <b>to False</b>. Additionally, it also empties the voices’ lists, so that when the user stops the synthesizer the stored voices are also reset.
                     </p>
                     <pre class="line-numbers"><code class="language-python">  
                         async def handle_stop(request):
@@ -601,8 +601,8 @@
                             }, headers={'Access-Control-Allow-Origin': '*'})                        
                     </code></pre>
                     <p>
-                        The <span class="tag-verde">handle_start_rec</span> method changes the <span class="tag-verde">is_recording</span> flag to <b>True</b> and <b>defines and empty list</b> for <b>the recorded events.</b> 
-                        <br>The <span class="tag-verde">handle_stop_rec</span> method changes the flag to <b>False</b>, <b>creates a loop from the recorded events and the duration of the recording</b> and <b>appends it to the loops list.</b> However, none of these two functions is responsible for the recording itself.
+                        The <span class="tag-verde">handle_start_rec</span> function changes the <span class="tag-verde">is_recording</span> flag to <b>True</b> and <b>defines and empty list</b> for <b>the recorded events.</b> 
+                        <br>The <span class="tag-verde">handle_stop_rec</span> function changes the flag to <b>False</b>, <b>creates a loop from the recorded events and the duration of the recording</b> and <b>appends it to the loops list.</b> However, none of these two functions is responsible for the recording itself.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         async def handle_start_rec(request):
@@ -647,7 +647,7 @@
                             }, headers={'Access-Control-Allow-Origin': '*'})                         
                     </code></pre>
                     <p>
-                        The <span class="tag-verde">handle_clear_loops</span> and <span class="tag-verde">handle_clear_ambient</span> methodss are respectively responsible for <b>clearing the recorded loops/the synth voices</b> that the synth is playing from its list and therefore resetting them, <b>without</b> stopping the callback from continuing to process the audio. Both functions exploit other “clear” functions defined in within the synth class.
+                        The <span class="tag-verde">handle_clear_loops</span> and <span class="tag-verde">handle_clear_ambient</span> functions are respectively responsible for <b>clearing the recorded loops/the synth voices</b> that the synth is playing from its list and therefore resetting them, <b>without stopping</b> the callback from continuing to process the audio. Both functions exploit other “clear” functions defined in within the synth class.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         async def handle_clear_loops(request):
@@ -735,7 +735,7 @@
                     </code></pre>
                     <p>
                         Then, the code sets up an infinite while(true) cycle. For each iteration of this cycle, the code tries to read the correspondent current output of Arduino. A valid output should consist in a line containing two numbers, separated by a comma. 
-                        <br>If the <b>output</b> is <b>valid</b>, the <b>code takes the two numbers</b> and <b>assigns the first one to</b> a <span class="tag-verde">hum_raw</span> variable and the <b>second one to</b> a <span class="tag-verde">bio_raw</span> variable. This step therefore consists in <b>saving the rough biodata of the plant</b>, coming through Arduino. The next one will be the mapping of this current biodata. But, before considering this next step, it is useful to study some other tools and functions which are defined at the very beginning of the code and that will be now used.
+                        <br>If the <b>output</b> is <b>valid</b>, the <b>code takes the two numbers</b> and <b>assigns the first one to</b> a <span class="tag-verde">hum_raw</span> variable and the <b>second one to</b> a <span class="tag-verde">bio_raw</span> variable. This step therefore consists in <b>saving the rough biodata of the plant</b>, coming through Arduino. The next one will be the mapping of this current biodata. But, before considering this next step, it is useful to <b>study some other tools and functions</b> which are defined at the <b>very beginning of the code</b> and that will be now used.
                     </p>
                     <h3>Musical utils</h3>
                     <p>
@@ -792,7 +792,7 @@
                         nearest = min(MAJOR_OFFSETS, key=lambda o: abs(o - semis))
                         return base_root + nearest, nearest                         
                     </code></pre>
-                    <h2>Mapping of biodata</h2>
+                    <h3>Mapping of biodata</h3>
                     <p>
                         Going back to the serial reader and the mapping of the impulses, the while cycle at every iteration applies the <span class="tag-verde">humidity_to_note</span> function to the <span class="tag-verde">hum_raw</span> variable, therefore assigning the biodata humidity value a correspondent note in major scale (expressed as a number of semitones above the base root). 
                         <br><b>If the number of semitones is equal to zero</b> (invalid value that happens when the humidity sensor is disconnected from Arduino) <b>twice in a row</b>, the <b>synthesizer's ambient voices are cleared</b>, and a specific <b>flag</b> is <b>changed to "true"</b>. This flag will return to "false" when the number of semitones will return to being valid. The valid <span class="tag-verde">hum_raw</span> values are appended to a list and, when the iteration's time has surpassed a time limit determined by <span class="tag-verde">AMB_WINDOW_SEC</span> , these values in the list are averaged. Then, the serial reader once again uses <span class="tag-verde">humidity_to_note</span> to turn the average humidity to a number of semitones. 
@@ -1555,6 +1555,7 @@
     <script src="../js/nav.js" type="text/javascript"></script>
     <script src="../js/prism.js" type="text/javascript"></script>
 </html>
+
 
 
 
