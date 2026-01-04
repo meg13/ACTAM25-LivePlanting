@@ -921,14 +921,13 @@
                     <br><br>
                     <h1>Backend-Frontend link</h1>
                     <p>
-                        The live_listening code is the most important piece of js coding of the website page of our Live Planting project. Even if the audio_controller python code had servers built in itself that allowed the real time audio to interact with the web page, it’s the live_listening code that actually makes these interactions possible. This js code, in fact, is mainly responsible for linking the various buttons on the webpage to the respective requests that the webpage sends to the control server, while also receiving the outputs of the visualization server and turning them into a live-drawing of the audio’s sine wave.
+                        The live_listening code is the most important piece of js coding of the website page of our Live Planting project. Even if the audio_controller python code had servers built in itself that allowed the real time audio to interact with the web page, it’s the live_listening code that <b>actually makes these interactions possible</b>. This js code, in fact, is mainly responsible for <b>linking the various buttons on the webpage to the respective requests</b> that the webpage sends to the control server, while also receiving the outputs of the visualization server and <b>turning them into a live-drawing</b> of the audio’s sine wave.
                     </p> 
                     <pre class="line-numbers"><code class="language-javascript">
                         class LiveAudioController
                     </code></pre>
                     <p>
-                        The live_listening code mainly revolves around the definition of an audio controller object (the object that the audio_controller code’s servers answer to) through a class. A javascript class contains a series of methods, which define its behavior. They are functions which can define and utilize within themselves both the attributes of the class (properties, which represent the object’s state) and other functions.
-                        Methods within the class often call and use other methods, creating an execution chain.
+                        The live_listening code mainly revolves around the definition of an audio controller object (the object that the audio_controller.py code’s servers answer to) through a Class.
                         Lets now focus on the various methos of the AudioController class. However, in this analysis we will not follow the order in which these methods appear in the code, but rather their execution chain.
                     </p> 
                     <h2>Audio drawing</h2>
@@ -949,7 +948,7 @@
                         }
                     </code></pre>
                     <p>
-                        The drawEmptyWaveform method retrieves the graphic context of a canvas object in the environment where it’s called, fills the whole canvas with a white background. It then sets the color and thickness of a line and draws a horizontal line on the canvas
+                        The <b>drawEmptyWaveform</b> method retrieves the graphic context of a canvas object in the environment where it’s called, fills the whole canvas with a white background. It then sets the color and thickness of a line and <b>draws a horizontal line on the canvas.</b>
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                             createCanvas() {
@@ -975,8 +974,8 @@
                             }
                     </code></pre>
                     <p>
-                        The createCanvas  method is responsible for creating the visual environment (canvas) in which the sine wave will actually be drawn. It creates the canvas element (still not visible) on the webpage’s document and it reads the dimensions of the to-be-drawn waveform’s div.
-                        It then sets up the inner resolution of the canvas according to those dimensions, as well as the canvas’s actual visual dimensions so that it fills the div. Finally it appends the canvas element to the waveform’s div, it calls the drawEmptyWaveform method to draw a flat waveform on the canvas (the audio is turned off at the start) and it keeps the canvas in sync with the page size.
+                        The <b>createCanvas</b> method is responsible for creating the visual environment (canvas) in which the sine wave will actually be drawn. It <b>creates the canvas element</b> (still not visible) on the webpage’s document and it reads the dimensions of the to-be-drawn waveform’s div.
+                        It then sets up the inner resolution of the canvas according to those dimensions, as well as the canvas’s actual visual dimensions so that it fills the div. Finally it <b>appends the canvas element to the waveform’s div</b>, it calls the drawEmptyWaveform method to draw a flat waveform on the canvas (the audio is turned off at the start) and it keeps the canvas in sync with the page size.
                         In fact, when the window is resized it recalculates the div’s dimensions, updates the canvas resolution accordingly, and redraws the idle waveform if audio is not playing.
                     </p> 
                     <pre class="line-numbers"><code class="language-javascript">
@@ -989,7 +988,7 @@
                          }
                     </code></pre>
                     <p>
-                       Handlevizualization is a method that processes the audio samples coming from the visualization server: it turns the coming binary samples into floats and saves them in a circular buffer. A circular buffer is an array that is filled through a loop: it never changes its fixed dimension and when you fill it to the end you start again from the beginning, overwriting the oldest data.
+                       <b>Handlevizualization</b> is a method that processes the audio samples coming from the visualization server: it turns the coming binary samples into floats and saves them in a circular buffer.
                     </p> 
                     <pre class="line-numbers"><code class="language-javascript">
                         startVisualization() {
@@ -1031,7 +1030,7 @@
                         }                        
                     </code></pre>
                     <p>
-                       startVisualization initially retreives the information of the canvas and prepares the canvas for the current frame: it fills the background, sets the style of the line and initializes a new drawing path. The frame is the current drawing on the canvas, which can change over time. Then, startvisualization transforms the audio samples into a line drawn on the canvas. It takes the number of samples in the circular buffer and computes how much horizontal space each sample occupies. For each sample, it reads the audio value, normalizes it from the range [-1,+1]  to [0,1], and converts it into a vertical coordinate, mapping the audio buffer onto a continuous line from left to right within the same frame. For the first sample, the drawing cursor is moved to the initial point without drawing, while for all subsequent samples a line is drawn from the previous point to the new one. After each sample, the horizontal position is advanced so the waveform progresses across the canvas.
+                       <b>startVisualization</b> initially retreives the information of the canvas and <b>prepares the canvas for the current frame</b>: it fills the background, sets the style of the line and initializes a new drawing path. The frame is the current drawing on the canvas, which can change over time. Then, <b>startvisualization transforms the audio samples into a line drawn on the canvas</b>. It takes the number of samples in the circular buffer and computes how much horizontal space each sample occupies. For each sample, it reads the audio value, normalizes it from the range [-1,+1]  to [0,1], and converts it into a vertical coordinate, mapping the audio buffer onto a continuous line from left to right within the same frame. For the first sample, the drawing cursor is moved to the initial point without drawing, while for all subsequent samples a line is drawn from the previous point to the new one. After each sample, the horizontal position is advanced so the waveform progresses across the canvas.
                     </p>
                     <h2>Visualization and Control server connection</h2>
                     <pre class="line-numbers"><code class="language-javascript">
@@ -1068,7 +1067,7 @@
 
                     </code></pre>
                     <p>
-                       tryConnectWebSocket, as the name suggests, uses a try operator to connect the webpage as a client to the visualization server, through Websocket. It also asks Websocket to treat the coming data as binary values. If the connection is good it changes the isWsConnected flag to “true”. It then calls the Handlevisualization method. 
+                       <b>tryConnectWebSocket</b>, as the name suggests, uses a try operator to connect the webpage as a client to the visualization server, through Websocket. It also asks Websocket to treat the coming data as binary values. If the connection is good it changes the isWsConnected flag to “true”. It then calls the Handlevisualization method. 
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                         setupEventListeners() {
@@ -1083,8 +1082,8 @@
                         }
                     </code></pre>
                     <p>
-                      setupEventListeners is a method that associates various buttons of the webpage’s main page to their respective JS functions, which will send the requests corresponding to the buttons to the servers. The buttons that it links to functions are: startButton, stopButton, recordButton (depending on when it’s clicked it can act both as a start-recording or stop-recording button), clearLoopButton, clearAmbienceButton.
-                      Every time a JavaScript function needs to make a request to the HTTP server (when the corresponding button is clicked), fetch is the command that sends the HTTP request to the server (e.g. /clear_loops) and, using await, waits for the server’s response before continuing execution. But how are the the JS functions that are associated with the various buttons defined?
+                      <b>setupEventListeners</b> is a method that <b>associates various buttons of the webpage’s main page to their respective JS methods</b>, which will send the requests corresponding to the buttons to the servers. The buttons that it links to functions are: <b>startButton, stopButton, recordButton</b> (depending on when it’s clicked it can act both as a start-recording or stop-recording button), <b>clearLoopButton, clearAmbienceButton.</b>
+                      Every time a JavaScript function needs to make a request to the HTTP server (when the corresponding button is clicked), fetch is the command that sends the HTTP request to the server (e.g. /clear_loops) and, using await, waits for the server’s response before continuing execution. But how are the the JS methods that are associated with the various buttons defined?
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                         async start() {
@@ -1131,7 +1130,7 @@
                         }
                     </code></pre>
                     <p>
-                       Start is the asynchronous method (the JS of an asynchronous function in python coding) that setupEventListeners links to the start button. It sends to the HTTP server a request to start rendering and reproducing the pulse and ambient voices. It waits for the server’s response and, if it’s positive, it changes the isPlaying  flag to true, it calls the tryConnectWebSocket and StartVisualization methods and it adjusts the flags that enable/disable the various buttons
+                       <b>Start</b> is the asynchronous method that setupEventListeners links to the start button. It sends to the HTTP server a request to start rendering and reproducing the pulse and ambient voices. It waits for the server’s response and, if it’s positive, it changes the isPlaying  flag to true, it calls the tryConnectWebSocket and StartVisualization methods and it adjusts the flags that enable/disable the various buttons
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                         async stop() {
@@ -1178,7 +1177,7 @@
                         }
                     </code></pre>
                     <p>
-                        Stop is the asynchronous method associated by setupEventListeners to the stop button. It sends to the HTTP server a request to stop and reset the audio rendering.  It waits for the server’s response and, if it’s positive, it changes the isPlaying  flag to false, it closes the websocket connection, it cancels the current frame and it calls drawEmptyWaveform.
+                        <b>Stop</b> is the asynchronous method associated by setupEventListeners to the stop button. It sends to the HTTP server a request to stop and reset the audio rendering.  It waits for the server’s response and, if it’s positive, it changes the isPlaying  flag to false, it closes the websocket connection, it cancels the current frame and it calls drawEmptyWaveform.
                         It also updates the flags for the disabled button and, if a loop recording is still undercurring, it changes the respective flag to “false” and calls updateRecordingUI.
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
@@ -1195,8 +1194,8 @@
                         }
                     </code></pre>
                     <p>
-                        updateRecordingUI updates only the graphical interface according to the recording state. When recording is active, it shows the pause icon, changes the button color, and updates the label; when recording is inactive, it restores the button’s normal appearance.
-                        Remember that single button (and icon) acts as a toggle: each click switches the isRecording state and updateRecordingUI() updates the visual feedback accordingly.
+                        <b>updateRecordingUI updates only the graphical interface according to the recording state</b>. When recording is active, it shows the pause icon, changes the button color, and updates the label; when recording is inactive, it restores the button’s normal appearance.
+                        <b>Remember that single button (and icon) acts as a toggle</b>: each click switches the isRecording state and updateRecordingUI() updates the visual feedback accordingly.
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                         async toggleRecording() {
@@ -1228,7 +1227,7 @@
                         }
                     </code></pre>
                     <p>
-                        updateRecordingUI is also used in the toggleRecording, the asynchronous method linked to the single recording button. When it’s called (every time the toggle button is clicked, thanks to the association made by setupEventListeners), based on the value of the isRecording flag, it either sends a request to the HTTP server to start a loop recording or to stop an occurring one. It then calls updateRecordingUI.
+                        updateRecordingUI is also used in the <b>toggleRecording, the asynchronous method linked to the single recording button</b>. When it’s called (every time the toggle button is clicked, thanks to the association made by setupEventListeners), based on the value of the isRecording flag, it either sends a request to the HTTP server to start a loop recording or to stop an occurring one. It then calls updateRecordingUI.
                         Of course, if the button is clicked but the audio reproduction hasn’t started yet, toggleRecording signals that to the user.
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
@@ -1255,7 +1254,7 @@
                         }
                     </code></pre>
                     <p>
-                        ClearLoop and ClearAmbience are the JS functions (asynchronous methods) that execute on the control server, once the respective buttons are clicked, the matching requests.
+                        <b>ClearLoop and ClearAmbience</b> are the JS functions (asynchronous methods) that execute on the control server, once the respective buttons are clicked, the matching requests.
                     </p>
                     <h2>Other methods</h2>
                     <pre class="line-numbers"><code class="language-javascript">
@@ -1276,7 +1275,7 @@
                         }
                     </code></pre>
                     <p>
-                        The init method is responsible for calling the createCanvas and setupEventListeners methods, therefore creating the canvas and associating the buttons to the JS functions.
+                        The <b>init method is responsible for calling the createCanvas and setupEventListeners methods</b>, therefore creating the canvas and associating the buttons to the JS functions.
                         Since the init method will be called when the page will be in initial state, with the audio reproduction yet to be started, the method sets up as “true” flags that will initially disable the stop, clearloop, clearambience buttons.
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
@@ -1316,9 +1315,9 @@
                         }
                     </code></pre>
                     <p>
-                        The constructor method defines and initializes most of the properties of the class. It is the one that uses all the previous methods to actually build and initialize the Audio Controller object when the class is called.
+                        <b>The constructor method defines and initializes most of the properties of the class</b>. It is the one that uses all the previous methods to actually build and initialize the Audio Controller object when the class is called.
                         Initially it sets up the destination ( which coincides with the audio_controller’s servers destination) to which the JS functions will send their requests. It then sets up null/empty the attributes related to the websocket connection with the visualization server, to the canvas and to the buffer for the to-be-visualized information.
-                        It then retrieves from the webpage’s document and the elements which correspond to the various buttons, therefore identifying them in the js code. Finally, it calls the init method.
+                        It then retrieves from the webpage’s document and the elements which correspond to the various buttons, therefore identifying them in the js code. Finally, <b>it calls the init method</b>.
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                         // Initialize
@@ -1555,6 +1554,7 @@
     <script src="../js/nav.js" type="text/javascript"></script>
     <script src="../js/prism.js" type="text/javascript"></script>
 </html>
+
 
 
 
