@@ -24,7 +24,7 @@
                     <ol>
                         <li>A <b>real time audio engine</b>, responsible for generating audio signals and sending them to the hardware of the computer. 
                             <br>It uses the sounddevice API for communication with audio hardware.</li>
-                        <li>A <b>control server</b>, responsible for translating command from the webpage into internal actions on the audio generation code. 
+                        <li>A <b>control server</b>, responsible for translating commands from the webpage into internal actions on the audio generation code. 
                             <br>It uses the HTTP control API.</li>
                         <li>A <b>visualization server</b>, which reads the audio signals, ready to be visualized, and sends them to the part of the webpage that is responsible for such visualization. 
                             <br>It uses a Websocket API for data streaming.</li>
@@ -32,7 +32,7 @@
                     <h2>The synthesizer</h2>
                     <p>
                         These three servers all <b>revolve around interactions with</b> a digital object: a <b>synthesizer</b>, which is <b>implemented</b> in the code through a <b>Python class</b>. 
-                        <br>A Python class is a blueprint that defines the structure and behavior of objects by grouping data (attributes) and functions (methods) together. 
+                        <br>A Python class is a blueprint that defines the structure and behavior of objects by grouping data and functions together. A variable stored in a class is also called an attribute, while a function stored in a class is also called a method.
                         <br>Within the synth class, the most important attributes are:
                     </p>                   
                     <ul>
@@ -42,7 +42,7 @@
                             respectively responsible for <b>containing the ambient voices</b> and <b>the pulse voices</b> which are generated.</li>
                         <li>An object: <span class="tag-verde">self.pulse_reverb</span>, responsible for applying a <b>reverb effect</b> on the pulse notes.</li>
                         <li>An object: <span class="tag-verde">self.viz_queue</span>, responsible for <b>containing the processed information</b> for the clients of the visualization server.</li>
-                        <li>An Output stream: <span class="tag-verde">self.stream</span>, responsible for actually <b>obtaining the final audio signals</b> communicating them to the hardware.</li>
+                        <li>An Output stream: <span class="tag-verde">self.stream</span>, responsible for actually <b>obtaining the final audio signals</b> and communicating them to the hardware.</li>
                     </ul>
                     <pre class="line-numbers"><code class="language-python">
                         class CombinedSynth:
@@ -88,8 +88,8 @@
                     </p>
                     <h3>Voices</h3>
                     <p>
-                        When considering the two voices lists, it is important to ask ourselves what a voice actually is and how it is defined: a voice is not an audio signal, but a parameter structure in which all the information of a to-be-generated audio signal are contained. In other words, it is a list of instructions for the future creation of a sound. 
-                        <br>The <b>functions for the creation of pulse and ambient voices</b> are <b>defined within the synth class</b>. These functions mainly revolve around taking as inputs the parameters of a voice and grouping them within one single element, while adding some missing ones as well, therefore creating the voice itself.
+                        When considering the two voices lists, it is important to ask ourselves what a voice actually is and how it is defined: a voice is not an audio signal, but a <b>parameter structure</b> in which all the information of a to-be-generated audio signal are contained. In other words, it is a <b>list of instructions</b> for the future creation of a sound. 
+                        <br>The <b>methods for the creation of pulse and ambient voices</b> are <b>defined within the synth class</b>. These functions mainly revolve around taking as inputs the parameters of a voice and grouping them within one single element, while adding some missing ones as well, therefore creating the voice itself.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         def add_ambient_voice(self, midi_note: int, volume=0.12, pan=0.5,
@@ -152,11 +152,11 @@
                                         self.pulse_voices.append(v)
                     </code></pre>
                     <p>
-                        The functions for the pulse and ambient voices are different because so are the sounds that these voices are associated with. In fact, while  <span class="tag-verde">add_pulse_voice</span> function establishes fixed duration, vibrato and tremolo parameters for the pulse voice, <span class="tag-verde">add_ambient_voice_moving</span> does not define a duration (the pulse voices are infinite until user interruption), chooses random values for the vibrato and tremolo and then calls the  <span class="tag-verde">add_ambient_voice</span> functions, which actually creates the pulse voice.
+                        The mehtods for the pulse and ambient voices are different because so are the sounds that these voices are associated with. In fact, while  <span class="tag-verde">add_pulse_voice</span> function establishes fixed duration, vibrato and tremolo parameters for the pulse voice, <span class="tag-verde">add_ambient_voice_moving</span> does not define a duration (the pulse voices are infinite until user interruption), chooses random values for the vibrato and tremolo and then calls the  <span class="tag-verde">add_ambient_voice</span> functions, which actually creates the pulse voice.
                     </p>
                     <h3>Reverb</h3>
                     <p>
-                        <span class="tag-verde">self.pulse_reverb</span> is the name assigned within the synthesizer to an attribute which is created using the SchroedererReverb class, defined before the synth class.    
+                        <span class="tag-verde">self.pulse_reverb</span> is the name assigned within the synthesizer to an attribute which is created using the SchroedererReverb class, defined <b>before</b> the synth class.    
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         class SchroederReverb:
@@ -406,6 +406,7 @@
                     <h2>Pulse tools</h2>
                     <p>
                         The function <span class="tag-verde">hann_env</span>, used during the rendering of the pulse notes, is defined in the “pulse tools” section at the beginning of the code, before the synth class. This function takes as an input the duration of the signal for which the envelope is needed, a fade in ratio and a fade out ratio, and from these inputs it creates and returns a set of coefficients which constitute the envelope itself.
+                        The envelope has a quadratically-shaped attack and a cosine-shaped release, both very smooth.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         def hann_env(t, dur, fade_in_ratio=0.15, fade_out_ratio=0.25):
@@ -1557,6 +1558,7 @@
     <script src="../js/nav.js" type="text/javascript"></script>
     <script src="../js/prism.js" type="text/javascript"></script>
 </html>
+
 
 
 
