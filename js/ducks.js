@@ -53,24 +53,6 @@ class SimpleDuck {
     }
     
     update() {
-    // Random pause
-    if (this.paused) {
-        this.pauseTimer--;
-        if (this.pauseTimer <= 0) {
-            this.paused = false;
-            this.vx = (Math.random() - 0.5) * 1.2;
-            this.vy = (Math.random() - 0.5) * 0.3;
-            this.direction = this.vx > 0 ? 1 : -1;
-        }
-        return;
-    }
-
-    // Random pause (ONLY if not jumping)
-    if (!this.paused && !this.jumping && Math.random() < 0.01) {
-        this.paused = true;
-        this.pauseTimer = Math.random() * 100 + 50;
-        return;
-    }
 
     // Random jump
     if (!this.jumping && Math.random() < 0.005) {
