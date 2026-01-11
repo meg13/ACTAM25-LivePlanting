@@ -40,7 +40,7 @@
                         <p>For bioelectrical impulses, we associated the range <code>0-1023</code> (in terms of Arduino values) to a range of five octaves. This musical range is expressed in terms of semitones from a pre-set base root frequency. 
                             Every time an impulse number is received after a certain cooldown time, it is converted to the respective number of semitones above the base root, which is then rounded to the closest number of semitones in a major scale. 
                             This number is then used to define a note which is played by the synth. In other words, the higher the voltage detected, the higher the frequency of the respective note. The notes associated with the bioelectrical 
-                            impulses have a shorter duration and limited attack and release. The code also offers the possibility to interact with the pulse notes, by allowing the user to record and loop up to five segments of bioelectrical-impulse 
+                            impulses have a shorter duration and limited attack and release. The code also offers the possibility to interact with the pulse notes, by allowing the user to record and loop up to ten segments of bioelectrical-impulse 
                             audio, and resetting those loops when desired. If you are an user, you are encouraged to touch the plant's leaves and see how the pulse notes change, as long as you are delicate! 
                         </p>
 
@@ -124,3 +124,4 @@
     </body>
     <script src="../js/nav.js" type="text/javascript"></script>
 </html>
+
