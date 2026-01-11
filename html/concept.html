@@ -51,6 +51,39 @@
                             points of the plant's soil over time, can build various layers of an ambience that lies underneath the pulse notes/loops, and can be reset when necessary. 
                          </p>
                 </article>
+
+                
+                <article>
+                    <h2>Backend Architecture and Web Communication</h2>
+                        <p>The communication between the Python audio engine and the web interface is achieved through a dual-protocol architecture. The system uses two different communication protocols to separate control commands from data streaming, 
+                            ensuring both reliable command execution and real-time visualization.
+                        </p>
+                        <p>
+                            The Python backend implements an <b>HTTP server</b> running on localhost port 8080, which handles all user commands sent from the web interface. When a user clicks on buttons like <b><i>Start Listening</i></b>, 
+                            <b><i>Stop Listening</i></b>, <b><i>Record Loop</i></b>, or the clearing controls, the JavaScript frontend sends POST requests (HTTP commands that trigger actions) to specific endpoints (<code>/start</code>, <code>/stop</code>, 
+                            <code>/start_rec</code>, <code>/stop_rec</code>, <code>/clear_loops</code>, <code>/clear_ambient</code>). This HTTP-based command system guarantees that user interactions are reliably processed 
+                            regardless of network conditions, as each command receives an explicit JSON response confirming its execution.
+                        </p>
+                        <p>
+                            Parallel to the HTTP command channel, the Python backend establishes a <b>WebSocket server</b> on port 8765 dedicated exclusively to streaming audio visualization data. Once the audio generation starts, 
+                            the Python code continuously sends chunks of audio samples as binary data through the WebSocket connection. These samples, formatted as arrays of floating-point numbers (Float32Array), are received by the JavaScript 
+                            <code>LiveAudioController</code> class in real-time and fed into the circular buffer—a rotating memory storage that continuously updates with new data while discarding the oldest—that powers the canvas-based waveform visualization. 
+                            This separation of concerns—HTTP for commands, WebSocket for data streaming—allows the web interface to maintain responsive controls even during intensive audio processing.
+                        </p>
+                        <p>
+                            The WebSocket connection is treated as optional in the frontend implementation: if the WebSocket server is unavailable, the audio playback continues through the system's speakers and only the 
+                            visualization is affected. This design choice ensures that the core functionality of listening to the plant's biodata remains accessible even in degraded network conditions.
+                        </p>
+                        <p>
+                            The <code>LiveAudioController</code> JavaScript class orchestrates the entire client-side interaction. It manages the canvas rendering loop through <code>requestAnimationFrame</code>, processes 
+                            incoming WebSocket messages, maintains the visualization buffer state, and synchronizes the UI elements (button states, recording indicators) with the backend's operational status. The class 
+                            implements error handling for both HTTP and WebSocket failures, providing user feedback when connections cannot be established.
+                        </p>
+                        <p>
+                            This architecture effectively bridges the gap between the physical sensors connected to Arduino, the Python-based audio synthesis engine, and the interactive web interface, creating a seamless 
+                            user experience where botanical data transforms into musical expression in real-time.
+                        </p>
+                </article>
                    
                 <article>
                     <h2>Web Interface and Visual Design</h2>
@@ -86,38 +119,7 @@
                         </p>
                 </article>
 
-                <article>
-                    <h2>Backend Architecture and Web Communication</h2>
-                        <p>The communication between the Python audio engine and the web interface is achieved through a dual-protocol architecture. The system uses two different communication protocols to separate control commands from data streaming, 
-                            ensuring both reliable command execution and real-time visualization.
-                        </p>
-                        <p>
-                            The Python backend implements an <b>HTTP server</b> running on localhost port 8080, which handles all user commands sent from the web interface. When a user clicks on buttons like <b><i>Start Listening</i></b>, 
-                            <b><i>Stop Listening</i></b>, <b><i>Record Loop</i></b>, or the clearing controls, the JavaScript frontend sends POST requests (HTTP commands that trigger actions) to specific endpoints (<code>/start</code>, <code>/stop</code>, 
-                            <code>/start_rec</code>, <code>/stop_rec</code>, <code>/clear_loops</code>, <code>/clear_ambient</code>). This HTTP-based command system guarantees that user interactions are reliably processed 
-                            regardless of network conditions, as each command receives an explicit JSON response confirming its execution.
-                        </p>
-                        <p>
-                            Parallel to the HTTP command channel, the Python backend establishes a <b>WebSocket server</b> on port 8765 dedicated exclusively to streaming audio visualization data. Once the audio generation starts, 
-                            the Python code continuously sends chunks of audio samples as binary data through the WebSocket connection. These samples, formatted as arrays of floating-point numbers (Float32Array), are received by the JavaScript 
-                            <code>LiveAudioController</code> class in real-time and fed into the circular buffer—a rotating memory storage that continuously updates with new data while discarding the oldest—that powers the canvas-based waveform visualization. 
-                            This separation of concerns—HTTP for commands, WebSocket for data streaming—allows the web interface to maintain responsive controls even during intensive audio processing.
-                        </p>
-                        <p>
-                            The WebSocket connection is treated as optional in the frontend implementation: if the WebSocket server is unavailable, the audio playback continues through the system's speakers and only the 
-                            visualization is affected. This design choice ensures that the core functionality of listening to the plant's biodata remains accessible even in degraded network conditions.
-                        </p>
-                        <p>
-                            The <code>LiveAudioController</code> JavaScript class orchestrates the entire client-side interaction. It manages the canvas rendering loop through <code>requestAnimationFrame</code>, processes 
-                            incoming WebSocket messages, maintains the visualization buffer state, and synchronizes the UI elements (button states, recording indicators) with the backend's operational status. The class 
-                            implements error handling for both HTTP and WebSocket failures, providing user feedback when connections cannot be established.
-                        </p>
-                        <p>
-                            This architecture effectively bridges the gap between the physical sensors connected to Arduino, the Python-based audio synthesis engine, and the interactive web interface, creating a seamless 
-                            user experience where botanical data transforms into musical expression in real-time.
-                        </p>
-                </article>
-
+              
                 
             </div>
         </main>
