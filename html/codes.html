@@ -1030,7 +1030,7 @@
                         }                        
                     </code></pre>
                     <p>
-                       <span class="tag-verde">The startVisualization method</span> defines and uses the inner function <span class="tag-verde">draw</span>. <b>Draw initially implements requestAnimationFrame</b>, which in turn is responsible for <b>calling draw again, creating a loop</b>. Draw will be called sixty times per second, guaranteeing therefore <b>60 frames per second</b>.  The frame is the current drawing on the canvas, which can change over time. Every time draw is called, it retreives the information of the canvas and prepares it for the current frame, by <b>cleaning it from the previous one</b>: it fills the background, sets the style of the line and initializes a new drawing path. <b>Then, draw transforms the audio samples into a line drawn on the canvas</b>. It takes the number of samples in the circular buffer and computes how much horizontal space each sample occupies. For each sample, it reads the audio value, normalizes it from the range to , and converts it into a vertical coordinate, mapping the audio buffer onto a continuous line from left to right within the same frame. For the first sample, the drawing cursor is moved to the initial point without drawing, while for all subsequent samples a line is drawn from the previous point to the new one. After each sample, the horizontal position is advanced so the waveform progresses across the canvas.
+                       The <span class="tag-verde">startVisualization</span> method defines and uses the inner function <span class="tag-verde">draw</span>. <b>Draw initially implements</b> <span class="tag-verde">requestAnimationFrame</span>, which in turn is responsible for <b>calling draw again, creating a loop</b>. Draw will be called sixty times per second, guaranteeing therefore <b>60 frames per second</b>.  The frame is the current drawing on the canvas, which can change over time. Every time draw is called, it retreives the information of the canvas and prepares it for the current frame, by <b>cleaning it from the previous one</b>: it fills the background, sets the style of the line and initializes a new drawing path. <b>Then, draw transforms the audio samples into a line drawn on the canvas</b>. It takes the number of samples in the circular buffer and computes how much horizontal space each sample occupies. For each sample, it reads the audio value, normalizes it from the range to , and converts it into a vertical coordinate, mapping the audio buffer onto a continuous line from left to right within the same frame. For the first sample, the drawing cursor is moved to the initial point without drawing, while for all subsequent samples a line is drawn from the previous point to the new one. After each sample, the horizontal position is advanced so the waveform progresses across the canvas.
                     </p>
                     <h2>Visualization and Control server connection</h2>
                     <pre class="line-numbers"><code class="language-javascript">
@@ -1130,7 +1130,7 @@
                         }
                     </code></pre>
                     <p>
-                       <span class="tag-verde">Start</span> is the asynchronous method that setupEventListeners links to the start button. It sends to the <span class="tag-verde">HTTP server</span> a request to start rendering and reproducing the pulse and ambient voices. It waits for the server’s response and, if it’s positive, it changes the isPlaying  flag to true, it calls the <span class="tag-verde">tryConnectWebSocket and StartVisualization</span> methods and it adjusts the flags that enable/disable the various buttons
+                       <span class="tag-verde">Start</span> is the asynchronous method that setupEventListeners links to the start button. It sends to the <span class="tag-verde">HTTP server</span> a request to start rendering and reproducing the pulse and ambient voices. It waits for the server’s response and, if it’s positive, it changes the <span class="tag-verde">isPlaying</span> flag to true, it calls the <span class="tag-verde">tryConnectWebSocket</span>  and <span class="tag-verde">StartVisualization</span> methods and it adjusts the flags that enable/disable the various buttons
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                         async stop() {
@@ -1177,8 +1177,8 @@
                         }
                     </code></pre>
                     <p>
-                        <span class="tag-verde">Stop</span> is the asynchronous method associated by setupEventListeners to the stop button. It sends to the <span class="tag-verde">HTTP server</span> a request to stop and reset the audio rendering.  It waits for the server’s response and, if it’s positive, it changes the isPlaying  flag to false, it closes the websocket connection, it cancels the current frame and it calls <b>drawEmptyWaveform</b>.
-                        It also updates the flags for the disabled button and, if a loop recording is still undercurring, it changes the respective flag to “false” and calls updateRecordingUI.
+                        <span class="tag-verde">Stop</span> is the asynchronous method associated by setupEventListeners to the stop button. It sends to the <span class="tag-verde">HTTP server</span> a request to stop and reset the audio rendering.  It waits for the server’s response and, if it’s positive, it changes the <span class="tag-verde">isPlaying</span> flag to false, it closes the webSocket connection, it cancels the current frame and it calls <span class="tag-verde">drawEmptyWaveform</span>.
+                        It also updates the flags for the disabled button and, if a loop recording is still undercurring, it changes the respective flag to “false” and calls <span class="tag-verde">updateRecordingUI</span>.
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                         updateRecordingUI() {
@@ -1195,7 +1195,7 @@
                     </code></pre>
                     <p>
                         <span class="tag-verde">updateRecordingUI</span> <b>updates only the graphical interface according to the recording state</b>. When recording is active, it shows the pause icon, changes the button color, and updates the label; when recording is inactive, it restores the button’s normal appearance.
-                        <b>Remember that single button (and icon) acts as a toggle</b>: each click switches the isRecording state and updateRecordingUI() updates the visual feedback accordingly.
+                        <b>Remember that single button (and icon) acts as a toggle</b>: each click switches the isRecording state and <span class="tag-verde">updateRecordingUI</span> updates the visual feedback accordingly.
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                         async toggleRecording() {
@@ -1227,8 +1227,8 @@
                         }
                     </code></pre>
                     <p>
-                        updateRecordingUI is also used in the <span class="tag-verde">toggleRecording</span>, <b>the asynchronous method linked to the single recording button</b>. When it’s called (every time the toggle button is clicked, thanks to the association made by setupEventListeners), based on the value of the isRecording flag, it either sends a request to the HTTP server to start a loop recording or to stop an occurring one. It then calls updateRecordingUI.
-                        Of course, if the button is clicked but the audio reproduction hasn’t started yet, toggleRecording signals that to the user.
+                        <span class="tag-verde">updateRecordingUI</span> is also used in the <span class="tag-verde">toggleRecording</span>, <b>the asynchronous method linked to the single recording button</b>. When it’s called (every time the toggle button is clicked, thanks to the association made by setupEventListeners), based on the value of the <span class="tag-verde">isRecording</span> flag, it either sends a request to the HTTP server to start a loop recording or to stop an occurring one. It then calls <span class="tag-verde">updateRecordingUI</span>.
+                        Of course, if the button is clicked but the audio reproduction hasn’t started yet, <span class="tag-verde">toggleRecording</span> signals that to the user.
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                         async clearLoops() {
@@ -1275,8 +1275,8 @@
                         }
                     </code></pre>
                     <p>
-                        The <span class="tag-verde">init</span> method<b> is responsible for calling the createCanvas and setupEventListeners methods</b>, therefore creating the canvas and associating the buttons to the JS functions.
-                        Since the init method will be called when the page will be in initial state, with the audio reproduction yet to be started, the method sets up as “true” flags that will initially disable the stop, clearloop, clearambience buttons.
+                        The <span class="tag-verde">init</span> method <b>is responsible for calling the</b> <span class="tag-verde">createCanvas</span> <b>and</b> <span class="tag-verde">setupEventListeners</span> <b>methods</b>, therefore creating the canvas and associating the buttons to the JS functions.
+                        Since the init method will be called when the page will be in initial state, with the audio reproduction yet to be started, the method sets up as “true” flags that will initially disable the stop, clearLoop, clearAmbience buttons.
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                         constructor() {
@@ -1317,7 +1317,7 @@
                     <p>
                         The <span class="tag-verde"> constructor</span> method <b>defines and initializes most of the properties of the class</b>. It is the one that uses all the previous methods to actually build and initialize the Audio Controller object when the class is called.
                         Initially it sets up the destination ( which coincides with the audio_controller’s servers destination) to which the JS functions will send their requests. It then sets up null/empty the attributes related to the websocket connection with the visualization server, to the canvas and to the buffer for the to-be-visualized information.
-                        It then retrieves from the webpage’s document and the elements which correspond to the various buttons, therefore identifying them in the js code. Finally, <b>it calls the init method</b>.
+                        It then retrieves from the webpage’s document and the elements which correspond to the various buttons, therefore identifying them in the js code. Finally, <b>it calls the <span class="tag-verde">init</span> method</b>.
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                         // Initialize
@@ -1326,7 +1326,7 @@
                             });
                     </code></pre>
                     <p>
-                        In the final lines of code, the script waits until the HTML document is fully loaded and then creates an instance of LiveAudioController (by calling the respective class), which triggers the initialization of the application logic, the user interface, and the communication with the server.
+                        In the final lines of code, the script waits until the HTML document is fully loaded and then creates an instance of <span class="tag-verde">LiveAudioController</span> (by calling the respective class), which triggers the initialization of the application logic, the user interface, and the communication with the server.
                     </p>
                     
  
