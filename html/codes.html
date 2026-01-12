@@ -928,7 +928,7 @@
                     </code></pre>
                     <p>
                         The live_listening code mainly revolves around the definition of an <span class="tag-verde">audio controller object</span> (the object that the audio_controller.py code’s servers answer to) through a Class.
-                        Lets now focus on the various methos of the AudioController class. However, in this analysis we will not follow the order in which these methods appear in the code, but rather their execution chain.
+                        Let's now focus on the various methos of the AudioController class. However, in this analysis we will not follow the order in which these methods appear in the code, but rather their execution chain.
                     </p> 
                     <h2>Audio drawing</h2>
                     <pre class="line-numbers"><code class="language-javascript">
@@ -988,7 +988,7 @@
                          }
                     </code></pre>
                     <p>
-                       <span class="tag-verde">Handlevizualization</span> is a method that processes the audio samples coming from the visualization server: it turns the coming binary samples into floats and saves them in a <b>circular buffer</b>.
+                       <span class="tag-verde">handleVisualizationData</span> is a method that processes the audio samples coming from the visualization server: it turns the coming binary samples into floats and saves them in a <b>circular buffer</b>.
                     </p> 
                     <pre class="line-numbers"><code class="language-javascript">
                         startVisualization() {
