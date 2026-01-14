@@ -1,7 +1,5 @@
 # 🌱 Live Planting - Plant Biodata Sonification
 
-![Plant Audio Visualization](images/Plant.png)
-
 An interactive web-based system that transforms plant bioelectrical signals and soil humidity into real-time musical compositions. Experience your plant's "voice" through a retro-styled interface with 8-bit aesthetics.
 
 ## 🎵 Overview
