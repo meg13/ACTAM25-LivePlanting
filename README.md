@@ -216,105 +216,13 @@ live-planting/
     ├── cow.svg                    # Cow sprite (inline SVG)
     └── branch.svg                 # Navigation decoration
 ```
-
----
-
-## 🎨 Features In Detail
-
-### Audio Engine
-
-- **Stereo output** with independent left/right processing
-- **Dynamic voice allocation** (24 ambient + 24 pulse voices)
-- **Soft clipping** (tanh saturation) prevents harsh distortion
-- **Master limiter** prevents clipping (peak normalization)
-- **Thread-safe** command queue for web control
-
-### Loop System
-
-- Circular buffer storing up to 5 loops
-- Each loop preserves exact timing and MIDI notes
-- Last-write-wins when limit exceeded
-- Independent playback from real-time sensor input
-
-### Visualization
-
-- **60 FPS** canvas rendering via `requestAnimationFrame`
-- **Circular buffer** (256 samples) for smooth scrolling
-- WebSocket streams decimated audio data (@10Hz)
-- Falls back gracefully if WebSocket unavailable
-
----
-
-## 🐛 Troubleshooting
-
-### No Audio Output
-
-**Check sounddevice configuration:**
-```python
-python -m sounddevice
-```
-Look for the `>` marker indicating default output device.
-
-**Windows**: May need to set latency explicitly:
-```python
-sd.default.latency = 'high'
-```
-
-### Arduino Not Detected
-
-- Verify COM port in Device Manager (Windows) or `ls /dev/tty*` (Linux/Mac)
-- Ensure Arduino IDE Serial Monitor is closed (port conflict)
-- Check USB cable supports data transfer (not charge-only)
-
-### WebSocket Connection Fails
-
-- Verify Python shows: `✅ WebSocket server on ws://localhost:8765`
-- Check browser console (F12) for connection errors
-- Audio will still work via HTTP; only visualization affected
-
-### Buffer Underruns ("output underflow")
-
-Increase buffer size in Python:
-```python
-blocksize=4096  # Default is 2048
-```
-
----
-
-## 🎓 Educational Value
-
-This project demonstrates:
-
-- **Real-time DSP** (Digital Signal Processing)
-- **Sensor data mapping** and normalization
-- **Additive synthesis** and harmonic generation
-- **Reverb algorithms** (Schroeder design)
-- **Async programming** (Python asyncio)
-- **Web Audio API** alternatives (server-side synthesis)
-- **WebSocket** vs **HTTP** protocol selection
-- **Thread-safe** multi-threaded Python
-
 ---
 
 ## 📖 References
 
-- Schroeder, M. R. (1962). "Natural Sounding Artificial Reverberation"
 - [Symbiotic Kit Documentation](https://spadelectronics.com)
 - [sounddevice Python library](https://python-sounddevice.readthedocs.io/)
 - [HTML5 Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)
-
----
-
-## 🤝 Contributing
-
-Contributions welcome! Areas for improvement:
-
-- [ ] Additional synthesis algorithms (FM, wavetable)
-- [ ] MIDI output support
-- [ ] Mobile-responsive interface
-- [ ] Audio recording/export
-- [ ] Multi-plant support (multiple Arduinos)
-- [ ] Machine learning pattern recognition
 
 ---
 
@@ -328,27 +236,10 @@ MIT License - See LICENSE file for details
 
 **Advanced Coding Tools and Methodologies Course Project**
 
-- Frontend Design & Implementation
-- Python Audio Synthesis Engine
-- Arduino Integration
-- System Architecture
-
----
-
-## 🙏 Acknowledgments
-
-- **Spad Electronics** for the Symbiotic Kit
-- **Press Start 2P** font by CodeMan38
-- **Oxygen Mono** font by Vernon Adams
-- Course instructors and teaching assistants
-
----
-
-## 📧 Contact
-
-For questions or collaboration:
-- GitHub Issues: [Project Issues](https://github.com/yourusername/live-planting/issues)
-- Documentation: See `concept.html` for detailed technical explanation
+- Margherita Raponi
+- Vittoria Tomiati
+- Sara Naima D'angelo
+- Alessando Covini
 
 ---
 
