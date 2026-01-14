@@ -107,6 +107,8 @@ You should see:
 
 2. **Open Web Interface**
 
+![Live Planting Interface](images/livelistening_screenshot.png)
+
 Navigate to `html/live_listening.html` in your browser or use a local server:
 ```bash
 # Optional: Use Python's built-in server
