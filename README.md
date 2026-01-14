@@ -1,4 +1,4 @@
-# 𖡼.𖤣⸙𖡼.𖤣⸙ Live Planting - Plant Biodata Sonification 𖡼.𖤣⸙𖡼.𖤣⸙
+# 𖡼.𖤣⸙.𖤣⸙ Live Planting - Plant Biodata Sonification 𖡼.𖤣⸙.𖤣⸙
 
 ![Live Planting Interface](images/homepage_screenshot.png)
 
