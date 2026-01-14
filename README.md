@@ -1,5 +1,7 @@
 # 🌱 Live Planting - Plant Biodata Sonification
 
+![Live Planting Interface](images/homepage_screenshot.png)
+
 An interactive web-based system that transforms plant bioelectrical signals and soil humidity into real-time musical compositions. Experience your plant's "voice" through a retro-styled interface with 8-bit aesthetics.
 
 ## 🎵 Overview
@@ -10,7 +12,7 @@ This project implements **Biodata Sonification** - converting measurable plant s
 
 - **Real-time audio synthesis** from plant sensor data
 - **Dual signal mapping**: humidity → ambient notes, bioelectrical impulses → pulse notes
-- **Interactive loop recording** with up to 5 simultaneous layers
+- **Interactive loop recording** with up to 10 simultaneous layers
 - **Live waveform visualization** using HTML5 Canvas
 - **Retro pixel-art interface** with animated elements
 - **Schroeder reverb** for spatial audio depth
@@ -52,8 +54,8 @@ This project implements **Biodata Sonification** - converting measurable plant s
 # Python 3.8 or higher
 python --version
 
-# Node.js (optional, for development server)
-node --version
+# Arduino IDE (for uploading sketch)
+# Download from: https://www.arduino.cc/en/software
 ```
 
 ### Setup
@@ -64,16 +66,20 @@ git clone https://github.com/yourusername/live-planting.git
 cd live-planting
 ```
 
+2. **Add Screenshot** (optional but recommended)
+
+Save your homepage screenshot as `images/homepage_screenshot.png` or update the image path in this README to match your file name.
+
 2. **Install Python dependencies**
 ```bash
 pip install numpy sounddevice pyserial aiohttp websockets
 ```
 
 3. **Arduino Setup**
-   - Upload the Arduino sketch to your MEGA board
+   - Upload the Arduino sketch (`sketch_dec3a_fix.ino`) to your MEGA board
    - Connect sensors:
-     - APKLVSR sensor → Analog pin A0
-     - Symbiotic Kit output → Analog pin A1
+     - APKLVSR humidity sensor → Analog pin **A1**
+     - Symbiotic Kit output → Analog pin **A2**
    - Note your COM port (e.g., `COM5` on Windows, `/dev/ttyUSB0` on Linux)
 
 4. **Configure COM Port**
@@ -188,6 +194,7 @@ python -m http.server 8000
 ```
 live-planting/
 ├── audio_controller_http.py      # Main Python backend
+├── sketch_dec3a_fix.ino          # Arduino sketch (upload to MEGA)
 ├── html/
 │   ├── homepage.html              # Landing page with START button
 │   ├── live_listening.html        # Main audio interface
