@@ -62,13 +62,9 @@ python --version
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/live-planting.git
-cd live-planting
+git clone https://github.com/meg13/ACTAM25-LivePlanting.git
+cd LivePlanting
 ```
-
-2. **Add Screenshot** (optional but recommended)
-
-Save your homepage screenshot as `images/homepage_screenshot.png` or update the image path in this README to match your file name.
 
 2. **Install Python dependencies**
 ```bash
