@@ -1,10 +1,10 @@
-# 🌱 Live Planting - Plant Biodata Sonification
+# ⚘ Live Planting - Plant Biodata Sonification ⚘
 
 ![Live Planting Interface](images/homepage_screenshot.png)
 
 An interactive web-based system that transforms plant bioelectrical signals and soil humidity into real-time musical compositions. Experience your plant's "voice" through a retro-styled interface with 8-bit aesthetics.
 
-## 🎵 Overview
+## ♫ Overview
 
 This project implements **Biodata Sonification** - converting measurable plant signals into audible sounds. By monitoring humidity levels and bioelectrical impulses, the system generates ambient soundscapes and rhythmic patterns that reflect your plant's real-time condition.
 
@@ -20,7 +20,7 @@ This project implements **Biodata Sonification** - converting measurable plant s
 
 ---
 
-## 🛠️ Technical Architecture
+## ⚙ Technical Architecture
 
 ### Hardware Components
 
@@ -46,7 +46,7 @@ This project implements **Biodata Sonification** - converting measurable plant s
 
 ---
 
-## 📦 Installation
+## ⌬ Installation
 
 ### Prerequisites
 
@@ -88,7 +88,7 @@ BAUD = 9600
 
 ---
 
-## 🚀 Usage
+## 🖱 Usage
 
 ### Starting the System
 
@@ -133,7 +133,7 @@ python -m http.server 8000
 
 ---
 
-## 🎼 How It Works
+## ♪✿♪ How It Works
 
 ### Signal Mapping
 
@@ -168,26 +168,31 @@ python -m http.server 8000
 ### Communication Protocol
 
 ```
-┌─────────────┐                  ┌──────────────┐
-│   Browser   │                  │    Python    │
-│             │                  │   Backend    │
-│  ┌────────┐ │  HTTP POST      │  ┌────────┐  │
-│  │Commands├─┼─────────────────→│  │/start  │  │
-│  └────────┘ │  /start, /stop   │  │/stop   │  │
-│             │  /start_rec, etc │  │/rec... │  │
-│             │                  │  └────────┘  │
-│  ┌────────┐ │  WebSocket      │  ┌────────┐  │
-│  │Canvas  │←┼─────────────────┤  │ Audio  │  │
-│  │Viz     │ │  Float32Array    │  │ Data   │  │
-│  └────────┘ │  @10Hz           │  └────────┘  │
-└─────────────┘                  └──────────────┘
-        ↑                                ↓
-        └──────── sounddevice ──────→ 🔊 Speakers
+┌───────────────────────┐              ┌───────────────────────┐
+│        BROWSER        │              │    PYTHON BACKEND     │
+│                       │              │                       │
+│  ┌─────────────────┐  │  HTTP POST   │  ┌─────────────────┐  │
+│  │    COMMANDS     │──┼─────────────>│  │  API ENDPOINTS  │  │
+│  │ /start, /stop   │  │              │  │ /start, /stop   │  │
+│  └─────────────────┘  │              │  └─────────────────┘  │
+│                       │              │                       │
+│  ┌─────────────────┐  │  WEBSOCKET   │  ┌─────────────────┐  │
+│  │   CANVAS VIZ    │<─┼──────────────│  │   AUDIO DATA    │  │
+│  │  Float32 @10Hz  │  │              │  │  Stream Buffer  │  │
+│  └─────────────────┘  │              │  └─────────────────┘  │
+└──────────┬────────────┘              └──────────┬────────────┘
+           ^                                      │
+           │           ┌────────────────┐         │
+           └───────────┤  SOUNDDEVICE   │<────────┘
+                       └───────┬────────┘
+                               │
+                               ▼
+                            SPEAKERS
 ```
 
 ---
 
-## 📁 Project Structure
+## 🗀 Project Structure
 
 ```
 live-planting/
@@ -218,7 +223,7 @@ live-planting/
 ```
 ---
 
-## 📖 References
+## 🕮 References
 
 - [Symbiotic Kit Documentation](https://spadelectronics.com)
 - [sounddevice Python library](https://python-sounddevice.readthedocs.io/)
@@ -226,13 +231,7 @@ live-planting/
 
 ---
 
-## 📜 License
-
-MIT License - See LICENSE file for details
-
----
-
-## 👥 Authors
+## ℗  Authors
 
 **Advanced Coding Tools and Methodologies Course Project**
 
@@ -243,4 +242,4 @@ MIT License - See LICENSE file for details
 
 ---
 
-**🌿 Listen to your plant. Hear nature's hidden symphony. 🎵**
+**⚘♫ Listen to your plant. Hear nature's hidden symphony. ♫⚘**
