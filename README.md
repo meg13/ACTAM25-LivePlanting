@@ -88,7 +88,7 @@ BAUD = 9600
 
 ---
 
-## ⌨ Usage ⌨
+## 🖳 Usage 🖳 
 
 ### Starting the System
 
@@ -243,7 +243,7 @@ live-planting/
 
 ---
 
-## ✎ ⋆⑅ Authors˚₊ ✎
+## ✎ ⋆˚Authors˚₊ ✎
 
 **Advanced Coding Tools and Methodologies Course Project**
 
