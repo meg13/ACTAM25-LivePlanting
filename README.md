@@ -46,7 +46,7 @@ This project implements **Biodata Sonification** - converting measurable plant s
 
 ---
 
-## ⚒ Installation ⚒
+## ⤓ Installation ⤓
 
 ### Prerequisites
 
