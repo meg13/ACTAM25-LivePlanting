@@ -1035,36 +1035,35 @@
                     <h2>Visualization and Control server connection</h2>
                     <pre class="line-numbers"><code class="language-javascript">
                         tryConnectWebSocket() {
-                            // WebSocket opzionale per visualizzazione
+                            // Attempt to connect to WebSocket for visualization
                             try {
-                                console.log('📊 Connessione WebSocket per visualizzazione...');
+                                console.log('Connecting WebSocket for visualization...');
                                 
                                 this.websocket = new WebSocket('ws://localhost:8765');
                                 this.websocket.binaryType = 'arraybuffer';
-                    
+
                                 this.websocket.onopen = () => {
-                                    console.log('✅ WebSocket connesso! (visualizzazione attiva)');
+                                    console.log('WebSocket connected! (visualization active)');
                                     this.isWsConnected = true;
                                 };
-                    
+
                                 this.websocket.onmessage = (event) => {
                                     if (event.data instanceof ArrayBuffer) {
                                         this.handleVisualizationData(event.data);
                                     }
                                 };
-                    
+
                                 this.websocket.onerror = () => {
-                                    console.log('⚠️  WebSocket non disponibile (non è un problema!)');
+                                    console.log('WebSocket not available (it is not a problem!)');
                                 };
-                    
+
                                 this.websocket.onclose = () => {
                                     this.isWsConnected = false;
                                 };
                             } catch (e) {
-                                console.log('⚠️  WebSocket non disponibile (non è un problema!)');
+                                console.log('WebSocket not available (it is not a problem!)');
                             }
                         }
-
                     </code></pre>
                     <p>
                         <span class="green-highlight">tryConnectWebSocket</span>, as the name suggests, uses a try operator to connect the webpage as a client to the visualization server. It also instructs the Websocket API to treat, in the future, the coming data as <b>binary values</b>, to change the <span class="green-highlight">isWsConnected</span> flag to “true” if the connection is successful(and viceversa). In case of a message from the server (related to the arrival of a binary buffer), the Websocket API is instructed to call the <span class="green-highlight">handleVisualizationData</span> method. This method will therefore be called by the API every time a new audio chunk arrives. <span class="green-highlight">handleVisualizationData</span> is responsible for turning the binary array into an array of float32 values.
@@ -1088,44 +1087,44 @@
                     <pre class="line-numbers"><code class="language-javascript">
                         async start() {
                             try {
-                                console.log('▶️  Invio comando START...');
-                                console.log('📡 URL:', `${this.httpUrl}/start`);
+                                console.log('Sending START command...');
+                                console.log('URL:', `${this.httpUrl}/start`);
                                 
-                                // ✅ COMANDO HTTP (sempre funziona!)
+                                // Sending HTTP POST request to start audio
                                 const response = await fetch(`${this.httpUrl}/start`, {
                                     method: 'POST',
                                     mode: 'cors'
                                 });
                                 
-                                console.log('📥 Risposta ricevuta:', response.status, response.statusText);
+                                console.log('Answer received:', response.status, response.statusText);
                                 
                                 if (!response.ok) {
-                                    throw new Error(`Errore HTTP: ${response.status} ${response.statusText}`);
+                                    throw new Error(`HTTP error: ${response.status} ${response.statusText}`);
                                 }
                                 
                                 const data = await response.json();
-                                console.log('✅ START confermato:', data);
-                                console.log('🎵 Dovresti sentire 3 note dal PC!');
+                                console.log('START confirmed:', data);
+                                console.log('You should hear 3 notes from the PC!');
                                 
                                 this.isPlaying = true;
-                                
-                                // Prova a connettere WebSocket per visualizzazione (opzionale)
+            
+                                // Try to connect WebSocket for visualization 
                                 this.tryConnectWebSocket();
                                 
-                                // Start visualizzazione
+                                // Start visualization
                                 this.startVisualization();
-                    
+
                                 // Update UI
                                 this.startButton.disabled = true;
                                 this.stopButton.disabled = false;
                                 this.clearLoopButton.disabled = false;
                                 this.clearAmbienceButton.disabled = false;
                                 
-                                console.log('🎵 Dovresti sentire le note di test dal PC!');
-                    
+                                console.log('You should hear the test notes from the PC!');
+
                             } catch (error) {
-                                console.error('❌ Errore:', error);
-                                alert('Errore avvio audio!\n\nVerifica che Python sia in esecuzione.');
+                                console.error('Error:', error);
+                                alert('Error starting audio!\n\nCheck that Python is running.');
                             }
                         }
                     </code></pre>
@@ -1135,35 +1134,35 @@
                     <pre class="line-numbers"><code class="language-javascript">
                         async stop() {
                             try {
-                                console.log('⏸️  Invio comando STOP...');
+                                console.log('Sending STOP command...');
                                 
                                 const response = await fetch(`${this.httpUrl}/stop`, {
                                     method: 'POST'
                                 });
                                 
                                 const data = await response.json();
-                                console.log('✅ STOP confermato:', data.message);
+                                console.log('STOP confirmed:', data.message);
                                 
                                 this.isPlaying = false;
-                    
+
                             } catch (error) {
-                                console.error('❌ Errore stop:', error);
+                                console.error('Stop error:', error);
                             }
-                    
+
                             // Close WebSocket
                             if (this.websocket) {
                                 this.websocket.close();
                                 this.websocket = null;
                             }
-                    
+
                             // Stop visualization
                             if (this.animationId) {
                                 cancelAnimationFrame(this.animationId);
                                 this.animationId = null;
                             }
-                    
+
                             this.drawEmptyWaveform();
-                    
+
                             // Update UI
                             this.startButton.disabled = false;
                             this.stopButton.disabled = true;
@@ -1199,32 +1198,32 @@
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                         async toggleRecording() {
-                            if (!this.isPlaying) {
-                                alert('Avvia prima l\'audio!');
-                                return;
-                            }
-                            
-                            try {
-                                if (this.isRecording) {
-                                    const response = await fetch(`${this.httpUrl}/stop_rec`, {
-                                        method: 'POST'
-                                    });
-                                    const data = await response.json();
-                                    console.log('⏹️  Recording stop:', data);
-                                    this.isRecording = false;
-                                } else {
-                                    const response = await fetch(`${this.httpUrl}/start_rec`, {
-                                        method: 'POST'
-                                    });
-                                    const data = await response.json();
-                                    console.log('🔴 Recording start:', data);
-                                    this.isRecording = true;
+                                if (!this.isPlaying) {
+                                    alert('Start the audio first!');
+                                    return;
                                 }
-                                this.updateRecordingUI();
-                            } catch (error) {
-                                console.error('❌ Errore recording:', error);
+                                
+                                try {
+                                    if (this.isRecording) {
+                                        const response = await fetch(`${this.httpUrl}/stop_rec`, {
+                                            method: 'POST'
+                                        });
+                                        const data = await response.json();
+                                        console.log('Recording stop:', data);
+                                        this.isRecording = false;
+                                    } else {
+                                        const response = await fetch(`${this.httpUrl}/start_rec`, {
+                                            method: 'POST'
+                                        });
+                                        const data = await response.json();
+                                        console.log('Recording start:', data);
+                                        this.isRecording = true;
+                                    }
+                                    this.updateRecordingUI();
+                                } catch (error) {
+                                    console.error('Recording error:', error);
+                                }
                             }
-                        }
                     </code></pre>
                     <p>
                         <span class="green-highlight">updateRecordingUI</span> is also used in the <span class="green-highlight">toggleRecording</span>, <b>the asynchronous method linked to the single recording button</b>. When it’s called (every time the toggle button is clicked, thanks to the association made by setupEventListeners), based on the value of the <span class="green-highlight">isRecording</span> flag, it either sends a request to the HTTP server to start a loop recording or to stop an occurring one. It then calls <span class="green-highlight">updateRecordingUI</span>.
@@ -1236,21 +1235,21 @@
                                 await fetch(`${this.httpUrl}/clear_loops`, {
                                     method: 'POST'
                                 });
-                                console.log('🗑️  Loops cleared');
+                                console.log('Loops cleared');
                             } catch (error) {
-                                console.error('❌ Errore:', error);
+                                console.error('Error:', error);
                             }
                         }
                         
                         async clearAmbience() {
-                            try {
-                                await fetch(`${this.httpUrl}/clear_ambient`, {
-                                    method: 'POST'
-                                });
-                                console.log('🗑️  Ambience cleared');
-                            } catch (error) {
-                                console.error('❌ Errore:', error);
-                            }
+                                try {
+                                    await fetch(`${this.httpUrl}/clear_ambient`, {
+                                        method: 'POST'
+                                    });
+                                    console.log('Ambience cleared');
+                                } catch (error) {
+                                    console.error('Error:', error);
+                                }
                         }
                     </code></pre>
                     <p>
@@ -1261,17 +1260,17 @@
                         init() {
                             this.createCanvas();
                             this.setupEventListeners();
-                    
+
                             // Initial state
                             this.stopButton.disabled = true;
                             this.clearLoopButton.disabled = true;
                             this.clearAmbienceButton.disabled = true;
                             
                             
-                            console.log('🎮 Controller pronto!');
-                            console.log('🔊 Audio: casse del PC');
-                            console.log('📡 Comandi: HTTP (sempre funzionano)');
-                            console.log('📊 Visualizzazione: WebSocket (opzionale)');
+                            console.log('Controller ready!');
+                            console.log('Audio: PC speakers');
+                            console.log('Controls: HTTP (always works)');
+                            console.log('Visualization: WebSocket (optional)');
                         }
                     </code></pre>
                     <p>
