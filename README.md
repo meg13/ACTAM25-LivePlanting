@@ -225,7 +225,7 @@ live-planting/
 
 ## 🕮 References
 
-- [Symbiotic Kit Documentation](https://spadelectronics.com)
+- [Symbiotic Kit Documentation](https://linktr.ee/spad_electronics)
 - [sounddevice Python library](https://python-sounddevice.readthedocs.io/)
 - [HTML5 Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)
 
