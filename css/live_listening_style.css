@@ -64,6 +64,10 @@ main {
     margin-right: 0;
 }
 
+.audio-controls button:hover {
+    transform: scale(1.05); 
+}
+
 .sound-management {
     position: relative;
     width: 500px;
