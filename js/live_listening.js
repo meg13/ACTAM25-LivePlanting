@@ -43,10 +43,10 @@ class LiveAudioController {
         this.clearAmbienceButton.disabled = true;
         
         
-        console.log('Controller pronto!');
-        console.log('Audio: casse del PC');
-        console.log('Comandi: HTTP (sempre funzionano)');
-        console.log('Visualizzazione: WebSocket (opzionale)');
+        console.log('Controller ready!');
+        console.log('Audio: PC speakers');
+        console.log('Controls: HTTP (always works)');
+        console.log('Visualization: WebSocket (optional)');
     }
 
     createCanvas() {
@@ -99,7 +99,7 @@ class LiveAudioController {
 
     async start() {
         try {
-            console.log('Invio comando START...');
+            console.log('Sending START command...');
             console.log('URL:', `${this.httpUrl}/start`);
             
             // Sending HTTP POST request to start audio
@@ -108,22 +108,22 @@ class LiveAudioController {
                 mode: 'cors'
             });
             
-            console.log('Risposta ricevuta:', response.status, response.statusText);
+            console.log('Answer received:', response.status, response.statusText);
             
             if (!response.ok) {
-                throw new Error(`Errore HTTP: ${response.status} ${response.statusText}`);
+                throw new Error(`HTTP error: ${response.status} ${response.statusText}`);
             }
             
             const data = await response.json();
-            console.log('START confermato:', data);
-            console.log('Dovresti sentire 3 note dal PC!');
+            console.log('START confirmed:', data);
+            console.log('You should hear 3 notes from the PC!');
             
             this.isPlaying = true;
             
             // Try to connect WebSocket for visualization 
             this.tryConnectWebSocket();
             
-            // Start visualizzation
+            // Start visualization
             this.startVisualization();
 
             // Update UI
@@ -132,24 +132,24 @@ class LiveAudioController {
             this.clearLoopButton.disabled = false;
             this.clearAmbienceButton.disabled = false;
             
-            console.log('Dovresti sentire le note di test dal PC!');
+            console.log('You should hear the test notes from the PC!');
 
         } catch (error) {
-            console.error('Errore:', error);
-            alert('Errore avvio audio!\n\nVerifica che Python sia in esecuzione.');
+            console.error('Error:', error);
+            alert('Error starting audio!\n\nCheck that Python is running.');
         }
     }
 
     tryConnectWebSocket() {
         // Attempt to connect to WebSocket for visualization
         try {
-            console.log('Connessione WebSocket per visualizzazione...');
+            console.log('Connecting WebSocket for visualization...');
             
             this.websocket = new WebSocket('ws://localhost:8765');
             this.websocket.binaryType = 'arraybuffer';
 
             this.websocket.onopen = () => {
-                console.log('WebSocket connesso! (visualizzazione attiva)');
+                console.log('WebSocket connected! (visualization active)');
                 this.isWsConnected = true;
             };
 
@@ -160,14 +160,14 @@ class LiveAudioController {
             };
 
             this.websocket.onerror = () => {
-                console.log('WebSocket non disponibile (non è un problema!)');
+                console.log('WebSocket not available (it is not a problem!)');
             };
 
             this.websocket.onclose = () => {
                 this.isWsConnected = false;
             };
         } catch (e) {
-            console.log('WebSocket non disponibile (non è un problema!)');
+            console.log('WebSocket not available (it is not a problem!)');
         }
     }
 
@@ -219,19 +219,19 @@ class LiveAudioController {
 
     async stop() {
         try {
-            console.log('Invio comando STOP...');
+            console.log('Sending STOP command...');
             
             const response = await fetch(`${this.httpUrl}/stop`, {
                 method: 'POST'
             });
             
             const data = await response.json();
-            console.log('STOP confermato:', data.message);
+            console.log('STOP confirmed:', data.message);
             
             this.isPlaying = false;
 
         } catch (error) {
-            console.error('Errore stop:', error);
+            console.error('Stop error:', error);
         }
 
         // Close WebSocket
@@ -262,7 +262,7 @@ class LiveAudioController {
 
     async toggleRecording() {
         if (!this.isPlaying) {
-            alert('Avvia prima l\'audio!');
+            alert('Start the audio first!');
             return;
         }
         
@@ -284,7 +284,7 @@ class LiveAudioController {
             }
             this.updateRecordingUI();
         } catch (error) {
-            console.error('Errore recording:', error);
+            console.error('Recording error:', error);
         }
     }
     
@@ -305,7 +305,7 @@ class LiveAudioController {
             });
             console.log('Loops cleared');
         } catch (error) {
-            console.error('Errore:', error);
+            console.error('Error:', error);
         }
     }
     
@@ -316,7 +316,7 @@ class LiveAudioController {
             });
             console.log('Ambience cleared');
         } catch (error) {
-            console.error('Errore:', error);
+            console.error('Error:', error);
         }
     }
 }
