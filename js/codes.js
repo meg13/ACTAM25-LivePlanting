@@ -25,11 +25,12 @@ class HoverTableOfContents {
    * Automatically generates IDs for headings without them
    */
   collectHeadings() {
-    const selector = this.headingLevels.join(", ");
-    const elements = document.querySelectorAll(selector);
+  const selector = this.headingLevels.join(", ");
+  const elements = document.querySelectorAll(selector);
 
-    this.headings = Array.from(elements).map((heading, index) => {
-      // Generate ID if heading doesn't have one
+  this.headings = Array.from(elements)
+    .filter((heading) => !heading.closest("header"))
+    .map((heading, index) => {
       if (!heading.id) {
         heading.id = `heading-${index}`;
       }
@@ -37,10 +38,11 @@ class HoverTableOfContents {
       return {
         id: heading.id,
         text: heading.textContent.trim(),
-        level: parseInt(heading.tagName[1]), // Extract level from tag (h1=1, h2=2, etc.)
+        level: parseInt(heading.tagName[1]),
       };
     });
-  }
+}
+
 
   /**
    * Build nested TOC HTML structure with hover functionality for h2/h3
