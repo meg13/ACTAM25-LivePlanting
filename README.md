@@ -1,10 +1,10 @@
-# ⚘ Live Planting - Plant Biodata Sonification ⚘
+# 🌱 Live Planting - Plant Biodata Sonification 🌱
 
 ![Live Planting Interface](images/homepage_screenshot.png)
 
 An interactive web-based system that transforms plant bioelectrical signals and soil humidity into real-time musical compositions. Experience your plant's "voice" through a retro-styled interface with 8-bit aesthetics.
 
-## ♫ Overview
+## 🎵 Overview
 
 This project implements **Biodata Sonification** - converting measurable plant signals into audible sounds. By monitoring humidity levels and bioelectrical impulses, the system generates ambient soundscapes and rhythmic patterns that reflect your plant's real-time condition.
 
@@ -20,7 +20,7 @@ This project implements **Biodata Sonification** - converting measurable plant s
 
 ---
 
-## ⚙ Technical Architecture
+## ⚙️ Technical Architecture
 
 ### Hardware Components
 
@@ -46,7 +46,7 @@ This project implements **Biodata Sonification** - converting measurable plant s
 
 ---
 
-## ⌬ Installation
+## 📥 Installation
 
 ### Prerequisites
 
@@ -88,7 +88,7 @@ BAUD = 9600
 
 ---
 
-## 🖱 Usage
+## 🖱️ Usage
 
 ### Starting the System
 
@@ -133,7 +133,7 @@ python -m http.server 8000
 
 ---
 
-## ♪✿♪ How It Works
+## 🎶🌺🎶 How It Works
 
 ### Signal Mapping
 
@@ -192,12 +192,13 @@ python -m http.server 8000
 
 ---
 
-## 🗀 Project Structure
+## 🗃️ Project Structure
 
 ```
 live-planting/
-├── audio_controller_http.py      # Main Python backend
-├── sketch_dec3a_fix.ino          # Arduino sketch (upload to MEGA)
+├── audio_controller_http.py       # Main Python backend
+├── arduino/
+│   └── sketch_dec3a_fix.ino       # Arduino sketch (upload to MEGA)
 ├── html/
 │   ├── homepage.html              # Landing page with START button
 │   ├── live_listening.html        # Main audio interface
@@ -207,31 +208,42 @@ live-planting/
 │   ├── style.css                  # Global styles & navigation
 │   ├── live_listening_style.css   # Audio interface styles
 │   ├── homepage.css               # Landing page styles
-│   └── concept_style.css          # Documentation styles
+│   ├── concept_style.css          # Documentation styles
+│   ├── codes_style.css            # Code page styles
+│   └── prism.css                  # Code blocks styles
 ├── js/
 │   ├── live_listening.js          # Audio controller (HTTP + WebSocket)
 │   ├── nav.js                     # Animated navigation flowers
 │   ├── cows.js                    # Walking cow animations
 │   ├── ducks.js                   # Jumping duck animations
 │   ├── flower.js                  # Decorative flower spawner
-│   └── grass.js                   # Grass background elements
+│   ├── grass.js                   # Grass background elements
+│   ├── codes.js                   # Code page interactivity
+│   └── prism.js                   # Code block highlighting library
 └── images/
     ├── Plant.png                  # Pixel art plant
     ├── duck.svg                   # Duck sprite
-    ├── cow.svg                    # Cow sprite (inline SVG)
-    └── branch.svg                 # Navigation decoration
+    ├── duck_for_code_report.svg   # Duck sprite for code report
+    ├── cow.svg                    # Cow sprite
+    ├── branch.svg                 # Navigation decoration
+    ├── bg_flower.svg              # Background flower
+    ├── grass.svg                  # Grass decoration
+    ├── pxlFlowe.svg               # Pixel flower for code report
+    ├── pause.png                  # Pause button icon
+    ├── homepage_screenshot.png    # Homepage screenshot
+    └── livelistening_screenshot.png # Live listening screenshot
 ```
 ---
 
-## 🕮 References
+## 📖 References
 
-- [Symbiotic Kit Documentation](https://spadelectronics.com)
+- [Symbiotic Kit Documentation](https://linktr.ee/spad_electronics)
 - [sounddevice Python library](https://python-sounddevice.readthedocs.io/)
 - [HTML5 Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)
 
 ---
 
-## ℗  Authors
+## ✨ Authors
 
 **Advanced Coding Tools and Methodologies Course Project**
 
@@ -242,4 +254,4 @@ live-planting/
 
 ---
 
-**⚘♫ Listen to your plant. Hear nature's hidden symphony. ♫⚘**
+**🌱🎶 Listen to your plant. Hear nature's hidden symphony. 🎶🌱**
