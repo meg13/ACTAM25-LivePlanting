@@ -36,12 +36,12 @@
                     </p>                   
                     <ul>
                         <li>Two lists: 
-                            <span class="tag-verde">self.ambient_voices</span> and 
-                            <span class="tag-verde">self.pulse_voices</span>,
+                            <span class="green-highlight">self.ambient_voices</span> and 
+                            <span class="green-highlight">self.pulse_voices</span>,
                             respectively responsible for <b>containing the ambient voices</b> and <b>the pulse voices</b> which are generated.</li>
-                        <li>An object: <span class="tag-verde">self.pulse_reverb</span>, responsible for applying a <b>reverb effect</b> on the pulse notes.</li>
-                        <li>An object: <span class="tag-verde">self.viz_queue</span>, responsible for <b>containing the processed information</b> for the clients of the visualization server.</li>
-                        <li>An Output stream: <span class="tag-verde">self.stream</span>, responsible for actually <b>obtaining the final audio signals</b> and communicating them to the hardware.</li>
+                        <li>An object: <span class="green-highlight">self.pulse_reverb</span>, responsible for applying a <b>reverb effect</b> on the pulse notes.</li>
+                        <li>An object: <span class="green-highlight">self.viz_queue</span>, responsible for <b>containing the processed information</b> for the clients of the visualization server.</li>
+                        <li>An Output stream: <span class="green-highlight">self.stream</span>, responsible for actually <b>obtaining the final audio signals</b> and communicating them to the hardware.</li>
                     </ul>
                     <pre class="line-numbers"><code class="language-python">
                         class CombinedSynth:
@@ -151,11 +151,11 @@
                                         self.pulse_voices.append(v)
                     </code></pre>
                     <p>
-                        The mehtods for the pulse and ambient voices are different because so are the sounds that these voices are associated with. In fact, while the <span class="tag-verde">add_pulse_voice</span> method establishes fixed duration, vibrato and tremolo parameters for the pulse voice, <span class="tag-verde">add_ambient_voice_moving</span> does not define a duration (the pulse voices are infinite until user interruption), chooses random values for the vibrato and tremolo and then calls the  <span class="tag-verde">add_ambient_voice</span> method, which actually creates the pulse voice.
+                        The mehtods for the pulse and ambient voices are different because so are the sounds that these voices are associated with. In fact, while the <span class="green-highlight">add_pulse_voice</span> method establishes fixed duration, vibrato and tremolo parameters for the pulse voice, <span class="green-highlight">add_ambient_voice_moving</span> does not define a duration (the pulse voices are infinite until user interruption), chooses random values for the vibrato and tremolo and then calls the  <span class="green-highlight">add_ambient_voice</span> method, which actually creates the pulse voice.
                     </p>
                     <h3>Reverb</h3>
                     <p>
-                        <span class="tag-verde">self.pulse_reverb</span> is the name assigned within the synthesizer to an attribute which is created using the SchroedererReverb class, defined <b>before</b> the synth class.    
+                        <span class="green-highlight">self.pulse_reverb</span> is the name assigned within the synthesizer to an attribute which is created using the SchroedererReverb class, defined <b>before</b> the synth class.    
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         class SchroederReverb:
@@ -208,14 +208,14 @@
                                 return outL.astype(np.float32), outR.astype(np.float32)
                     </code></pre>
                     <p>
-                        The <span class="tag-verde">SchroedererReverb</span> class in turn implements objects like the <span class="tag-verde">Comb</span> Class and the <span class="tag-verde">Allpass</span> Class. 
-                        <br><span class="tag-verde">Comb</span> is responsible for <b>creating from an input signal x</b>, using the inner process method, an <b>infinite series of delayed echoes</b> from the original signal, with <b>decreasing intensity</b>.  
-                        <br><span class="tag-verde">Allpass</span>, instead, consists in an <b>all-pass filter</b>, which through its process method can <b>change and darken the timbre of a sound</b>. 
+                        The <span class="green-highlight">SchroedererReverb</span> class in turn implements objects like the <span class="green-highlight">Comb</span> Class and the <span class="green-highlight">Allpass</span> Class. 
+                        <br><span class="green-highlight">Comb</span> is responsible for <b>creating from an input signal x</b>, using the inner process method, an <b>infinite series of delayed echoes</b> from the original signal, with <b>decreasing intensity</b>.  
+                        <br><span class="green-highlight">Allpass</span>, instead, consists in an <b>all-pass filter</b>, which through its process method can <b>change and darken the timbre of a sound</b>. 
                     </p>
                     <p>
                         But how does the Schroederer reverb actually implement these objects?
-                        <br>The reverb class contains within itself, two <b>sets</b> of <span class="tag-verde">Comb</span> objects and two <b>sets</b> of <span class="tag-verde">Allpass</span> objects (each pair of sets associated to the right and left sides of the audio hardware). Within <span class="tag-verde">SchroedererReverb</span>, a method for applying a low pass filter to a signal is also defined, as well as a final process method.
-                        This process method, given two input singals xL and xR, initially passes them both through the low-pass filter. It then applies to each one of the two the process methods of <b>all</b> its respective (based on the right-left side) <span class="tag-verde">Comb</span> objects and <b>all</b> its respective <span class="tag-verde">Allpass</span> filters. Through this process, we obtain versions of xL and xR with reverb applied to them.
+                        <br>The reverb class contains within itself, two <b>sets</b> of <span class="green-highlight">Comb</span> objects and two <b>sets</b> of <span class="green-highlight">Allpass</span> objects (each pair of sets associated to the right and left sides of the audio hardware). Within <span class="green-highlight">SchroedererReverb</span>, a method for applying a low pass filter to a signal is also defined, as well as a final process method.
+                        This process method, given two input singals xL and xR, initially passes them both through the low-pass filter. It then applies to each one of the two the process methods of <b>all</b> its respective (based on the right-left side) <span class="green-highlight">Comb</span> objects and <b>all</b> its respective <span class="green-highlight">Allpass</span> filters. Through this process, we obtain versions of xL and xR with reverb applied to them.
                     </p>    
                     <h3>Queue</h3>
                     <pre class="line-numbers"><code class="language-python">
@@ -223,9 +223,9 @@
                     self.viz_queue = queue.Queue(maxsize=50)
                     </code></pre>
                     <p>
-                        To create the queue object, the <span class="tag-verde">Queue</span> class from the queue library is used. This queue will be filled through 
-                        a process which will be controlled by two other attributes, the <span class="tag-verde">self.viz_counter</span> parameter and the 
-                        <span class="tag-verde">self.viz_decimation</span> parameter.
+                        To create the queue object, the <span class="green-highlight">Queue</span> class from the queue library is used. This queue will be filled through 
+                        a process which will be controlled by two other attributes, the <span class="green-highlight">self.viz_counter</span> parameter and the 
+                        <span class="green-highlight">self.viz_decimation</span> parameter.
                     </p>
                     <h3>Output stream</h3>
                     <pre class="line-numbers"><code class="language-python">
@@ -245,7 +245,7 @@
                         self.stream.close
                     </code></pre>
                     <p>
-                        The output stream is created by using the <span class="tag-verde">OutputStream</span> class from the sounddevice library. Its creation is associated to the definition of <b>two specific methods</b> to <b>start</b> and <b>stop</b> it. What's most important about it is its usage of the <span class="tag-verde">callback</span> method, which is defined <b>within</b> the synth.The <span class="tag-verde">callback</span> method is the <b>functional core of the synth</b>. Once the output stream’s <b>process starts running</b> (through another specific function), the <span class="tag-verde">callback</span> method is <b>called constantly</b>: it is responsible for reading the ambient and pulse voices within the respective lists and for converting the instructions inside them into the corresponding audio signals. The stream then carries the signals to the hardware and allows it to actually reproduce them. 
+                        The output stream is created by using the <span class="green-highlight">OutputStream</span> class from the sounddevice library. Its creation is associated to the definition of <b>two specific methods</b> to <b>start</b> and <b>stop</b> it. What's most important about it is its usage of the <span class="green-highlight">callback</span> method, which is defined <b>within</b> the synth.The <span class="green-highlight">callback</span> method is the <b>functional core of the synth</b>. Once the output stream’s <b>process starts running</b> (through another specific function), the <span class="green-highlight">callback</span> method is <b>called constantly</b>: it is responsible for reading the ambient and pulse voices within the respective lists and for converting the instructions inside them into the corresponding audio signals. The stream then carries the signals to the hardware and allows it to actually reproduce them. 
                     </p>
                     <h3>Callback</h3>
                     <pre class="line-numbers"><code class="language-python">
@@ -262,7 +262,7 @@
                                     return
                     </code></pre>
                     <p>
-                        Let’s now focus on how the <span class="tag-verde">callback</span> method actually works: first of all, it is built in order to read a flag called <span class="tag-verde">is_audio_playing</span>. If the <b>flag is false</b>, when the callback is called it <b>sends to the stream only zeros</b> (which translate to silence) even though ambient or pulse voices are present in the respective lists. However, if the <b>flag is true</b>, when the method is called it <b>builds four separate empty buffers for the pulse and ambient sounds</b> that will be sent to the right and left hardware. Then, it proceeds with the rendering of the voices.
+                        Let’s now focus on how the <span class="green-highlight">callback</span> method actually works: first of all, it is built in order to read a flag called <span class="green-highlight">is_audio_playing</span>. If the <b>flag is false</b>, when the callback is called it <b>sends to the stream only zeros</b> (which translate to silence) even though ambient or pulse voices are present in the respective lists. However, if the <b>flag is true</b>, when the method is called it <b>builds four separate empty buffers for the pulse and ambient sounds</b> that will be sent to the right and left hardware. Then, it proceeds with the rendering of the voices.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                     ambL = np.zeros(frames, dtype=np.float32)
@@ -271,7 +271,7 @@
                     pulR = np.zeros(frames, dtype=np.float32)
                     </code></pre>
                     <p>
-                    The rendering of the voices depends on the fact that the <span class="tag-verde">callback</span> and <span class="tag-verde">OutputStream</span> both process and reproduce the audio by treating it as <b>segmented into blocks</b>. In fact, everytime the callback is called, it receives a new block of frames to fill with rendered audio signals. Therefore, not only it is <b>important</b> to <b>define</b> which <b>time instant</b>, and the corresponding frames are <b>associated to the various blocks</b>, but also to <b>avoid rough transitions from one block to another</b> for the sounds that are reproduced across multiple blocks. This is done by defining and updating, at the end of each block for each active voice, the last time instant (<span class="tag-verde">v["t"]</span>) and the last value of the phase (<span class="tag-verde">v["phase"]</span>). In this way, when the same voice is rendered at the beginning of the following block, the time and the phase will be coherent.    
+                    The rendering of the voices depends on the fact that the <span class="green-highlight">callback</span> and <span class="green-highlight">OutputStream</span> both process and reproduce the audio by treating it as <b>segmented into blocks</b>. In fact, everytime the callback is called, it receives a new block of frames to fill with rendered audio signals. Therefore, not only it is <b>important</b> to <b>define</b> which <b>time instant</b>, and the corresponding frames are <b>associated to the various blocks</b>, but also to <b>avoid rough transitions from one block to another</b> for the sounds that are reproduced across multiple blocks. This is done by defining and updating, at the end of each block for each active voice, the last time instant (<span class="green-highlight">v["t"]</span>) and the last value of the phase (<span class="green-highlight">v["phase"]</span>). In this way, when the same voice is rendered at the beginning of the following block, the time and the phase will be coherent.    
                     </p>
                     <p>
                         When the callback renders the voices:
@@ -369,7 +369,7 @@
                         </li>
                     </ul>
                     <p>
-                        The rendering is completed by applying the reverb’s process function on the pulse sines, as well as a final gain factor, <span class="tag-verde">self.master_gain</span>. The right and left pulse buffers are summed to the respective ambient buffers to obtain two final buffers. Then, the <span class="tag-verde">callback</span> applies a simple limiter to the buffers to prevent clipping and writes the safely bounded audio samples to the output stream. Finally, the <span class="tag-verde">callback</span> uses as a block counter <span class="tag-verde">self.viz_counter</span> so that, every time a number of audio blocks equal to <span class="tag-verde">self.viz_decimation</span> have been processed, <b>only the processed left buffer of the current block is decimated</b> (8x decimation) <b>and added to the visualization queue object</b>. Therefore, the <b>visualization server will receive only a snapshot of the decimated left channel</b> every <span class="tag-verde">self.viz_decimation</span> blocks: this makes sure that the <b>server will send the clients</b>, who are responsible for the visualization, <b>audio chunks which won’t be too heavy to process.</b>
+                        The rendering is completed by applying the reverb’s process function on the pulse sines, as well as a final gain factor, <span class="green-highlight">self.master_gain</span>. The right and left pulse buffers are summed to the respective ambient buffers to obtain two final buffers. Then, the <span class="green-highlight">callback</span> applies a simple limiter to the buffers to prevent clipping and writes the safely bounded audio samples to the output stream. Finally, the <span class="green-highlight">callback</span> uses as a block counter <span class="green-highlight">self.viz_counter</span> so that, every time a number of audio blocks equal to <span class="green-highlight">self.viz_decimation</span> have been processed, <b>only the processed left buffer of the current block is decimated</b> (8x decimation) <b>and added to the visualization queue object</b>. Therefore, the <b>visualization server will receive only a snapshot of the decimated left channel</b> every <span class="green-highlight">self.viz_decimation</span> blocks: this makes sure that the <b>server will send the clients</b>, who are responsible for the visualization, <b>audio chunks which won’t be too heavy to process.</b>
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                                 # Separated master gain control
@@ -405,7 +405,7 @@
                     </code></pre>
                     <h2>Pulse tools</h2>
                     <p>
-                        The function <span class="tag-verde">hann_env</span>, used during the rendering of the pulse notes, is defined in the “pulse tools” section at the beginning of the code, before the synth class. This function takes as an input the duration of the signal for which the envelope is needed, a fade in ratio and a fade out ratio, and from these inputs it creates and returns a set of coefficients which constitute the envelope itself.
+                        The function <span class="green-highlight">hann_env</span>, used during the rendering of the pulse notes, is defined in the “pulse tools” section at the beginning of the code, before the synth class. This function takes as an input the duration of the signal for which the envelope is needed, a fade in ratio and a fade out ratio, and from these inputs it creates and returns a set of coefficients which constitute the envelope itself.
                         The envelope has a <b>quadratically-shaped attack and a cosine-shaped release</b>, both very smooth.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
@@ -436,7 +436,7 @@
                         When considering how the synth is used within the code, it is crucial to consider the loop player as well. The <b>loop player</b> is a <b>function</b> that <b>takes the synth object as an input</b> and <b>uses it to play the pulse-notes loops that have been recorded and stored</b> (for why there are pulse note loops, see the concept page). The function initially defines an empty runtime list and then establishes an infinite while cycle. 
                         <br>The cycle consists of constantly updating the loops list with the current stored loops. <b>If the number of loops has changed or one of the loops has been substituted</b>, the <b>runtime list gets updated.</b> 
                         <br>It is updated by <b>considering all the stored loops</b> and, <b>only for the ones which actually contain at least one event</b> (one pulse note), it <b>adds an element to the runtime list containing the corresponding loop, an index, and two-time parameters.</b> 
-                        <br>Out of these two parameters, the first one, <span class="tag-verde">t0</span>, is indicative of the <b>current iteration of the loop</b>, while the second one, <span class="tag-verde">t_next</span>, is indicative of <b>when to play the next event of the loop within the current iteration.</b> Once the runtime has been updated, the single iteration of the while cycle continues with an inner for cycle: the for cycle checks if the current time has surpassed the <span class="tag-verde">t_next</span> for the current events of any of the active loops, and adds in such case the corresponding voices to the synth (<span class="tag-verde">t0</span> and the  event indexes are updated).
+                        <br>Out of these two parameters, the first one, <span class="green-highlight">t0</span>, is indicative of the <b>current iteration of the loop</b>, while the second one, <span class="green-highlight">t_next</span>, is indicative of <b>when to play the next event of the loop within the current iteration.</b> Once the runtime has been updated, the single iteration of the while cycle continues with an inner for cycle: the for cycle checks if the current time has surpassed the <span class="green-highlight">t_next</span> for the current events of any of the active loops, and adds in such case the corresponding voices to the synth (<span class="green-highlight">t0</span> and the  event indexes are updated).
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         def loop_player_thread(synth):
@@ -487,7 +487,7 @@
                     </code></pre>
                     <h2>Visualization server</h2>
                     <p>
-                        The visualization server mainly relies on two asynchronous functions. The first one, <span class="tag-verde">websocket_handler</span>, serves the purpose of <b>adding a possible new client of the server to a shared set</b> and/or <b>removing from the same set a client that is disconnecting</b> from the server.
+                        The visualization server mainly relies on two asynchronous functions. The first one, <span class="green-highlight">websocket_handler</span>, serves the purpose of <b>adding a possible new client of the server to a shared set</b> and/or <b>removing from the same set a client that is disconnecting</b> from the server.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         websocket_clients = set()
@@ -512,7 +512,7 @@
                                 print(f"[WS] Client disconnected. Total: {len(websocket_clients)}")
                     </code></pre>
                     <p>
-                        The second one, <span class="tag-verde">viz_broadcaster</span>, which takes as an input the synthesizer object, establishes an <b>infinite while cycle</b>. The cycle <b>reads at every iteration</b>, from the queue attribute of the synthesizer, the <b>first-in-line audio chunk</b> of the queue (processed and decimated left channel audio block). It then <b>sends the chunk to the list of all the currently connected clients</b>, which will in turn visualize it. It also reports every time 500 chunks have been sent to the clients.
+                        The second one, <span class="green-highlight">viz_broadcaster</span>, which takes as an input the synthesizer object, establishes an <b>infinite while cycle</b>. The cycle <b>reads at every iteration</b>, from the queue attribute of the synthesizer, the <b>first-in-line audio chunk</b> of the queue (processed and decimated left channel audio block). It then <b>sends the chunk to the list of all the currently connected clients</b>, which will in turn visualize it. It also reports every time 500 chunks have been sent to the clients.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         async def viz_broadcaster(synth):
@@ -552,7 +552,7 @@
                         The HTTP or control server relies on many asynchronous functions. Each one of them has the task of allowing the server to act on how the real time engine is reproducing the audio, based on a specific user request from the web page. However, these following functions are defined as being dependent on a generic external request and still need to be associated to their specific respective user request, in order for the control server to actually use them.
                     </p>
                     <p>
-                        The <span class="tag-verde">handle_start</span> function is responsible for <b>changing</b>, after receiving a generic external request, the <span class="tag-verde">is_audio_playing</span> flag <b>to True</b>. It will be used by the server to ask the callback, whenever the user requests it from the webpage, to stop sending to the Output stream only zeros and to <b></b>start rendering the voices in the lists</b>. This function also adds three notes to the synthesizer to test its correct functioning.
+                        The <span class="green-highlight">handle_start</span> function is responsible for <b>changing</b>, after receiving a generic external request, the <span class="green-highlight">is_audio_playing</span> flag <b>to True</b>. It will be used by the server to ask the callback, whenever the user requests it from the webpage, to stop sending to the Output stream only zeros and to <b></b>start rendering the voices in the lists</b>. This function also adds three notes to the synthesizer to test its correct functioning.
                     </p>
                     <pre class="line-numbers"><code class="language-python">  
                         async def handle_start(request):
@@ -578,7 +578,7 @@
                             }, headers={'Access-Control-Allow-Origin': '*'})                       
                     </code></pre>
                     <p>
-                        The <span class="tag-verde">handle_stop</span> function, after a generic request, <b>changes</b> the <span class="tag-verde">is_audio_playing</span> flag <b>to False</b>. Additionally, it also empties the voices’ lists, so that when the user stops the synthesizer the stored voices are also reset.
+                        The <span class="green-highlight">handle_stop</span> function, after a generic request, <b>changes</b> the <span class="green-highlight">is_audio_playing</span> flag <b>to False</b>. Additionally, it also empties the voices’ lists, so that when the user stops the synthesizer the stored voices are also reset.
                     </p>
                     <pre class="line-numbers"><code class="language-python">  
                         async def handle_stop(request):
@@ -601,8 +601,8 @@
                             }, headers={'Access-Control-Allow-Origin': '*'})                        
                     </code></pre>
                     <p>
-                        The <span class="tag-verde">handle_start_rec</span> function changes the <span class="tag-verde">is_recording</span> flag to <b>True</b> and <b>defines and empty list</b> for <b>the recorded events.</b> 
-                        <br>The <span class="tag-verde">handle_stop_rec</span> function changes the flag to <b>False</b>, <b>creates a loop from the recorded events and the duration of the recording</b> and <b>appends it to the loops list.</b> However, none of these two functions is responsible for the recording itself.
+                        The <span class="green-highlight">handle_start_rec</span> function changes the <span class="green-highlight">is_recording</span> flag to <b>True</b> and <b>defines and empty list</b> for <b>the recorded events.</b> 
+                        <br>The <span class="green-highlight">handle_stop_rec</span> function changes the flag to <b>False</b>, <b>creates a loop from the recorded events and the duration of the recording</b> and <b>appends it to the loops list.</b> However, none of these two functions is responsible for the recording itself.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         async def handle_start_rec(request):
@@ -647,7 +647,7 @@
                             }, headers={'Access-Control-Allow-Origin': '*'})                         
                     </code></pre>
                     <p>
-                        The <span class="tag-verde">handle_clear_loops</span> and <span class="tag-verde">handle_clear_ambient</span> functions are respectively responsible for <b>clearing the recorded loops/the synth voices</b> that the synth is playing from its list and therefore resetting them, <b>without stopping</b> the callback from continuing to process the audio. Both functions exploit other “clear” functions defined in within the synth class.
+                        The <span class="green-highlight">handle_clear_loops</span> and <span class="green-highlight">handle_clear_ambient</span> functions are respectively responsible for <b>clearing the recorded loops/the synth voices</b> that the synth is playing from its list and therefore resetting them, <b>without stopping</b> the callback from continuing to process the audio. Both functions exploit other “clear” functions defined in within the synth class.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         async def handle_clear_loops(request):
@@ -675,7 +675,7 @@
                     </code></pre>
                     <h2>Real time audio engine server</h2>
                     <p>
-                        The definition of the real time audio server is dependent on another asynchronous function, <span class="tag-verde">serial_reader</span>.
+                        The definition of the real time audio server is dependent on another asynchronous function, <span class="green-highlight">serial_reader</span>.
                     </p>
                     <pre class="line-numbers"><code class="language-python">  
                         # -----------------------------
@@ -708,7 +708,7 @@
                                 ser = None                    
                     </code></pre>
                     <p>
-                        The <span class="tag-verde">serial_reader</span> function takes as an input a synth object, and initially it defines a set of parameters. Among these parameters, the <span class="tag-verde">BAUD</span> and <span class="tag-verde">PORT</span> parameters are relevant to the first operation that the code executes through a try operator, which is to create a digital serial door. This door consists in a digital equivalent of the link between the computer and the Arduino module, through which the code can import and read the Arduino outputs.
+                        The <span class="green-highlight">serial_reader</span> function takes as an input a synth object, and initially it defines a set of parameters. Among these parameters, the <span class="green-highlight">BAUD</span> and <span class="green-highlight">PORT</span> parameters are relevant to the first operation that the code executes through a try operator, which is to create a digital serial door. This door consists in a digital equivalent of the link between the computer and the Arduino module, through which the code can import and read the Arduino outputs.
                     </p>
                     <pre class="line-numbers"><code class="language-python">  
                         try:
@@ -735,12 +735,12 @@
                     </code></pre>
                     <p>
                         Then, the code sets up an infinite while(true) cycle. For each iteration of this cycle, the code tries to read the correspondent current output of Arduino. A valid output should consist in a line containing two numbers, separated by a comma. 
-                        <br>If the <b>output</b> is <b>valid</b>, the <b>code takes the two numbers</b> and <b>assigns the first one to</b> a <span class="tag-verde">hum_raw</span> variable and the <b>second one to</b> a <span class="tag-verde">bio_raw</span> variable. This step therefore consists in <b>saving the rough biodata of the plant</b>, coming through Arduino. The next one will be the mapping of this current biodata. But, before considering this next step, it is useful to <b>study some other tools and functions</b> which are defined at the <b>very beginning of the code</b> and that will be now used.
+                        <br>If the <b>output</b> is <b>valid</b>, the <b>code takes the two numbers</b> and <b>assigns the first one to</b> a <span class="green-highlight">hum_raw</span> variable and the <b>second one to</b> a <span class="green-highlight">bio_raw</span> variable. This step therefore consists in <b>saving the rough biodata of the plant</b>, coming through Arduino. The next one will be the mapping of this current biodata. But, before considering this next step, it is useful to <b>study some other tools and functions</b> which are defined at the <b>very beginning of the code</b> and that will be now used.
                     </p>
                     <h3>Musical utils</h3>
                     <p>
-                        The function <span class="tag-verde">midi_to_freq</span> takes as an input a midi frequency value and translates it into a Hertz frequency value. 
-                        The <span class="tag-verde">midi_from_adc_semitones</span> function takes as an input a base frequency, called <span class="tag-verde">base_root</span> (default value 24 midi), and an adc parameter that goes from 0 to 1023. It turns the adc into a number of semitones (from a minimum of 0 to a maximum of 60) and it returns the number of semitones summed to the base root and the number itself.
+                        The function <span class="green-highlight">midi_to_freq</span> takes as an input a midi frequency value and translates it into a Hertz frequency value. 
+                        The <span class="green-highlight">midi_from_adc_semitones</span> function takes as an input a base frequency, called <span class="green-highlight">base_root</span> (default value 24 midi), and an adc parameter that goes from 0 to 1023. It turns the adc into a number of semitones (from a minimum of 0 to a maximum of 60) and it returns the number of semitones summed to the base root and the number itself.
                     </p>
                     <pre class="line-numbers"><code class="language-python">      
                         def midi_to_freq(m):
@@ -752,8 +752,8 @@
                             return base_root + semis, semis                    
                     </code></pre>
                     <p>
-                        The <span class="tag-verde">build_major_offsets_3_octaves</span> function uses a list of degrees (defined before it as a list of the number of semitones above the tonic note of all the notes in a major scale). This list is used to build another list containing the numbers of semitones above a generic base root of all the notes that are contained in three octaves of major scale (all starting from the base root).
-                        <br>The <span class="tag-verde">quantize_to_major</span> function is related to <span class="tag-verde">build_major_offsets_3_octaves</span>, in the sense that it takes as an input a generic number of semitones above a base root and rounds it to the nearest major offset in the correspondent octave (in this case five octaves are considered).  It will be used in the pulse mapping.
+                        The <span class="green-highlight">build_major_offsets_3_octaves</span> function uses a list of degrees (defined before it as a list of the number of semitones above the tonic note of all the notes in a major scale). This list is used to build another list containing the numbers of semitones above a generic base root of all the notes that are contained in three octaves of major scale (all starting from the base root).
+                        <br>The <span class="green-highlight">quantize_to_major</span> function is related to <span class="green-highlight">build_major_offsets_3_octaves</span>, in the sense that it takes as an input a generic number of semitones above a base root and rounds it to the nearest major offset in the correspondent octave (in this case five octaves are considered).  It will be used in the pulse mapping.
                     </p>
                     <pre class="line-numbers"><code class="language-python">   
                         MAJOR_DEGREES = [0, 2, 4, 5, 7, 9, 11]
@@ -778,7 +778,7 @@
                         MAJOR_OFFSETS = build_major_offsets_3_octaves(36)                       
                     </code></pre>
                     <p>
-                        <span class="tag-verde">build_major_offsets_3_octaves</span> is used to obtain <span class="tag-verde">MAJOR_OFFSETS</span>, which is in turn used in the <span class="tag-verde">humidity_to_note</span> function which takes as an input an h value ( presumably a raw humidity biodata value). The h value is turned into a percentage by considering it within a range of biodata values that goes from 200 to 400. Then, this percentage is used to obtain a value from 0 to 36, which is in turn rounded and finally swapped with the nearest major offset, all to obtain a mapped equivalent of h, in terms of semitones above the base root.
+                        <span class="green-highlight">build_major_offsets_3_octaves</span> is used to obtain <span class="green-highlight">MAJOR_OFFSETS</span>, which is in turn used in the <span class="green-highlight">humidity_to_note</span> function which takes as an input an h value ( presumably a raw humidity biodata value). The h value is turned into a percentage by considering it within a range of biodata values that goes from 200 to 400. Then, this percentage is used to obtain a value from 0 to 36, which is in turn rounded and finally swapped with the nearest major offset, all to obtain a mapped equivalent of h, in terms of semitones above the base root.
                     </p>
                     <pre class="line-numbers"><code class="language-python"> 
                         def humidity_to_note(h: float, base_root: int, h_min=200.0, h_max=400.0):
@@ -794,9 +794,9 @@
                     </code></pre>
                     <h3>Mapping of biodata</h3>
                     <p>
-                        Going back to the serial reader and the mapping of the impulses, the while cycle at every iteration applies the <span class="tag-verde">humidity_to_note</span> function to the <span class="tag-verde">hum_raw</span> variable, therefore assigning the biodata humidity value a correspondent note in major scale (expressed as a number of semitones above the base root). 
-                        <br><b>If the number of semitones is equal to zero</b> (invalid value that happens when the humidity sensor is disconnected from Arduino) <b>twice in a row</b>, the <b>synthesizer's ambient voices are cleared</b>, and a specific <b>flag</b> is <b>changed to "true"</b>. This flag will return to "false" when the number of semitones will return to being valid. The valid <span class="tag-verde">hum_raw</span> values are appended to a list and, when the iteration's time has surpassed a time limit determined by <span class="tag-verde">AMB_WINDOW_SEC</span> , these values in the list are averaged. Then, the serial reader once again uses <span class="tag-verde">humidity_to_note</span> to turn the average humidity to a number of semitones. 
-                        <br>Finally, through <span class="tag-verde">add_ambient_voice_moving</span>, it adds to the synth an ambient voice with a frequency associated to the average number of semitones. This completes the humidity mapping.
+                        Going back to the serial reader and the mapping of the impulses, the while cycle at every iteration applies the <span class="green-highlight">humidity_to_note</span> function to the <span class="green-highlight">hum_raw</span> variable, therefore assigning the biodata humidity value a correspondent note in major scale (expressed as a number of semitones above the base root). 
+                        <br><b>If the number of semitones is equal to zero</b> (invalid value that happens when the humidity sensor is disconnected from Arduino) <b>twice in a row</b>, the <b>synthesizer's ambient voices are cleared</b>, and a specific <b>flag</b> is <b>changed to "true"</b>. This flag will return to "false" when the number of semitones will return to being valid. The valid <span class="green-highlight">hum_raw</span> values are appended to a list and, when the iteration's time has surpassed a time limit determined by <span class="green-highlight">AMB_WINDOW_SEC</span> , these values in the list are averaged. Then, the serial reader once again uses <span class="green-highlight">humidity_to_note</span> to turn the average humidity to a number of semitones. 
+                        <br>Finally, through <span class="green-highlight">add_ambient_voice_moving</span>, it adds to the synth an ambient voice with a frequency associated to the average number of semitones. This completes the humidity mapping.
                     </p>
                     <pre class="line-numbers"><code class="language-python"> 
                         # ---- AMBIENCE (only if audio is playing) ----
@@ -827,9 +827,9 @@
                                         amb_window_start = now                        
                     </code></pre>
                     <p>
-                        Next is the bioelectrical impulse mapping: at every iteration the current <span class="tag-verde">bio_raw</span> value is turned into a number of semitones using <span class="tag-verde">midi_from_adc_semitones</span>, this number of semitones is rounded to the closest one in major scale using <span class="tag-verde">quantize_to_major</span>. This number of semitones is added to the base root, obtaining a total note midi value. 
+                        Next is the bioelectrical impulse mapping: at every iteration the current <span class="green-highlight">bio_raw</span> value is turned into a number of semitones using <span class="green-highlight">midi_from_adc_semitones</span>, this number of semitones is rounded to the closest one in major scale using <span class="green-highlight">quantize_to_major</span>. This number of semitones is added to the base root, obtaining a total note midi value. 
                         <br>If the value is above a minimum threshold and the time exceeds a cooldown time, the pulse note is added to the synth. If a loop recording is happening, the note is also saved as an event for the loop that is being recorded.
-                        <br>If the output stream has started and the <span class="tag-verde">is_audio_playing</span> flag is true, these mapped voices, once added to the synth, will be translated into audio signals by the callback and sent by the stream to the hardware! In any instances in which the <span class="tag-verde">serial_reader</span> is running but the <span class="tag-verde">is_audio_playing</span> flag is false, the pulse and ambient voices corresponding to the Arduino outputs will be added to the synth, but the active callback will not read the voices' lists and will keep sending to the output stream only zeros.
+                        <br>If the output stream has started and the <span class="green-highlight">is_audio_playing</span> flag is true, these mapped voices, once added to the synth, will be translated into audio signals by the callback and sent by the stream to the hardware! In any instances in which the <span class="green-highlight">serial_reader</span> is running but the <span class="green-highlight">is_audio_playing</span> flag is false, the pulse and ambient voices corresponding to the Arduino outputs will be added to the synth, but the active callback will not read the voices' lists and will keep sending to the output stream only zeros.
                     </p>
                     <pre class="line-numbers"><code class="language-python">
                         # ---- PULSE (only if audio is playing) ----
@@ -847,10 +847,10 @@
                     </code></pre>
                     <h2>Main</h2>
                     <p>
-                        The final key asynchronous function is the <span class="tag-verde">main</span> function. If the code runs the main, it is responsible for using all the asynchronous and non-asynchronous functions, as well as all the classes, defined above to actually create the synthesizer and the functioning servers. 
+                        The final key asynchronous function is the <span class="green-highlight">main</span> function. If the code runs the main, it is responsible for using all the asynchronous and non-asynchronous functions, as well as all the classes, defined above to actually create the synthesizer and the functioning servers. 
                     </p>
                                         <p>
-                        In fact, this function initially creates a synth object using the <span class="tag-verde">Synth</span> class. It  then creates the websocket and HTTP servers, which will use their respective asynchronous functions. In the case of the HTTP server, specific user requests are associated to the various functions used by the control server, making it fully functioning. 
+                        In fact, this function initially creates a synth object using the <span class="green-highlight">Synth</span> class. It  then creates the websocket and HTTP servers, which will use their respective asynchronous functions. In the case of the HTTP server, specific user requests are associated to the various functions used by the control server, making it fully functioning. 
                     </p>
                     <pre class="line-numbers"><code class="language-python">   
                         async def main():
@@ -907,7 +907,7 @@
                         await serial_reader(synth)                       
                     </code></pre>
                     <p>
-                        In its final lines, the code runs the <span class="tag-verde">main</span> function, the synth and servers are created,  and the output stream produces silence, even though the Arduino values are being mapped and saved by the serial reader. This will of course change when the user, through the control server, will ask the callback to start reproducing the mapped biodata.
+                        In its final lines, the code runs the <span class="green-highlight">main</span> function, the synth and servers are created,  and the output stream produces silence, even though the Arduino values are being mapped and saved by the serial reader. This will of course change when the user, through the control server, will ask the callback to start reproducing the mapped biodata.
                     </p>
                     <pre class="line-numbers"><code class="language-python">    
                         if __name__ == "__main__":
@@ -921,13 +921,13 @@
                     <br><br>
                     <h1>Backend-Frontend link</h1>
                     <p>
-                        The <span class="tag-verde">live_listening</span> code is the most important piece of js coding of the website page of our Live Planting project. Even if the audio_controller python code had servers built in itself that allowed the real time audio to interact with the web page, it’s the live_listening code that <b>actually makes these interactions possible</b>. This js code, in fact, is mainly responsible for <b>linking the various buttons on the webpage to the respective requests</b> that the webpage sends to the control server, while also receiving the outputs of the visualization server and <b>turning them into a live-drawing</b> of the audio’s sine wave.
+                        The <span class="green-highlight">live_listening</span> code is the most important piece of js coding of the website page of our Live Planting project. Even if the audio_controller python code had servers built in itself that allowed the real time audio to interact with the web page, it’s the live_listening code that <b>actually makes these interactions possible</b>. This js code, in fact, is mainly responsible for <b>linking the various buttons on the webpage to the respective requests</b> that the webpage sends to the control server, while also receiving the outputs of the visualization server and <b>turning them into a live-drawing</b> of the audio’s sine wave.
                     </p> 
                     <pre class="line-numbers"><code class="language-javascript">
                         class LiveAudioController
                     </code></pre>
                     <p>
-                        The live_listening code mainly revolves around the definition of an <span class="tag-verde">audio controller object</span> (the object that the audio_controller.py code’s servers answer to) through a Class.
+                        The live_listening code mainly revolves around the definition of an <span class="green-highlight">audio controller object</span> (the object that the audio_controller.py code’s servers answer to) through a Class.
                         Let's now focus on the various methos of the AudioController class. However, in this analysis we will not follow the order in which these methods appear in the code, but rather their execution chain.
                     </p> 
                     <h2>Audio drawing</h2>
@@ -948,7 +948,7 @@
                         }
                     </code></pre>
                     <p>
-                        The <span class="tag-verde">drawEmptyWaveform</span> method retrieves the graphic context of a canvas object in the environment where it’s called, fills the whole canvas with a white background. It then sets the color and thickness of a line and <b>draws a horizontal line on the canvas.</b>
+                        The <span class="green-highlight">drawEmptyWaveform</span> method retrieves the graphic context of a canvas object in the environment where it’s called, fills the whole canvas with a white background. It then sets the color and thickness of a line and <b>draws a horizontal line on the canvas.</b>
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                             createCanvas() {
@@ -974,8 +974,8 @@
                             }
                     </code></pre>
                     <p>
-                        The <span class="tag-verde">createCanvas</span> method is responsible for creating the visual environment (canvas) in which the sine wave will actually be drawn. It <b>creates the canvas element</b> (still not visible) on the webpage’s document and it reads the dimensions of the to-be-drawn waveform’s div.
-                        It then sets up the inner resolution of the canvas according to those dimensions, as well as the canvas’s actual visual dimensions so that it fills the div. Finally it <b>appends the canvas element to the waveform’s div</b>, it calls the <span class="tag-verde">drawEmptyWaveform</span> method to draw a flat waveform on the canvas (the audio is turned off at the start) and it keeps the canvas in sync with the page size.
+                        The <span class="green-highlight">createCanvas</span> method is responsible for creating the visual environment (canvas) in which the sine wave will actually be drawn. It <b>creates the canvas element</b> (still not visible) on the webpage’s document and it reads the dimensions of the to-be-drawn waveform’s div.
+                        It then sets up the inner resolution of the canvas according to those dimensions, as well as the canvas’s actual visual dimensions so that it fills the div. Finally it <b>appends the canvas element to the waveform’s div</b>, it calls the <span class="green-highlight">drawEmptyWaveform</span> method to draw a flat waveform on the canvas (the audio is turned off at the start) and it keeps the canvas in sync with the page size.
                         In fact, when the window is resized it recalculates the div’s dimensions, updates the canvas resolution accordingly, and redraws the idle waveform if audio is not playing.
                     </p> 
                     <pre class="line-numbers"><code class="language-javascript">
@@ -988,7 +988,7 @@
                          }
                     </code></pre>
                     <p>
-                       <span class="tag-verde">handleVisualizationData</span> is a method that processes the audio samples coming from the visualization server: it turns the coming binary samples into floats and saves them in a <b>circular buffer</b>.
+                       <span class="green-highlight">handleVisualizationData</span> is a method that processes the audio samples coming from the visualization server: it turns the coming binary samples into floats and saves them in a <b>circular buffer</b>.
                     </p> 
                     <pre class="line-numbers"><code class="language-javascript">
                         startVisualization() {
@@ -1030,7 +1030,7 @@
                         }                        
                     </code></pre>
                     <p>
-                       The <span class="tag-verde">startVisualization</span> method defines and uses the inner function <span class="tag-verde">draw</span>. <b>Draw initially implements</b> <span class="tag-verde">requestAnimationFrame</span>, which in turn is responsible for <b>calling draw again, creating a loop</b>. Draw will be called sixty times per second, guaranteeing therefore <b>60 frames per second</b>.  The frame is the current drawing on the canvas, which can change over time. Every time draw is called, it retreives the information of the canvas and prepares it for the current frame, by <b>cleaning it from the previous one</b>: it fills the background, sets the style of the line and initializes a new drawing path. <b>Then, draw transforms the audio samples into a line drawn on the canvas</b>. It takes the number of samples in the circular buffer and computes how much horizontal space each sample occupies. For each sample, it reads the audio value, normalizes it from the range [-1, 1] to [0, 1], and converts it into a vertical coordinate, mapping the audio buffer onto a continuous line from left to right within the same frame. For the first sample, the drawing cursor is moved to the initial point without drawing, while for all subsequent samples a line is drawn from the previous point to the new one. After each sample, the horizontal position is advanced so the waveform progresses across the canvas.
+                       The <span class="green-highlight">startVisualization</span> method defines and uses the inner function <span class="green-highlight">draw</span>. <b>Draw initially implements</b> <span class="green-highlight">requestAnimationFrame</span>, which in turn is responsible for <b>calling draw again, creating a loop</b>. Draw will be called sixty times per second, guaranteeing therefore <b>60 frames per second</b>.  The frame is the current drawing on the canvas, which can change over time. Every time draw is called, it retreives the information of the canvas and prepares it for the current frame, by <b>cleaning it from the previous one</b>: it fills the background, sets the style of the line and initializes a new drawing path. <b>Then, draw transforms the audio samples into a line drawn on the canvas</b>. It takes the number of samples in the circular buffer and computes how much horizontal space each sample occupies. For each sample, it reads the audio value, normalizes it from the range [-1, 1] to [0, 1], and converts it into a vertical coordinate, mapping the audio buffer onto a continuous line from left to right within the same frame. For the first sample, the drawing cursor is moved to the initial point without drawing, while for all subsequent samples a line is drawn from the previous point to the new one. After each sample, the horizontal position is advanced so the waveform progresses across the canvas.
                     </p>
                     <h2>Visualization and Control server connection</h2>
                     <pre class="line-numbers"><code class="language-javascript">
@@ -1067,7 +1067,7 @@
 
                     </code></pre>
                     <p>
-                        <span class="tag-verde">tryConnectWebSocket</span>, as the name suggests, uses a try operator to connect the webpage as a client to the visualization server. It also instructs the Websocket API to treat, in the future, the coming data as <b>binary values</b>, to change the <span class="tag-verde">isWsConnected</span> flag to “true” if the connection is successful(and viceversa). In case of a message from the server (related to the arrival of a binary buffer), the Websocket API is instructed to call the <span class="tag-verde">handleVisualizationData</span> method. This method will therefore be called by the API every time a new audio chunk arrives. <span class="tag-verde">handleVisualizationData</span> is responsible for turning the binary array into an array of float32 values.
+                        <span class="green-highlight">tryConnectWebSocket</span>, as the name suggests, uses a try operator to connect the webpage as a client to the visualization server. It also instructs the Websocket API to treat, in the future, the coming data as <b>binary values</b>, to change the <span class="green-highlight">isWsConnected</span> flag to “true” if the connection is successful(and viceversa). In case of a message from the server (related to the arrival of a binary buffer), the Websocket API is instructed to call the <span class="green-highlight">handleVisualizationData</span> method. This method will therefore be called by the API every time a new audio chunk arrives. <span class="green-highlight">handleVisualizationData</span> is responsible for turning the binary array into an array of float32 values.
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                         setupEventListeners() {
@@ -1082,7 +1082,7 @@
                         }
                     </code></pre>
                     <p>
-                      <span class="tag-verde">setupEventListeners</span> is a method that <b>associates various buttons of the webpage’s main page to their respective JS methods</b>, which will send the requests corresponding to the buttons to the servers. The buttons that it links to functions are: <span class="tag-verde">startButton, stopButton, recordButton</span> (depending on when it’s clicked it can act both as a start-recording or stop-recording button), <span class="tag-verde">clearLoopButton, clearAmbienceButton.</span>
+                      <span class="green-highlight">setupEventListeners</span> is a method that <b>associates various buttons of the webpage’s main page to their respective JS methods</b>, which will send the requests corresponding to the buttons to the servers. The buttons that it links to functions are: <span class="green-highlight">startButton, stopButton, recordButton</span> (depending on when it’s clicked it can act both as a start-recording or stop-recording button), <span class="green-highlight">clearLoopButton, clearAmbienceButton.</span>
                       Every time a JavaScript function needs to make a request to the HTTP server (when the corresponding button is clicked), fetch is the command through which it sends the HTTP request to the server (e.g. /clear_loops). By also using await, the function waits for the server’s response before continuing with the execution. But how are the the JS methods that are associated with the various buttons defined?
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
@@ -1130,7 +1130,7 @@
                         }
                     </code></pre>
                     <p>
-                       <span class="tag-verde">Start</span> is the asynchronous method that setupEventListeners links to the start button. It sends to the <span class="tag-verde">HTTP server</span> a request to start rendering and reproducing the pulse and ambient voices. It waits for the server’s response and, if it’s positive, it changes the <span class="tag-verde">isPlaying</span> flag to true, it calls the <span class="tag-verde">tryConnectWebSocket</span>  and <span class="tag-verde">StartVisualization</span> methods and it adjusts the flags that enable/disable the various buttons
+                       <span class="green-highlight">Start</span> is the asynchronous method that setupEventListeners links to the start button. It sends to the <span class="green-highlight">HTTP server</span> a request to start rendering and reproducing the pulse and ambient voices. It waits for the server’s response and, if it’s positive, it changes the <span class="green-highlight">isPlaying</span> flag to true, it calls the <span class="green-highlight">tryConnectWebSocket</span>  and <span class="green-highlight">StartVisualization</span> methods and it adjusts the flags that enable/disable the various buttons
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                         async stop() {
@@ -1177,8 +1177,8 @@
                         }
                     </code></pre>
                     <p>
-                        <span class="tag-verde">Stop</span> is the asynchronous method associated by setupEventListeners to the stop button. It sends to the <span class="tag-verde">HTTP server</span> a request to stop and reset the audio rendering.  It waits for the server’s response and, if it’s positive, it changes the <span class="tag-verde">isPlaying</span> flag to false, it closes the webSocket connection, it cancels the current frame and it calls <span class="tag-verde">drawEmptyWaveform</span>.
-                        It also updates the flags for the disabled button and, if a loop recording is still undercurring, it changes the respective flag to “false” and calls <span class="tag-verde">updateRecordingUI</span>.
+                        <span class="green-highlight">Stop</span> is the asynchronous method associated by setupEventListeners to the stop button. It sends to the <span class="green-highlight">HTTP server</span> a request to stop and reset the audio rendering.  It waits for the server’s response and, if it’s positive, it changes the <span class="green-highlight">isPlaying</span> flag to false, it closes the webSocket connection, it cancels the current frame and it calls <span class="green-highlight">drawEmptyWaveform</span>.
+                        It also updates the flags for the disabled button and, if a loop recording is still undercurring, it changes the respective flag to “false” and calls <span class="green-highlight">updateRecordingUI</span>.
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                         updateRecordingUI() {
@@ -1194,8 +1194,8 @@
                         }
                     </code></pre>
                     <p>
-                        <span class="tag-verde">updateRecordingUI</span> <b>updates only the graphical interface according to the recording state</b>. When recording is active, it shows the pause icon, changes the button color, and updates the label; when recording is inactive, it restores the button’s normal appearance.
-                        <b>Remember that single button (and icon) acts as a toggle</b>: each click switches the isRecording state and <span class="tag-verde">updateRecordingUI</span> updates the visual feedback accordingly.
+                        <span class="green-highlight">updateRecordingUI</span> <b>updates only the graphical interface according to the recording state</b>. When recording is active, it shows the pause icon, changes the button color, and updates the label; when recording is inactive, it restores the button’s normal appearance.
+                        <b>Remember that single button (and icon) acts as a toggle</b>: each click switches the isRecording state and <span class="green-highlight">updateRecordingUI</span> updates the visual feedback accordingly.
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                         async toggleRecording() {
@@ -1227,8 +1227,8 @@
                         }
                     </code></pre>
                     <p>
-                        <span class="tag-verde">updateRecordingUI</span> is also used in the <span class="tag-verde">toggleRecording</span>, <b>the asynchronous method linked to the single recording button</b>. When it’s called (every time the toggle button is clicked, thanks to the association made by setupEventListeners), based on the value of the <span class="tag-verde">isRecording</span> flag, it either sends a request to the HTTP server to start a loop recording or to stop an occurring one. It then calls <span class="tag-verde">updateRecordingUI</span>.
-                        Of course, if the button is clicked but the audio reproduction hasn’t started yet, <span class="tag-verde">toggleRecording</span> signals that to the user.
+                        <span class="green-highlight">updateRecordingUI</span> is also used in the <span class="green-highlight">toggleRecording</span>, <b>the asynchronous method linked to the single recording button</b>. When it’s called (every time the toggle button is clicked, thanks to the association made by setupEventListeners), based on the value of the <span class="green-highlight">isRecording</span> flag, it either sends a request to the HTTP server to start a loop recording or to stop an occurring one. It then calls <span class="green-highlight">updateRecordingUI</span>.
+                        Of course, if the button is clicked but the audio reproduction hasn’t started yet, <span class="green-highlight">toggleRecording</span> signals that to the user.
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                         async clearLoops() {
@@ -1254,7 +1254,7 @@
                         }
                     </code></pre>
                     <p>
-                        <span class="tag-verde">ClearLoop and ClearAmbience</span> are the JS methods that execute on the control server, once the respective buttons are clicked, the matching requests.
+                        <span class="green-highlight">ClearLoop and ClearAmbience</span> are the JS methods that execute on the control server, once the respective buttons are clicked, the matching requests.
                     </p>
                     <h2>Other methods</h2>
                     <pre class="line-numbers"><code class="language-javascript">
@@ -1275,7 +1275,7 @@
                         }
                     </code></pre>
                     <p>
-                        The <span class="tag-verde">init</span> method <b>is responsible for calling the</b> <span class="tag-verde">createCanvas</span> <b>and</b> <span class="tag-verde">setupEventListeners</span> <b>methods</b>, therefore creating the canvas and associating the buttons to the JS functions.
+                        The <span class="green-highlight">init</span> method <b>is responsible for calling the</b> <span class="green-highlight">createCanvas</span> <b>and</b> <span class="green-highlight">setupEventListeners</span> <b>methods</b>, therefore creating the canvas and associating the buttons to the JS functions.
                         Since the init method will be called when the page will be in initial state, with the audio reproduction yet to be started, the method sets up as “true” flags that will initially disable the stop, clearLoop, clearAmbience buttons.
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
@@ -1315,9 +1315,9 @@
                         }
                     </code></pre>
                     <p>
-                        The <span class="tag-verde"> constructor</span> method <b>defines and initializes most of the properties of the class</b>. It is the one that uses all the previous methods to actually build and initialize the Audio Controller object when the class is called.
+                        The <span class="green-highlight"> constructor</span> method <b>defines and initializes most of the properties of the class</b>. It is the one that uses all the previous methods to actually build and initialize the Audio Controller object when the class is called.
                         Initially it sets up the destination ( which coincides with the audio_controller’s servers destination) to which the JS functions will send their requests. It then sets up null/empty the attributes related to the websocket connection with the visualization server, to the canvas and to the buffer for the to-be-visualized information.
-                        It then retrieves from the webpage’s document and the elements which correspond to the various buttons, therefore identifying them in the js code. Finally, <b>it calls the <span class="tag-verde">init</span> method</b>.
+                        It then retrieves from the webpage’s document and the elements which correspond to the various buttons, therefore identifying them in the js code. Finally, <b>it calls the <span class="green-highlight">init</span> method</b>.
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                         // Initialize
@@ -1326,7 +1326,7 @@
                             });
                     </code></pre>
                     <p>
-                        In the final lines of code, the script waits until the HTML document is fully loaded and then creates an instance of <span class="tag-verde">LiveAudioController</span> (by calling the respective class), which triggers the initialization of the application logic, the user interface, and the communication with the server.
+                        In the final lines of code, the script waits until the HTML document is fully loaded and then creates an instance of <span class="green-highlight">LiveAudioController</span> (by calling the respective class), which triggers the initialization of the application logic, the user interface, and the communication with the server.
                     </p>
                     
  
@@ -1356,11 +1356,11 @@
                     </p>
                     <h2>Navigation system <img src="../images/pxlFlowe.svg"></h2>
                     <p>
-                        The code for the navigation system is in <span class="tag-verde">nav.js</span> and follows a <b>DOM-based dynamic approach</b>. 
+                        The code for the navigation system is in <span class="green-highlight">nav.js</span> and follows a <b>DOM-based dynamic approach</b>. 
                         <br>It consists of:
                     </p>                    
                     <ul>
-                        <li>Personalized flower (<span class="tag-verde">menu-flower</span>) with colored petals</li>
+                        <li>Personalized flower (<span class="green-highlight">menu-flower</span>) with colored petals</li>
                         <li>Text button with the label of the section</li>
                         <li>CSS Animations on hover (center rotation, scale up)</li>
                     </ul>                  
@@ -1371,7 +1371,7 @@
                     <br><br>
                     <h3>Cow Animation <img src="../images/cow.svg"></h3>
                     <p>
-                        The <span class="tag-verde">SimpleCow</span> class has a <b>simulated physical movement system</b> that responds to collisions.
+                        The <span class="green-highlight">SimpleCow</span> class has a <b>simulated physical movement system</b> that responds to collisions.
                         <br>Each cow:
                     </p>                    
                     <ul>
@@ -1381,11 +1381,11 @@
                         <li>Nicely <b>bounces</b> on the edges of the screen and of the START button</li>
                     </ul>
                     <p>
-                        In the <b>constructor</b> of the <span class="tag-verde">SimpleCow</span> class, the <b>valid area</b> is calculated, where the cows can move, avoiding the navigation menu and the START button. For this task the property <span class="tag-verde">offsetWidth</span> of nav and the method <span class="tag-verde">getBoundingClientRect</span> for the START button are used.
+                        In the <b>constructor</b> of the <span class="green-highlight">SimpleCow</span> class, the <b>valid area</b> is calculated, where the cows can move, avoiding the navigation menu and the START button. For this task the property <span class="green-highlight">offsetWidth</span> of nav and the method <span class="green-highlight">getBoundingClientRect</span> for the START button are used.
                     </p>
                     <p>
-                        In the <span class="tag-verde">update</span> method, the <b>movement</b> of the Cows is handled.
-                        <br><b>Random pauses</b> are implemented in the movement simply using boolean property <span class="tag-verde">paused</span> of the class <span class="tag-verde">SimpleCow</span>. Cows have a 1% probability of being paused at each frame. When paused, the cow does not move for a random time between 500ms and 2000ms, after which it resumes its movement.
+                        In the <span class="green-highlight">update</span> method, the <b>movement</b> of the Cows is handled.
+                        <br><b>Random pauses</b> are implemented in the movement simply using boolean property <span class="green-highlight">paused</span> of the class <span class="green-highlight">SimpleCow</span>. Cows have a 1% probability of being paused at each frame. When paused, the cow does not move for a random time between 500ms and 2000ms, after which it resumes its movement.
                         <br><br>The <b>bouncing mechanism</b> is implemented by checking if the cow's position exceeds the valid area boundaries. If it does, the corresponding velocity component (vx or vy) is inverted and the cow bounces back into the valid area:
                     </p>                  
                     <pre class="line-numbers"><code class="language-javascript">
@@ -1455,7 +1455,7 @@
                     <h3>Duck Animation <img src="../images/duck_for_code_report.svg"></h3>
                     <p>
                         Ducks move similarly to cows, but with a <b>higher speed</b>. Also, a logic for <b>random jumps</b> is implemented.
-                        <br>Each duck has a 0.5% probability of jumping at each frame. When jumping, the duck's y position is temporarily decreased by a fixed jumpHeight value for a short duration (<span class="tag-verde">jumpTimer</span>), then it returns to its original y position.
+                        <br>Each duck has a 0.5% probability of jumping at each frame. When jumping, the duck's y position is temporarily decreased by a fixed jumpHeight value for a short duration (<span class="green-highlight">jumpTimer</span>), then it returns to its original y position.
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                     // Salto casuale
@@ -1477,7 +1477,7 @@
                     <br><br>
                     <h3>Decorative Grass <img src="../images/grass.svg"></h3>
                     <p>
-                        The grass items are added dinamically to the pages using the function <span class="tag-verde">addGrassItem()</span> in javascript. Each grass item has <b>random dimensions, position and color</b>. Also, a <span class="tag-verde">z-index</span> of 1 is assigned to the grass items to ensure they stay in the background.
+                        The grass items are added dinamically to the pages using the function <span class="green-highlight">addGrassItem()</span> in javascript. Each grass item has <b>random dimensions, position and color</b>. Also, a <span class="green-highlight">z-index</span> of 1 is assigned to the grass items to ensure they stay in the background.
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                     function addGrassItem() {
@@ -1503,8 +1503,8 @@
                     <br><br>
                     <h3>Background flowers <img src="../images/bg_flower.svg"></h3>
                     <p>
-                        Some flowers are added dinamically to the pages using the function <span class="tag-verde">addFlowerItem()</span> in javascript. Their position is random, but some <b>constraints</b> are added to <b>avoid overlapping</b> with the navigation menu, other flowers or audio settings in the live listening page. A number of attempts is set to try to find a valid position for each flower, if none is found, the flower is not added.
-                        <br>Their <span class="tag-verde">z-index</span> is put to 2, to stay over the grass, but under everything else.
+                        Some flowers are added dinamically to the pages using the function <span class="green-highlight">addFlowerItem()</span> in javascript. Their position is random, but some <b>constraints</b> are added to <b>avoid overlapping</b> with the navigation menu, other flowers or audio settings in the live listening page. A number of attempts is set to try to find a valid position for each flower, if none is found, the flower is not added.
+                        <br>Their <span class="green-highlight">z-index</span> is put to 2, to stay over the grass, but under everything else.
                     </p>
                     <pre class="line-numbers"><code class="language-javascript">
                     function getRandomPosition(flowerSize, maxAttempts = 50) {

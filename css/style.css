@@ -108,7 +108,7 @@ nav {
     height: auto;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centrer everything horizontally in relation to the flower. */
+    align-items: center; /* Center everything horizontally in relation to the flower. */
     text-decoration: none;
 }
 

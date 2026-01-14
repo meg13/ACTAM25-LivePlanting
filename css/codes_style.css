@@ -1,4 +1,3 @@
-/* Fixed trigger - side rectangle style */
 #toc-trigger {
   position: fixed;
   top: 110px;
@@ -43,7 +42,7 @@ article > h3 {
   margin-bottom: 9px;
 }
 
-.tag-verde {
+.green-highlight {
   color: #409543;
   font-style: italic;
   font-weight: 500;
@@ -85,7 +84,7 @@ article ul li img {
   margin-left: 4px;
 }
 
-/* TOC Trigger Button - Fixed floating button (class usata dal JS) */
+/* TOC Trigger Button - Fixed floating button (class used by JS) */
 .toc-trigger {
   position: fixed;
   top: 20px;
