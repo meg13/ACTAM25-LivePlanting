@@ -23,7 +23,6 @@ class LiveAudioController {
 
         // Recording controls
         this.recordButton = document.querySelector('.loopRecButton a');
-        this.pauseIcon = document.getElementById('pauseIcon');
         this.clearLoopButton = document.getElementById('loopCLButton');
         this.clearAmbienceButton = document.getElementById('ambienceCLButton');
         
@@ -291,12 +290,10 @@ class LiveAudioController {
     
     updateRecordingUI() {
         if (this.isRecording) {
-            this.pauseIcon.style.display = 'inline';
-            this.recordButton.style.backgroundColor = '#ff4444';
-            this.recordButton.innerHTML = ' Recording';
+            this.recordButton.classList.add('recording');
+            this.recordButton.innerHTML = 'Recording';
         } else {
-            this.pauseIcon.style.display = 'none';
-            this.recordButton.style.backgroundColor = '#e95d8c';
+            this.recordButton.classList.remove('recording');
             this.recordButton.innerHTML = 'Record Loop';
         }
     }
@@ -326,5 +323,5 @@ class LiveAudioController {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    const controller = new LiveAudioController();
+  const controller = new LiveAudioController();
 });
