@@ -20,7 +20,7 @@ This project implements **Biodata Sonification** - converting measurable plant s
 
 ---
 
-## 🛠 Technical Architecture
+## ⚙ Technical Architecture
 
 ### Hardware Components
 
@@ -46,7 +46,7 @@ This project implements **Biodata Sonification** - converting measurable plant s
 
 ---
 
-## ⚙ Installation
+## ⌬ Installation
 
 ### Prerequisites
 
@@ -88,7 +88,7 @@ BAUD = 9600
 
 ---
 
-## ⌨ Usage
+## 🖱 Usage
 
 ### Starting the System
 
@@ -231,7 +231,7 @@ live-planting/
 
 ---
 
-## ✒ Authors
+## ℗  Authors
 
 **Advanced Coding Tools and Methodologies Course Project**
 
