@@ -1,6 +1,6 @@
 # 𖡼.𖤣⸙.𖤣⸙ Live Planting - Plant Biodata Sonification 𖡼.𖤣⸙.𖤣⸙
 
-![Live Planting Interface](images/homepage_screenshot.png)
+<video src="video/Live_planting_demo.mp4" controls width="600"></video>
 
 An interactive web-based system that transforms plant bioelectrical signals and soil humidity into real-time musical compositions. Experience your plant's "voice" through a retro-styled interface with 8-bit aesthetics.
 
